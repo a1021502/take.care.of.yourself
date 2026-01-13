@@ -5,11 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>心靈急救箱</title>
     
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg viewBox='0 0 100 100' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M50 15C30 15 10 30 10 60C10 85 25 95 50 95C75 95 90 85 90 60C90 30 70 15 50 15Z' fill='%23FFFFFF' stroke='%23E0E0E0' stroke-width='3'/%3E%3Ccircle cx='35' cy='55' r='4' fill='%235C5552'/%3E%3Ccircle cx='65' cy='55' r='4' fill='%235C5552'/%3E%3Ccircle cx='28' cy='62' r='3' fill='%23FFD1DC' opacity='0.8'/%3E%3Ccircle cx='72' cy='62' r='3' fill='%23FFD1DC' opacity='0.8'/%3E%3C/svg%3E">
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700;900&display=swap" rel="stylesheet">
-
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><path d=%22M50 20C30 20 10 35 10 60C10 85 25 95 50 95C75 95 90 85 90 60C90 35 70 20 50 20Z%22 fill=%22%23FFFFFF%22 stroke=%22%23CCCCCC%22 stroke-width=%225%22/><circle cx=%2235%22 cy=%2255%22 r=%226%22 fill=%22%235C5552%22/><circle cx=%2265%22 cy=%2255%22 r=%226%22 fill=%22%235C5552%22/></svg>">
 
     <style>
         /* --- 🎨 視覺風格 --- */
@@ -180,9 +180,9 @@
         #spirit-pet {
             position: fixed;
             width: 80px; height: 80px;
-            z-index: 2001; 
-            cursor: grab; 
-            touch-action: none; /* 重要：防止手機拖曳時畫面捲動 */
+            z-index: 2001;
+            cursor: grab;
+            touch-action: none; 
             display: none;
             -webkit-tap-highlight-color: transparent;
         }
@@ -197,13 +197,11 @@
             filter: drop-shadow(0 4px 6px rgba(0,0,0,0.15));
             animation: petFloat 4s ease-in-out infinite;
         }
-
         @keyframes petFloat {
             0%, 100% { transform: translateY(0) scale(1); }
             50% { transform: translateY(-6px) scale(1.03); }
         }
         
-        /* 互動抖動 */
         .pet-shake { animation: shake 0.4s ease-in-out; }
         @keyframes shake {
             0% { transform: rotate(0deg); }
@@ -244,6 +242,13 @@
             top: -75px;
         }
 
+        /* 顏文字專用字體：防止格式跑掉 */
+        .kaomoji {
+            font-family: "Arial", "Helvetica", "Segoe UI Symbol", sans-serif;
+            font-weight: normal;
+            display: inline-block;
+        }
+
     </style>
 </head>
 <body>
@@ -260,7 +265,7 @@
     </div>
 
     <div id="spirit-pet">
-        <div class="pet-speech-bubble" id="pet-speech">嘿咻！( >ω<)</div>
+        <div class="pet-speech-bubble" id="pet-speech">嘿咻！<span class="kaomoji">( >ω&lt;)</span></div>
         <div class="pet-svg-body">
             <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M50 15C30 15 10 30 10 60C10 85 25 95 50 95C75 95 90 85 90 60C90 30 70 15 50 15Z" fill="#FFFFFF" stroke="#E0E0E0" stroke-width="3"/>
@@ -353,7 +358,7 @@
         function initApp() {
             renderMoodButtons();
             updateResults();
-            initPetSystem(); 
+            initPetSystem();
         }
 
         function renderMoodButtons() {
@@ -475,8 +480,7 @@
             resetAllFilters();
         });
 
-        // --- ☁️ 麵團精靈系統 (v0.9 靈魂注入版) ---
-        // 包含：低音頻聲音、修正雙重觸發、修正文字閃爍
+        // --- ☁️ 麵團精靈系統 (Pet System Logic) ---
 
         const petEl = document.getElementById('spirit-pet');
         const petToggleBtn = document.getElementById('pet-toggle-btn');
@@ -487,14 +491,22 @@
         let petMoveInterval;
         let isDragging = false;
         let audioCtx = null;
-        let speechTimeout = null; // 用來記錄文字計時器，解決閃爍問題
+        let speechTimeout; // 用來記錄對話框的計時器
+        let lastInteractionTime = 0; // 用來防止連點
 
-        // 顏文字語錄
+        // 顏文字加上 span class="kaomoji" 避免亂碼
         const comfortMessages = [
-            "記得喝水喔 ( ˘ ³˘)♥", "深呼吸～ ( ´ ▽ ` )ﾉ", "我在這裡陪你 (´• ω •`)", 
-            "你做得很好 (๑•̀ㅂ•́)و✧", "休息一下吧 _(:3 」∠ )_", "慢慢來，沒關係 (・∀・)", 
-            "今天天空很美嗎？ (❁´◡`❁)", "抱抱 (つ´ω`)つ", "放輕鬆～ (￣▽￣)~*", 
-            "你的感受很重要 (｡•́︿•̀｡)", "我會一直陪著你 ( >ω<)"
+            '記得喝水喔 <span class="kaomoji">( ˘ ³˘)♥</span>', 
+            '深呼吸～ <span class="kaomoji">( ´ ▽ ` )ﾉ</span>', 
+            '我在這裡陪你 <span class="kaomoji">(´• ω •`)</span>', 
+            '你做得很好 <span class="kaomoji">(๑•̀ㅂ•́)و✧</span>', 
+            '休息一下吧 <span class="kaomoji">_(:3 」∠ )_</span>', 
+            '慢慢來，沒關係 <span class="kaomoji">(・∀・)</span>', 
+            '今天天空很美嗎？ <span class="kaomoji">(❁´◡`❁)</span>', 
+            '抱抱 <span class="kaomoji">(つ´ω`)つ</span>', 
+            '放輕鬆～ <span class="kaomoji">(￣▽￣)~*</span>', 
+            '你的感受很重要 <span class="kaomoji">(｡•́︿•̀｡)</span>', 
+            '我會一直陪著你 <span class="kaomoji">( >ω<)</span>'
         ];
 
         function initPetSystem() {
@@ -522,8 +534,8 @@
             
             if (isPetActive) {
                 startPetBehavior();
-                playSootheSound(); // 播放新版聲音
-                showSpeech("我回來了！(≧∇≦)/", 2000);
+                playExhaleSound();
+                showSpeech('我回來了！<span class="kaomoji">(≧∇≦)/</span>', 3500);
             } else {
                 stopPetBehavior();
             }
@@ -556,7 +568,7 @@
             const maxX = window.innerWidth - 90;
             const maxY = window.innerHeight - 90;
             const randomX = Math.max(20, Math.random() * maxX);
-            const randomY = Math.max(80, Math.random() * maxY); 
+            const randomY = Math.max(80, Math.random() * maxY);
 
             petEl.style.left = randomX + 'px';
             petEl.style.top = randomY + 'px';
@@ -565,25 +577,20 @@
             localStorage.setItem('petY', randomY);
         }
 
-        // --- 互動：修正雙重觸發 & 拖曳邏輯 ---
         function setupPetInteraction() {
             let startX, startY, initialLeft, initialTop;
             let moveDistance = 0;
-            let hasTouchInteraction = false; // 旗標：是否為觸控互動
 
-            // 觸控開始 (Touch)
-            const onTouchStart = (e) => {
+            const startDrag = (e) => {
                 if(!isPetActive) return;
-                // e.preventDefault(); // 防止瀏覽器將 touch 轉為 mouse event (重要！)
-                // 但為了不鎖死 scroll，我們只在確定是拖曳時阻止預設行為
-                
-                hasTouchInteraction = true;
                 isDragging = true;
-                petEl.classList.remove('auto-moving');
-
-                const touch = e.touches[0];
-                startX = touch.clientX;
-                startY = touch.clientY;
+                petEl.classList.remove('auto-moving'); 
+                
+                const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+                const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+                
+                startX = clientX;
+                startY = clientY;
                 initialLeft = petEl.offsetLeft;
                 initialTop = petEl.offsetTop;
                 moveDistance = 0;
@@ -592,126 +599,118 @@
                 if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
             };
 
-            // 滑鼠開始 (Mouse) - 只有在沒有觸控時才執行
-            const onMouseDown = (e) => {
-                if(!isPetActive || hasTouchInteraction) return; 
-                isDragging = true;
-                petEl.classList.remove('auto-moving');
-                
-                startX = e.clientX;
-                startY = e.clientY;
-                initialLeft = petEl.offsetLeft;
-                initialTop = petEl.offsetTop;
-                moveDistance = 0;
-                
-                if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            };
-
-            const onMove = (clientX, clientY) => {
+            const doDrag = (e) => {
                 if (!isDragging) return;
+                e.preventDefault(); 
+                
+                const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+                const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+                
                 const dx = clientX - startX;
                 const dy = clientY - startY;
+                
                 moveDistance += Math.abs(dx) + Math.abs(dy);
 
                 petEl.style.left = (initialLeft + dx) + 'px';
                 petEl.style.top = (initialTop + dy) + 'px';
             };
 
-            const onTouchMove = (e) => {
-                if(isDragging) e.preventDefault(); // 拖曳時阻止畫面捲動
-                onMove(e.touches[0].clientX, e.touches[0].clientY);
-            };
-
-            const onMouseMove = (e) => {
-                onMove(e.clientX, e.clientY);
-            };
-
-            const onEnd = () => {
+            const endDrag = (e) => {
                 if (!isDragging) return;
                 isDragging = false;
                 
                 localStorage.setItem('petX', parseInt(petEl.style.left));
                 localStorage.setItem('petY', parseInt(petEl.style.top));
 
-                // 如果移動距離很小 (<10px)，視為點擊
+                // 判斷點擊：移動距離小於 10px
                 if (moveDistance < 10) {
-                    triggerInteraction();
+                    // 防止觸控設備 touchend 後觸發 click 導致兩次觸發
+                    // 使用時間戳記檢查
+                    const now = Date.now();
+                    if (now - lastInteractionTime > 300) { 
+                        triggerInteraction();
+                        lastInteractionTime = now;
+                    }
                 }
-                
-                // 重置觸控旗標 (稍微延遲以免影響 mouseup)
-                setTimeout(() => { hasTouchInteraction = false; }, 500);
             };
 
-            // 綁定事件
-            // 使用 passive: false 讓 touchmove 可以 preventDefault
-            petEl.addEventListener('touchstart', onTouchStart, {passive: false});
-            petEl.addEventListener('mousedown', onMouseDown);
-            
-            window.addEventListener('touchmove', onTouchMove, {passive: false});
-            window.addEventListener('mousemove', onMouseMove);
-            
-            window.addEventListener('touchend', onEnd);
-            window.addEventListener('mouseup', onEnd);
+            petEl.addEventListener('mousedown', startDrag);
+            window.addEventListener('mousemove', doDrag);
+            window.addEventListener('mouseup', endDrag);
+
+            petEl.addEventListener('touchstart', startDrag, {passive: false});
+            window.addEventListener('touchmove', doDrag, {passive: false});
+            window.addEventListener('touchend', endDrag);
         }
 
         function triggerInteraction() {
             if (navigator.vibrate) navigator.vibrate(50);
-            
-            playSootheSound(); // 新版聲音
 
+            // 1. 播放新的呼吸音效
+            playExhaleSound();
+
+            // 2. 視覺抖動
             const body = petEl.querySelector('.pet-svg-body');
             body.classList.remove('pet-shake');
             void petEl.offsetWidth; 
             body.classList.add('pet-shake');
 
+            // 3. 隨機說話
             const msg = comfortMessages[Math.floor(Math.random() * comfortMessages.length)];
-            showSpeech(msg, 3000);
+            // 延長顯示時間到 3.5 秒
+            showSpeech(msg, 3500);
         }
 
-        // --- 新版聲音：溫和低沉 (Soothe Sound) ---
-        // 0.8s, Low Pitch (180Hz -> 120Hz), Gentle Sine Wave
-        function playSootheSound() {
+        // Web Audio API: 製作 "呼氣" (Exhale/Sigh) 音效
+        // 使用 White Noise + LowPass Filter + Gain Envelope
+        function playExhaleSound() {
             if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
             if (audioCtx.state === 'suspended') audioCtx.resume();
 
-            const oscillator = audioCtx.createOscillator();
+            const duration = 4.0; // 持續 4 秒
+            const bufferSize = audioCtx.sampleRate * duration;
+            const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+            const data = buffer.getChannelData(0);
+
+            // 1. 產生白噪音 (White Noise)
+            for (let i = 0; i < bufferSize; i++) {
+                data[i] = Math.random() * 2 - 1;
+            }
+
+            const noise = audioCtx.createBufferSource();
+            noise.buffer = buffer;
+
+            // 2. 濾波器 (Low Pass Filter) - 讓聲音變悶、變柔和
+            const filter = audioCtx.createBiquadFilter();
+            filter.type = 'lowpass';
+            filter.frequency.setValueAtTime(400, audioCtx.currentTime); // 起始頻率低
+            // 頻率稍微下降，模擬氣息變慢
+            filter.frequency.linearRampToValueAtTime(100, audioCtx.currentTime + duration);
+
+            // 3. 音量包絡 (Gain Envelope) - 淡入淡出
             const gainNode = audioCtx.createGain();
-
-            oscillator.type = 'sine'; // 正弦波最溫和
-            // 音頻：從 180Hz 慢慢降到 120Hz
-            oscillator.frequency.setValueAtTime(180, audioCtx.currentTime);
-            oscillator.frequency.linearRampToValueAtTime(120, audioCtx.currentTime + 0.8);
-
-            // 音量 (Envelope)：淡入 -> 保持 -> 淡出
             gainNode.gain.setValueAtTime(0, audioCtx.currentTime);
-            gainNode.gain.linearRampToValueAtTime(0.3, audioCtx.currentTime + 0.1); // Attack
-            gainNode.gain.linearRampToValueAtTime(0.01, audioCtx.currentTime + 0.8); // Decay
+            gainNode.gain.linearRampToValueAtTime(0.15, audioCtx.currentTime + 0.5); // 慢慢吸氣感 (0.5秒到最大音量)
+            gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration); // 慢慢吐氣 (淡出)
 
-            oscillator.connect(gainNode);
+            // 連接
+            noise.connect(filter);
+            filter.connect(gainNode);
             gainNode.connect(audioCtx.destination);
 
-            oscillator.start();
-            oscillator.stop(audioCtx.currentTime + 0.8);
+            noise.start();
+            noise.stop(audioCtx.currentTime + duration);
         }
 
-        // --- 修正文字閃爍邏輯 ---
         function showSpeech(text, duration) {
-            // 1. 如果有舊的計時器，先清除，防止舊的「消失指令」執行
-            if (speechTimeout) {
-                clearTimeout(speechTimeout);
-                speechTimeout = null;
-            }
-            
-            // 2. 更新文字並顯示
-            petSpeech.innerText = text;
-            petSpeech.classList.remove('show'); // 先移除再加入，觸發 CSS transition 重置 (可選)
-            void petSpeech.offsetWidth; // Force reflow
-            petSpeech.classList.add('show');
+            // 清除舊的計時器，防止訊息閃爍消失
+            if (speechTimeout) clearTimeout(speechTimeout);
 
-            // 3. 設定新的消失計時器
+            petSpeech.innerHTML = text; // 使用 innerHTML 以解析 span 標籤
+            petSpeech.classList.add('show');
+            
             speechTimeout = setTimeout(() => {
                 petSpeech.classList.remove('show');
-                speechTimeout = null;
             }, duration);
         }
 
