@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>心靈急救箱</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Kiwi+Maru:wght@300;400;500&family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* --- 🎨 精緻化視覺系統 (Refined & Healing Palette) --- */
+        :root {
+            /* 莫蘭迪綠色系：低飽和，更耐看、高級 */
+            --primary: #6A8E7F;       /* 主色：乾燥鼠尾草綠 */
+            --primary-dark: #4A665A;  /* 深色：用於文字強調 */
+            --primary-soft: #E8F1ED;  /* 淺色：背景點綴 */
+            
+            --bg: #FAF9F6;            /* 背景：燕麥奶白 (比純白更護眼) */
+            --card-bg: #FFFFFF;
+            --text-main: #5C5552;     /* 深暖灰 */
+            --text-sub: #9E9894;      /* 淺暖灰 */
+            
+            --accent-warm: #D48C84;   /* 豆沙紅 (愛心用) */
+            
+            /* 高級感陰影：擴散範圍大，顏色淡 */
+            --shadow-card: 0 10px 25px -5px rgba(106, 142, 127, 0.15); 
+            --shadow-float: 0 15px 30px -5px rgba(106, 142, 127, 0.25);
+            
+            --radius-box: 24px;       /* 更圓潤的導角 */
+            --radius-btn: 50px;
+        }
+
+        body {
+            /* 內文使用圓體，確保易讀性 */
+            font-family: "Zen Maru Gothic", sans-serif;
+            background-color: var(--bg);
+            color: var(--text-main);
+            margin: 0;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            line-height: 1.7;
+            /* 隱約的紙張紋理背景 */
+            background-image: radial-gradient(#E0E0E0 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+
+        /* 特殊字體 class：用於標題，營造繪本感 */
+        .serif-font {
+            font-family: "Kiwi Maru", serif;
+            font-weight: 500;
+        }
+
+        /* --- Header 區域 --- */
+        header { 
+            text-align: center; 
+            margin-bottom: 32px; 
+            margin-top: 20px;
+            position: relative; 
+        }
+        
+        h1 { 
+            font-family: "Kiwi Maru", serif; 
+            font-weight: 500; 
+            font-size: 2.6rem;
+            margin: 0; 
+            color: var(--primary); 
+            letter-spacing: 0.05em;
+            text-shadow: 2px 2px 0px rgba(255,255,255,0.8); /* 文字白邊，增加層次 */
+        }
+        
+        p.subtitle { 
+            font-size: 1.05rem; 
+            color: var(--text-sub); 
+            margin-top: 8px; 
+            letter-spacing: 0.02em;
+        }
+
+        /* --- 🔍 搜尋欄 (懸浮膠囊設計) --- */
+        .search-container {
+            width: 100%;
+            max-width: 500px;
+            margin-bottom: 28px;
+            position: relative;
+        }
+        #search-input {
+            width: 100%;
+            padding: 18px 28px;
+            border-radius: var(--radius-btn);
+            border: 1px solid rgba(255,255,255,0.5); /* 半透明邊框 */
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px); /* 毛玻璃特效 */
+            font-size: 1rem;
+            font-family: "Zen Maru Gothic", sans-serif;
+            color: var(--text-main);
+            outline: none;
+            box-shadow: var(--shadow-card);
+            box-sizing: border-box;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+        #search-input:focus {
+            border-color: var(--primary);
+            box-shadow: var(--shadow-float);
+            transform: translateY(-2px);
+        }
+        #search-input::placeholder {
+            color: #C2BFBC;
+        }
+
+        /* --- 🚑 情緒快篩區 (柔和色塊) --- */
+        .triage-section {
+            width: 100%;
+            max-width: 500px;
+            background: linear-gradient(135deg, #F3F8F5 0%, #E8F1ED 100%); /* 微漸層 */
+            padding: 24px;
+            border-radius: var(--radius-box);
+            margin-bottom: 32px;
+            text-align: center;
+            box-sizing: border-box;
+            box-shadow: inset 0 0 0 1px rgba(255,255,255,0.8); /* 內發光質感 */
+        }
+        .triage-title { 
+            font-family: "Kiwi Maru", serif;
+            font-size: 1.25rem; 
+            margin-bottom: 16px; 
+            color: var(--primary-dark);
+        }
+        .mood-tags { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
+        
+        .mood-btn {
+            background: rgba(255, 255, 255, 0.8);
+            border: 1px solid transparent;
+            color: var(--text-main);
+            padding: 8px 18px;
+            border-radius: var(--radius-btn);
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+            font-family: "Zen Maru Gothic", sans-serif;
+            font-weight: 500;
+        }
+        .mood-btn:hover {
+            transform: translateY(-2px);
+            background: white;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+        /* 選中狀態 */
+        .mood-btn.active {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 4px 12px rgba(106, 142, 127, 0.4);
+            transform: translateY(-1px);
+        }
+        /* 最愛按鈕特別樣式 */
+        .mood-btn.fav-filter { color: var(--accent-warm); border: 1px solid rgba(212, 140, 132, 0.2); }
+        .mood-btn.fav-filter.active { background: var(--accent-warm); color: white; border-color: var(--accent-warm); }
+
+        /* --- 🛠️ 工具箱列表 (卡片設計) --- */
+        .toolbox-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr); /* 強制兩欄 */
+            gap: 20px;
+            width: 100%;
+            max-width: 500px;
+            padding-bottom: 40px;
+        }
+
+        .feature-card {
+            background: var(--card-bg);
+            border-radius: var(--radius-box);
+            padding: 24px 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            box-shadow: var(--shadow-card);
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); /* 彈性動畫 */
+            height: 150px;
+            position: relative;
+            border: 1px solid rgba(255,255,255,0.8);
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: var(--shadow-float);
+        }
+        .feature-card:active { transform: scale(0.97); }
+        
+        .card-icon { 
+            font-size: 2.8rem; 
+            margin-bottom: 12px; 
+            /* 讓 emoji 稍微透明一點，融合畫面 */
+            opacity: 0.9; 
+            filter: sepia(0.2); /* 讓 emoji 色調稍微復古一點 */
+        }
+        
+        .card-title { 
+            font-family: "Kiwi Maru", serif; 
+            font-size: 1.15rem; 
+            color: var(--text-main);
+            font-weight: 500;
+            line-height: 1.3;
+        }
+        .card-tag { 
+            font-size: 0.8rem; 
+            color: #B0B0B0; 
+            margin-top: 6px; 
+            font-weight: 400;
+        }
+
+        /* --- ❤️ 愛心收藏按鈕 --- */
+        .favorite-btn {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            font-size: 1.3rem;
+            color: #ECECEC; /* 未收藏時的顏色，非常淡，不干擾 */
+            cursor: pointer;
+            transition: all 0.3s;
+            z-index: 10;
+            padding: 5px;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.05));
+        }
+        .favorite-btn:hover { transform: scale(1.15); color: #F2CFCB; }
+        .favorite-btn.is-active {
+            color: var(--accent-warm); /* 豆沙紅 */
+            animation: heartPop 0.4s ease;
+        }
+        @keyframes heartPop {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.4); }
+            100% { transform: scale(1); }
+        }
+
+        /* --- 找不到結果 --- */
+        .no-result {
+            grid-column: span 2;
+            text-align: center;
+            color: var(--text-sub);
+            padding: 40px;
+            font-family: "Kiwi Maru", serif;
+            font-size: 1.1rem;
+            background: rgba(255,255,255,0.5);
+            border-radius: var(--radius-box);
+        }
+
+        /* --- 📱 功能畫面 (全螢幕覆蓋層) --- */
+        #active-feature-container {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: var(--bg);
+            z-index: 1000;
+            display: none;
+            flex-direction: column;
+            padding: 24px;
+            animation: fadeIn 0.3s ease;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .close-btn {
+            align-self: flex-end;
+            padding: 10px 24px;
+            background: #EBEAE6;
+            border-radius: var(--radius-btn);
+            border: none;
+            cursor: pointer;
+            font-family: "Zen Maru Gothic", sans-serif;
+            font-size: 1rem;
+            color: var(--text-main);
+            transition: all 0.2s;
+        }
+        .close-btn:hover { background: #E0DFDB; }
+
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Safe Space</h1>
+        <p class="subtitle serif-font">在這裡，你不需要勉強自己。</p>
+    </header>
+
+    <div class="search-container">
+        <input type="text" id="search-input" placeholder="🔍 搜尋：塔羅、呼吸、迷惘...">
+    </div>
+
+    <section class="triage-section">
+        <div class="triage-title">現在的心情像什麼天氣？</div>
+        <div class="mood-tags" id="mood-tags-container">
+            </div>
+        <div style="margin-top:20px; font-size:0.95rem; color:var(--text-sub); cursor:pointer; letter-spacing:1px; opacity:0.7; transition:0.3s;" class="serif-font" onclick="resetFilter()" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.7">
+            顯示全部功能
+        </div>
+    </section>
+
+    <section class="toolbox-grid" id="toolbox">
+        </section>
+
+    <div id="active-feature-container">
+        <button class="close-btn" onclick="closeFeature()">關閉 ✕</button>
+        <div style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center;">
+            <h2 id="feature-title-display" class="serif-font" style="text-align: center; font-size: 2.2rem; color: var(--primary); margin-bottom: 20px;">功能名稱</h2>
+            <div id="feature-content-area" style="text-align: center;">
+                <p style="font-size: 1.1rem; color: var(--text-sub);">✨ 輕輕地吸氣，慢慢地吐氣 ✨</p>
+                <p style="font-size: 0.9rem; color: #CCC; margin-top:10px;">(功能建置中)</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- 🧠 1. 資料庫 (The Brain) ---
+        const featuresDB = [
+            // Level 1: 基礎內容
+            { id: 'dbt_cards', name: '自我照顧卡', icon: '🃏', tag: 'DBT策略', moods: ['anxious', 'low', 'numb'], keywords: '卡片,抽卡,策略' },
+            { id: 'quotes', name: '療癒金句', icon: '📜', tag: '文字力量', moods: ['low', 'stress'], keywords: '語錄,句子,鼓勵' },
+            { id: 'tarot', name: '塔羅指引', icon: '🔮', tag: '潛意識', moods: ['anxious', 'confused'], keywords: '塔羅,占卜' },
+            { id: 'answer_book', name: '解答之書', icon: '📖', tag: '靈感指引', moods: ['confused', 'anxious'], keywords: '解答,困惑,迷惘' }, 
+            { id: 'questions', name: '問句引導', icon: '💡', tag: '自我對話', moods: ['low', 'confused', 'numb'], keywords: '敘事,sfbt,思考' }, 
+            { id: 'jokes', name: '笑話急轉彎', icon: '🤣', tag: '轉換心情', moods: ['stress', 'low'], keywords: '笑話,開心' },
+            { id: 'animals', name: '毛孩療癒', icon: '🐱', tag: '視覺安撫', moods: ['stress', 'low', 'angry'], keywords: '貓,狗,可愛' },
+            { id: 'tasks', name: '微小成就', icon: '🌱', tag: '行動', moods: ['numb', 'low'], keywords: '任務,動力' },
+            
+            // Level 2: 互動工具
+            { id: 'breathing', name: '呼吸練習', icon: '🌬️', tag: '生理調節', moods: ['anxious', 'angry', 'panic'], keywords: '呼吸,放鬆,冥想' },
+            { id: 'clicker', name: '紓壓泡泡', icon: '🫧', tag: '釋放壓力', moods: ['stress', 'angry'], keywords: '按鈕,泡泡紙' },
+            { id: 'whiteboard', name: '情緒塗鴉', icon: '🎨', tag: '表達', moods: ['angry', 'confused', 'numb'], keywords: '畫畫,寫字,白板' },
+            { id: 'conveyor', name: '念頭輸送帶', icon: '🌊', tag: 'ACT脫鉤', moods: ['anxious', 'stress'], keywords: '念頭,想法' },
+            { id: 'worry_jar', name: '煩惱寄放', icon: '🏺', tag: '邊界設定', moods: ['anxious', 'stress'], keywords: '煩惱,睡不著' },
+            { id: 'sos', name: '安全網 SOS', icon: '🆘', tag: '危機求助', moods: ['panic', 'low'], keywords: '求救,電話' }
+        ];
+
+        const moodOptions = [
+            { id: 'fav', label: '❤️ 我的最愛', isFav: true },
+            { id: 'anxious', label: '😰 焦慮慌張' },
+            { id: 'low', label: '😞 低落無力' },
+            { id: 'angry', label: '😡 生氣憤怒' },
+            { id: 'numb', label: '😶 麻木放空' },
+            { id: 'confused', label: '🤔 迷惘困惑' },
+            { id: 'panic', label: '🆘 快崩潰了' }
+        ];
+
+        // 讀取最愛列表
+        let favorites = JSON.parse(localStorage.getItem('safeSpaceFavs')) || [];
+
+        // --- 🏗️ 2. 建構介面 ---
+        const toolboxEl = document.getElementById('toolbox');
+        const moodContainer = document.getElementById('mood-tags-container');
+        const searchInput = document.getElementById('search-input');
+
+        function initApp() {
+            renderMoodButtons();
+            renderFeatures(featuresDB); 
+        }
+
+        // 產生情緒按鈕
+        function renderMoodButtons() {
+            moodContainer.innerHTML = '';
+            moodOptions.forEach(mood => {
+                const btn = document.createElement('button');
+                btn.className = 'mood-btn';
+                if(mood.isFav) btn.classList.add('fav-filter');
+                btn.innerText = mood.label;
+                btn.onclick = () => filterByMood(mood.id, btn);
+                moodContainer.appendChild(btn);
+            });
+        }
+
+        // 產生卡片
+        function renderFeatures(list) {
+            toolboxEl.innerHTML = '';
+            
+            if (list.length === 0) {
+                toolboxEl.innerHTML = `
+                    <div class="no-result">
+                        <div style="font-size:3rem;">🍂</div>
+                        <br>這裡暫時空空的<br>像秋天的午後
+                    </div>`;
+                return;
+            }
+
+            list.forEach(feature => {
+                const isFav = favorites.includes(feature.id);
+                const card = document.createElement('div');
+                card.className = 'feature-card';
+                card.innerHTML = `
+                    <div class="favorite-btn ${isFav ? 'is-active' : ''}" onclick="toggleFavorite(event, '${feature.id}')">
+                        ${isFav ? '❤️' : '🤍'}
+                    </div>
+                    <div class="card-icon">${feature.icon}</div>
+                    <div class="card-title">${feature.name}</div>
+                    <div class="card-tag">${feature.tag}</div>
+                `;
+                card.onclick = (e) => {
+                    if(e.target.classList.contains('favorite-btn')) return;
+                    openFeature(feature);
+                };
+                toolboxEl.appendChild(card);
+            });
+        }
+
+        // --- ❤️ 3. 愛心收藏邏輯 ---
+        function toggleFavorite(event, id) {
+            event.stopPropagation();
+            
+            if (favorites.includes(id)) {
+                favorites = favorites.filter(favId => favId !== id);
+            } else {
+                favorites.push(id);
+            }
+            
+            localStorage.setItem('safeSpaceFavs', JSON.stringify(favorites));
+            
+            // 檢查目前是否在「我的最愛」頁面，如果是，需即時重繪
+            const activeMoodBtn = document.querySelector('.mood-btn.active');
+            if (activeMoodBtn && activeMoodBtn.innerText.includes('我的最愛')) {
+                const favList = featuresDB.filter(item => favorites.includes(item.id));
+                renderFeatures(favList);
+            } else {
+                // 原地更新圖示
+                const btn = event.currentTarget;
+                const isNowFav = favorites.includes(id);
+                btn.innerHTML = isNowFav ? '❤️' : '🤍';
+                btn.classList.toggle('is-active');
+            }
+        }
+
+        // --- 🧠 4. 過濾與搜尋 ---
+        function filterByMood(moodId, clickedBtn) {
+            document.querySelectorAll('.mood-btn').forEach(btn => btn.classList.remove('active'));
+            clickedBtn.classList.add('active');
+            searchInput.value = '';
+
+            if (moodId === 'fav') {
+                const favList = featuresDB.filter(item => favorites.includes(item.id));
+                renderFeatures(favList);
+            } else {
+                const filtered = featuresDB.filter(item => item.moods.includes(moodId));
+                renderFeatures(filtered);
+            }
+        }
+
+        searchInput.addEventListener('input', (e) => {
+            const keyword = e.target.value.toLowerCase().trim();
+            document.querySelectorAll('.mood-btn').forEach(btn => btn.classList.remove('active'));
+
+            if (keyword === '') {
+                renderFeatures(featuresDB);
+                return;
+            }
+
+            const filtered = featuresDB.filter(item => 
+                item.name.includes(keyword) || 
+                item.keywords.includes(keyword) ||
+                item.tag.includes(keyword)
+            );
+            renderFeatures(filtered);
+        });
+
+        function resetFilter() {
+            document.querySelectorAll('.mood-btn').forEach(btn => btn.classList.remove('active'));
+            searchInput.value = '';
+            renderFeatures(featuresDB);
+        }
+
+        // --- 🎮 模擬功能視窗 ---
+        function openFeature(feature) {
+            const container = document.getElementById('active-feature-container');
+            const title = document.getElementById('feature-title-display');
+            container.style.display = 'flex';
+            title.innerText = feature.name;
+        }
+
+        function closeFeature() {
+            document.getElementById('active-feature-container').style.display = 'none';
+        }
+
+        initApp();
+    </script>
+</body>
+</html>
