@@ -19,7 +19,7 @@
             --card-bg: #FFFFFF;
             --text-main: #5C5552;
             --text-sub: #9E9894;
-            --accent-warm: #D67D68; /* 豆沙紅 */
+            --accent-warm: #D67D68;
             --radius-box: 24px;
             --radius-btn: 16px;
             --shadow-soft: 0 8px 20px rgba(122, 159, 110, 0.15);
@@ -37,6 +37,7 @@
             min-height: 100vh;
             line-height: 1.6;
             -webkit-tap-highlight-color: transparent;
+            overflow-x: hidden; /* 防止精靈飄出去產生捲軸 */
         }
 
         header { text-align: center; margin-bottom: 24px; margin-top: 10px; }
@@ -72,7 +73,6 @@
             color: var(--primary-dark); font-weight: 900; text-align: center; 
         }
 
-        /* 3列 x 2行 */
         .mood-grid {
             display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 10px;
         }
@@ -86,38 +86,28 @@
             display: flex; align-items: center; justify-content: center;
         }
         .mood-btn:active { transform: translateY(4px); box-shadow: none; }
-        
-        /* 多選狀態樣式 */
         .mood-btn.active {
             background: var(--primary); color: white;
             box-shadow: inset 0 3px 5px rgba(0,0,0,0.1);
             transform: translateY(2px);
         }
 
-        /* 右下角：我的最愛 (顏色翻轉) */
-        .fav-fab-container {
-            position: absolute; bottom: -15px; right: 15px; z-index: 10;
-        }
+        /* 收藏按鈕 */
+        .fav-fab-container { position: absolute; bottom: -15px; right: 15px; z-index: 10; }
         .fav-fab {
             width: 70px; height: 70px;
-            background-color: white; /* 改成白色背景 */
-            color: var(--accent-warm); /* 改成紅色文字圖示 */
+            background-color: white; color: var(--accent-warm);
             border-radius: 50%;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
             box-shadow: 0 6px 15px rgba(122, 159, 110, 0.2);
             cursor: pointer; transition: all 0.2s;
-            border: 3px solid white; /* 稍微加粗白邊 */
+            border: 3px solid white;
         }
         .fav-fab:active { transform: scale(0.9); }
-        
-        /* 收藏被選中時的狀態 (紅底白字) */
         .fav-fab.active {
-            background-color: var(--accent-warm);
-            color: white;
-            transform: scale(0.95);
-            box-shadow: inset 0 3px 5px rgba(0,0,0,0.2);
+            background-color: var(--accent-warm); color: white;
+            transform: scale(0.95); box-shadow: inset 0 3px 5px rgba(0,0,0,0.2);
         }
-        
         .fav-icon { font-size: 1.4rem; line-height: 1; margin-bottom: 2px; }
         .fav-text { font-size: 0.75rem; font-weight: 900; line-height: 1; }
 
@@ -137,7 +127,6 @@
         .card-icon { font-size: 2.8rem; margin-bottom: 8px; }
         .card-title { font-size: 1.1rem; color: var(--text-main); font-weight: 700; }
         .card-tag { font-size: 0.8rem; color: #B0B0B0; margin-top: 5px; font-weight: 500; }
-
         .card-fav-btn {
             position: absolute; top: 10px; right: 10px;
             font-size: 1.2rem; color: #EEE; padding: 8px;
@@ -162,9 +151,108 @@
             border: none; cursor: pointer; font-family: "Zen Maru Gothic", sans-serif;
             font-weight: 700; color: var(--text-main);
         }
+
+        /* --- 👻 療癒小精靈 (Pet) 系統 --- */
+        
+        /* 1. 精靈開關 (右上角) */
+        .pet-toggle-container {
+            position: fixed; top: 20px; right: 20px; z-index: 900;
+            display: flex; align-items: center; gap: 8px;
+            background: rgba(255,255,255,0.8);
+            backdrop-filter: blur(5px);
+            padding: 5px 12px;
+            border-radius: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .pet-toggle-container:active { transform: scale(0.95); }
+        .pet-toggle-icon { font-size: 1.2rem; }
+        .pet-toggle-text { font-size: 0.8rem; font-weight: 700; color: var(--primary); }
+        
+        /* 2. 精靈本體 */
+        #spirit-pet {
+            position: fixed;
+            width: 70px; height: 70px;
+            z-index: 800; /* 比 Modal 小，比頁面大 */
+            cursor: pointer;
+            pointer-events: auto;
+            transition: top 3s ease-in-out, left 3s ease-in-out; /* 緩慢移動 */
+            filter: drop-shadow(0 5px 15px rgba(0,0,0,0.1));
+            display: none; /* 預設隱藏，由 JS 開啟 */
+        }
+
+        /* 3. 精靈的呼吸動畫 */
+        @keyframes petFloat {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-8px) scale(1.05); }
+        }
+        .pet-body {
+            width: 100%; height: 100%;
+            animation: petFloat 4s ease-in-out infinite;
+        }
+        
+        /* 點擊時的抖動 */
+        .pet-shake { animation: shake 0.5s ease-in-out; }
+        @keyframes shake {
+            0% { transform: rotate(0deg); }
+            25% { transform: rotate(-15deg); }
+            50% { transform: rotate(15deg); }
+            75% { transform: rotate(-5deg); }
+            100% { transform: rotate(0deg); }
+        }
+
+        /* 4. 對話框 */
+        .pet-speech-bubble {
+            position: absolute;
+            top: -50px; left: 50%;
+            transform: translateX(-50%) scale(0);
+            background: white;
+            padding: 8px 14px;
+            border-radius: 15px;
+            font-size: 0.85rem;
+            color: var(--text-main);
+            font-weight: 700;
+            white-space: nowrap;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            opacity: 0;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            pointer-events: none;
+        }
+        .pet-speech-bubble::after {
+            content: ''; position: absolute; bottom: -6px; left: 50%;
+            transform: translateX(-50%);
+            border-width: 6px 6px 0; border-style: solid;
+            border-color: white transparent transparent transparent;
+        }
+        /* 顯示對話框 */
+        .pet-speech-bubble.show {
+            transform: translateX(-50%) scale(1);
+            opacity: 1;
+            top: -65px;
+        }
+
     </style>
 </head>
 <body>
+
+    <div class="pet-toggle-container" onclick="togglePetSystem()">
+        <div class="pet-toggle-icon" id="pet-toggle-icon">👻</div>
+        <div class="pet-toggle-text" id="pet-toggle-label">伴侶</div>
+    </div>
+
+    <div id="spirit-pet" onclick="interactWithPet()">
+        <div class="pet-speech-bubble" id="pet-speech">有點累了嗎？</div>
+        <div class="pet-body">
+            <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M50 15C30 15 10 30 10 60C10 85 25 95 50 95C75 95 90 85 90 60C90 30 70 15 50 15Z" fill="#FFFFFF"/>
+                <circle cx="35" cy="55" r="4" fill="#5C5552"/>
+                <circle cx="65" cy="55" r="4" fill="#5C5552"/>
+                <circle cx="28" cy="62" r="3" fill="#FFD1DC" opacity="0.6"/>
+                <circle cx="72" cy="62" r="3" fill="#FFD1DC" opacity="0.6"/>
+            </svg>
+        </div>
+    </div>
 
     <header>
         <h1>Safe Space</h1>
@@ -208,7 +296,7 @@
     </div>
 
     <script>
-        // --- 🧠 1. 資料庫 ---
+        // --- 1. APP 核心資料與狀態 ---
         const featuresDB = [
             { id: 'dbt_cards', name: '自我照顧卡', icon: '🃏', tag: 'DBT策略', moods: ['anxious', 'low', 'numb'], keywords: '卡片,抽卡,策略' },
             { id: 'quotes', name: '療癒金句', icon: '📜', tag: '文字力量', moods: ['low', 'stress'], keywords: '語錄,句子,鼓勵' },
@@ -235,12 +323,12 @@
             { id: 'panic', label: '🆘 快崩潰了' }
         ];
 
-        // 狀態管理
         let favorites = JSON.parse(localStorage.getItem('safeSpaceFavs')) || [];
-        let selectedMoods = new Set(); // 使用 Set 來管理多選
-        let isFavFilterActive = false; // 收藏篩選開關
+        let selectedMoods = new Set();
+        let isFavFilterActive = false;
         let searchKeyword = "";
 
+        // --- 2. 介面初始化 ---
         const toolboxEl = document.getElementById('toolbox');
         const moodGrid = document.getElementById('mood-grid-container');
         const searchInput = document.getElementById('search-input');
@@ -248,10 +336,10 @@
 
         function initApp() {
             renderMoodButtons();
-            updateResults(); // 初始渲染
+            updateResults();
+            initPetSystem(); // 初始化精靈
         }
 
-        // --- 渲染 UI 元件 ---
         function renderMoodButtons() {
             moodGrid.innerHTML = '';
             moodOptions.forEach(mood => {
@@ -259,50 +347,29 @@
                 btn.className = 'mood-btn';
                 btn.innerText = mood.label;
                 btn.dataset.id = mood.id;
-                // 多選：點擊切換狀態
                 btn.onclick = () => toggleMood(mood.id);
                 moodGrid.appendChild(btn);
             });
         }
 
-        // --- 核心邏輯：更新篩選結果 ---
         function updateResults() {
-            // 1. 更新按鈕視覺狀態
             document.querySelectorAll('.mood-btn').forEach(btn => {
-                if(selectedMoods.has(btn.dataset.id)) {
-                    btn.classList.add('active');
-                } else {
-                    btn.classList.remove('active');
-                }
+                if(selectedMoods.has(btn.dataset.id)) btn.classList.add('active');
+                else btn.classList.remove('active');
             });
+            
+            if(isFavFilterActive) favFabBtn.classList.add('active');
+            else favFabBtn.classList.remove('active');
 
-            if(isFavFilterActive) {
-                favFabBtn.classList.add('active');
-            } else {
-                favFabBtn.classList.remove('active');
-            }
-
-            // 2. 篩選資料
             let filtered = featuresDB.filter(item => {
-                // A. 關鍵字搜尋
-                const matchKeyword = searchKeyword === "" || 
-                                     item.name.includes(searchKeyword) || 
-                                     item.keywords.includes(searchKeyword) || 
-                                     item.tag.includes(searchKeyword);
-                
-                // B. 情緒篩選 (多選邏輯：只要符合其中一個選中的情緒即可，若沒選則全部符合)
-                // 邏輯：Item的情緒陣列 與 SelectedMoods 有交集
+                const matchKeyword = searchKeyword === "" || item.name.includes(searchKeyword) || item.keywords.includes(searchKeyword) || item.tag.includes(searchKeyword);
                 const itemMoodsSet = new Set(item.moods);
                 const hasMoodIntersection = [...selectedMoods].some(mood => itemMoodsSet.has(mood));
                 const matchMood = selectedMoods.size === 0 || hasMoodIntersection;
-
-                // C. 收藏篩選
                 const matchFav = !isFavFilterActive || favorites.includes(item.id);
-
                 return matchKeyword && matchMood && matchFav;
             });
 
-            // 3. 渲染卡片
             renderFeatures(filtered);
         }
 
@@ -332,41 +399,27 @@
             });
         }
 
-        // --- 互動邏輯 ---
-
-        // 1. 切換情緒 (多選)
+        // --- 3. 互動邏輯 ---
         function toggleMood(moodId) {
-            if (selectedMoods.has(moodId)) {
-                selectedMoods.delete(moodId);
-            } else {
-                selectedMoods.add(moodId);
-            }
-            ensureHistoryState(); // 確保有歷史紀錄可以「返回」
+            if (selectedMoods.has(moodId)) selectedMoods.delete(moodId);
+            else selectedMoods.add(moodId);
+            ensureHistoryState();
             updateResults();
         }
 
-        // 2. 切換收藏篩選
         function toggleFavFilter() {
             isFavFilterActive = !isFavFilterActive;
             ensureHistoryState();
             updateResults();
         }
 
-        // 3. 卡片上的愛心切換
         function toggleCardFav(event, id) {
             event.stopPropagation();
-            if (favorites.includes(id)) {
-                favorites = favorites.filter(favId => favId !== id);
-            } else {
-                favorites.push(id);
-            }
+            if (favorites.includes(id)) favorites = favorites.filter(favId => favId !== id);
+            else favorites.push(id);
             localStorage.setItem('safeSpaceFavs', JSON.stringify(favorites));
-            
-            // 只有當「收藏篩選」開啟時，才需要重繪整個列表(因為項目可能要消失)
-            // 否則只更新 UI 顯示即可 (避免畫面閃爍)
-            if(isFavFilterActive) {
-                updateResults();
-            } else {
+            if(isFavFilterActive) updateResults();
+            else {
                 const btn = event.currentTarget;
                 const isNowFav = favorites.includes(id);
                 btn.innerHTML = isNowFav ? '❤️' : '🤍';
@@ -374,60 +427,133 @@
             }
         }
 
-        // 4. 搜尋
         searchInput.addEventListener('input', (e) => {
             searchKeyword = e.target.value.toLowerCase().trim();
             if(searchKeyword !== "") ensureHistoryState();
             updateResults();
         });
 
-        // 5. 重置所有
         function resetAllFilters() {
             selectedMoods.clear();
             isFavFilterActive = false;
             searchKeyword = "";
             searchInput.value = "";
-            
-            // 這裡不一定要 pushState，如果是在篩選狀態下按重置，
-            // 其實是回到了最原始狀態，視情況可能需要 back() 或單純重繪
-            // 為了簡單，我們單純重繪
             updateResults();
         }
 
-        // --- 📱 History API 魔法 (返回鍵邏輯) ---
-        
-        // 這個函數負責：當使用者開始篩選時，推入一個歷史狀態
-        // 這樣按返回鍵時，我們就可以捕捉到，並執行「清除篩選」
+        // --- 4. History API ---
         function ensureHistoryState() {
-            // 檢查當前 URL 是否已經有 #filter hash，如果沒有才 push
             if (window.location.hash !== '#filter' && window.location.hash !== '#feature') {
                 history.pushState({ type: 'filter' }, null, '#filter');
             }
         }
-
+        
         const modal = document.getElementById('active-feature-container');
         const title = document.getElementById('feature-title-display');
-
         function openFeature(feature) {
             modal.style.display = 'flex';
             title.innerText = feature.name;
-            // 打開 Modal 時，推入新的歷史狀態
             history.pushState({ type: 'modal' }, null, "#feature");
         }
-
-        // 監聽歷史紀錄變化 (按了手機返回鍵)
         window.addEventListener('popstate', function(event) {
-            // 1. 如果 Modal 是開著的 -> 關閉 Modal
             if (modal.style.display === 'flex') {
                 modal.style.display = 'none';
-                return; // 結束，不繼續執行
+                return;
             }
-
-            // 2. 如果 Modal 沒開，但之前是在 #filter 狀態下按返回 -> 清空篩選
-            // 當返回發生，hash 變回空，或者 state 為 null
-            // 我們簡單粗暴一點：只要在首頁觸發 popstate，就重置篩選
             resetAllFilters();
         });
+
+        // --- 5. 👻 療癒小精靈系統 (Pet System) ---
+        
+        const petEl = document.getElementById('spirit-pet');
+        const petToggleIcon = document.getElementById('pet-toggle-icon');
+        const petToggleLabel = document.getElementById('pet-toggle-label');
+        const petSpeech = document.getElementById('pet-speech');
+        
+        let isPetActive = JSON.parse(localStorage.getItem('safeSpacePetActive')) ?? true; // 預設開啟
+        let petMoveInterval;
+
+        const comfortMessages = [
+            "記得喝水喔 💧", "深呼吸～", "我在這裡陪你", "你做得很好", 
+            "休息一下吧", "慢慢來，沒關係", "今天天空很美嗎？", 
+            "抱抱 ( >ω<)", "放輕鬆～", "你的感受很重要"
+        ];
+
+        function initPetSystem() {
+            updatePetVisibility();
+            if (isPetActive) startPetBehavior();
+        }
+
+        function togglePetSystem() {
+            isPetActive = !isPetActive;
+            localStorage.setItem('safeSpacePetActive', isPetActive);
+            updatePetVisibility();
+            
+            if (isPetActive) {
+                startPetBehavior();
+                showSpeech("我回來了！", 2000);
+            } else {
+                stopPetBehavior();
+            }
+        }
+
+        function updatePetVisibility() {
+            if (isPetActive) {
+                petEl.style.display = 'block';
+                petToggleIcon.innerText = '👻'; // 開啟狀態 Icon
+                petToggleLabel.innerText = '伴侶';
+                petToggleLabel.style.opacity = '1';
+            } else {
+                petEl.style.display = 'none';
+                petToggleIcon.innerText = '💤'; // 關閉狀態 Icon
+                petToggleLabel.innerText = '休息中';
+                petToggleLabel.style.opacity = '0.6';
+            }
+        }
+
+        function startPetBehavior() {
+            // 初始位置
+            movePetRandomly();
+            // 每 8~15 秒移動一次
+            petMoveInterval = setInterval(() => {
+                movePetRandomly();
+            }, 10000);
+        }
+
+        function stopPetBehavior() {
+            clearInterval(petMoveInterval);
+        }
+
+        function movePetRandomly() {
+            // 隨機計算位置，保留邊距以免被切到
+            const maxX = window.innerWidth - 80;
+            const maxY = window.innerHeight - 80;
+            
+            const randomX = Math.max(20, Math.random() * maxX);
+            const randomY = Math.max(80, Math.random() * maxY); // 避開 Header
+
+            petEl.style.left = randomX + 'px';
+            petEl.style.top = randomY + 'px';
+        }
+
+        function interactWithPet() {
+            // 1. 抖動動畫
+            petEl.querySelector('.pet-body').classList.remove('pet-shake');
+            void petEl.offsetWidth; // Trigger reflow
+            petEl.querySelector('.pet-body').classList.add('pet-shake');
+
+            // 2. 隨機說話
+            const msg = comfortMessages[Math.floor(Math.random() * comfortMessages.length)];
+            showSpeech(msg, 3000);
+        }
+
+        function showSpeech(text, duration) {
+            petSpeech.innerText = text;
+            petSpeech.classList.add('show');
+            setTimeout(() => {
+                petSpeech.classList.remove('show');
+            }, duration);
+        }
 
         initApp();
     </script>
