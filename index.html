@@ -10,7 +10,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700;900&display=swap" rel="stylesheet">
 
     <style>
-        /* --- 🎨 視覺風格設計 --- */
+        /* --- 🎨 視覺風格 --- */
         :root {
             --primary: #7A9F6E;
             --primary-dark: #58754F;
@@ -37,10 +37,11 @@
             min-height: 100vh;
             line-height: 1.6;
             -webkit-tap-highlight-color: transparent;
-            overflow-x: hidden; /* 防止精靈飄出去產生捲軸 */
+            overflow-x: hidden;
+            /* 讓 body 可被點擊，但精靈層級更高 */
         }
 
-        header { text-align: center; margin-bottom: 24px; margin-top: 10px; }
+        header { text-align: center; margin-bottom: 24px; margin-top: 40px; /* 增加頂部空間給左上角按鈕 */ }
         h1 { font-weight: 900; font-size: 2.4rem; margin: 0; color: var(--primary); letter-spacing: 1px; }
         p.subtitle { font-size: 1rem; color: var(--text-sub); margin-top: 5px; font-weight: 500; }
 
@@ -134,7 +135,7 @@
         }
         .card-fav-btn.is-active { color: var(--accent-warm); }
 
-        /* --- 📱 Modal --- */
+        /* --- 📱 Modal (功能頁面) --- */
         #active-feature-container {
             position: fixed; top: 0; left: 0; right: 0; bottom: 0;
             background: var(--bg); z-index: 1000;
@@ -152,52 +153,63 @@
             font-weight: 700; color: var(--text-main);
         }
 
-        /* --- 👻 療癒小精靈 (Pet) 系統 --- */
+        /* --- ☁️ 麵團精靈系統 (全域) --- */
         
-        /* 1. 精靈開關 (右上角) */
+        /* 1. 召喚開關 (左上角) */
         .pet-toggle-container {
-            position: fixed; top: 20px; right: 20px; z-index: 900;
+            position: fixed; top: 20px; left: 20px; z-index: 2000; /* 最高層級，保證任何頁面都能按 */
             display: flex; align-items: center; gap: 8px;
-            background: rgba(255,255,255,0.8);
+            background: rgba(255,255,255,0.9);
             backdrop-filter: blur(5px);
-            padding: 5px 12px;
-            border-radius: 20px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            padding: 6px 14px;
+            border-radius: 30px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
             cursor: pointer;
-            transition: transform 0.2s;
+            transition: all 0.2s;
+            border: 1px solid rgba(0,0,0,0.05);
         }
         .pet-toggle-container:active { transform: scale(0.95); }
-        .pet-toggle-icon { font-size: 1.2rem; }
-        .pet-toggle-text { font-size: 0.8rem; font-weight: 700; color: var(--primary); }
+        .pet-toggle-icon { 
+            width: 24px; height: 24px; display: flex; align-items: center; justify-content: center;
+        }
+        .pet-toggle-text { font-size: 0.85rem; font-weight: 700; color: var(--primary); }
         
         /* 2. 精靈本體 */
         #spirit-pet {
             position: fixed;
-            width: 70px; height: 70px;
-            z-index: 800; /* 比 Modal 小，比頁面大 */
-            cursor: pointer;
-            pointer-events: auto;
-            transition: top 3s ease-in-out, left 3s ease-in-out; /* 緩慢移動 */
-            filter: drop-shadow(0 5px 15px rgba(0,0,0,0.1));
-            display: none; /* 預設隱藏，由 JS 開啟 */
+            width: 80px; height: 80px;
+            z-index: 2001; /* 比 Modal 和開關都高 */
+            cursor: grab; /* 鼠標顯示為手掌 */
+            touch-action: none; /* 防止手機拖曳時畫面捲動 */
+            display: none;
+            /* 注意：這裡不設 transition: top/left，因為拖曳需要即時反應。
+               自動移動時會透過 JS 添加 class 來加入過渡效果 */
         }
+        #spirit-pet.auto-moving {
+            transition: top 3s ease-in-out, left 3s ease-in-out;
+        }
+        #spirit-pet:active { cursor: grabbing; }
 
-        /* 3. 精靈的呼吸動畫 */
-        @keyframes petFloat {
-            0%, 100% { transform: translateY(0) scale(1); }
-            50% { transform: translateY(-8px) scale(1.05); }
-        }
-        .pet-body {
+        /* 3. 麵團造型 (修正白色背景不可見問題) */
+        .pet-svg-body {
             width: 100%; height: 100%;
+            /* 加強陰影，讓它浮起來 */
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.15));
             animation: petFloat 4s ease-in-out infinite;
         }
+        /* 增加邊框 stroke 在 SVG 內部定義 */
+
+        @keyframes petFloat {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-6px) scale(1.03); }
+        }
         
-        /* 點擊時的抖動 */
-        .pet-shake { animation: shake 0.5s ease-in-out; }
+        /* 互動抖動 */
+        .pet-shake { animation: shake 0.4s ease-in-out; }
         @keyframes shake {
             0% { transform: rotate(0deg); }
-            25% { transform: rotate(-15deg); }
-            50% { transform: rotate(15deg); }
+            25% { transform: rotate(-10deg); }
+            50% { transform: rotate(10deg); }
             75% { transform: rotate(-5deg); }
             100% { transform: rotate(0deg); }
         }
@@ -205,55 +217,61 @@
         /* 4. 對話框 */
         .pet-speech-bubble {
             position: absolute;
-            top: -50px; left: 50%;
+            top: -60px; left: 50%;
             transform: translateX(-50%) scale(0);
             background: white;
-            padding: 8px 14px;
-            border-radius: 15px;
-            font-size: 0.85rem;
+            padding: 10px 16px;
+            border-radius: 18px;
+            font-size: 0.9rem;
             color: var(--text-main);
             font-weight: 700;
             white-space: nowrap;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
             opacity: 0;
             transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             pointer-events: none;
+            border: 2px solid var(--primary-light);
+            z-index: 2002;
         }
         .pet-speech-bubble::after {
-            content: ''; position: absolute; bottom: -6px; left: 50%;
+            content: ''; position: absolute; bottom: -8px; left: 50%;
             transform: translateX(-50%);
-            border-width: 6px 6px 0; border-style: solid;
+            border-width: 8px 8px 0; border-style: solid;
             border-color: white transparent transparent transparent;
         }
-        /* 顯示對話框 */
         .pet-speech-bubble.show {
             transform: translateX(-50%) scale(1);
             opacity: 1;
-            top: -65px;
+            top: -75px;
         }
 
     </style>
 </head>
 <body>
 
-    <div class="pet-toggle-container" onclick="togglePetSystem()">
-        <div class="pet-toggle-icon" id="pet-toggle-icon">👻</div>
-        <div class="pet-toggle-text" id="pet-toggle-label">伴侶</div>
+    <div class="pet-toggle-container" id="pet-toggle-btn">
+        <div class="pet-toggle-icon">
+            <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M50 20C30 20 10 35 10 60C10 85 25 95 50 95C75 95 90 85 90 60C90 35 70 20 50 20Z" fill="#FFFFFF" stroke="#CCCCCC" stroke-width="6"/>
+                <circle cx="35" cy="55" r="5" fill="#5C5552"/>
+                <circle cx="65" cy="55" r="5" fill="#5C5552"/>
+            </svg>
+        </div>
+        <div class="pet-toggle-text" id="pet-toggle-label">召喚麵團</div>
     </div>
 
-    <div id="spirit-pet" onclick="interactWithPet()">
-        <div class="pet-speech-bubble" id="pet-speech">有點累了嗎？</div>
-        <div class="pet-body">
+    <div id="spirit-pet">
+        <div class="pet-speech-bubble" id="pet-speech">嘿咻！( >ω<)</div>
+        <div class="pet-svg-body">
             <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M50 15C30 15 10 30 10 60C10 85 25 95 50 95C75 95 90 85 90 60C90 30 70 15 50 15Z" fill="#FFFFFF"/>
+                <path d="M50 15C30 15 10 30 10 60C10 85 25 95 50 95C75 95 90 85 90 60C90 30 70 15 50 15Z" fill="#FFFFFF" stroke="#E0E0E0" stroke-width="3"/>
                 <circle cx="35" cy="55" r="4" fill="#5C5552"/>
                 <circle cx="65" cy="55" r="4" fill="#5C5552"/>
                 <circle cx="28" cy="62" r="3" fill="#FFD1DC" opacity="0.6"/>
                 <circle cx="72" cy="62" r="3" fill="#FFD1DC" opacity="0.6"/>
-            </svg>
+                </svg>
         </div>
     </div>
-
     <header>
         <h1>Safe Space</h1>
         <p class="subtitle">在這裡，你不需要勉強自己。</p>
@@ -296,7 +314,7 @@
     </div>
 
     <script>
-        // --- 1. APP 核心資料與狀態 ---
+        // --- 1. APP 核心資料 (保留原樣) ---
         const featuresDB = [
             { id: 'dbt_cards', name: '自我照顧卡', icon: '🃏', tag: 'DBT策略', moods: ['anxious', 'low', 'numb'], keywords: '卡片,抽卡,策略' },
             { id: 'quotes', name: '療癒金句', icon: '📜', tag: '文字力量', moods: ['low', 'stress'], keywords: '語錄,句子,鼓勵' },
@@ -313,7 +331,6 @@
             { id: 'worry_jar', name: '煩惱寄放', icon: '🏺', tag: '邊界設定', moods: ['anxious', 'stress'], keywords: '煩惱,睡不著' },
             { id: 'sos', name: '安全網 SOS', icon: '🆘', tag: '危機求助', moods: ['panic', 'low'], keywords: '求救,電話' }
         ];
-
         const moodOptions = [
             { id: 'anxious', label: '😰 焦慮慌張' },
             { id: 'low', label: '😞 低落無力' },
@@ -328,7 +345,7 @@
         let isFavFilterActive = false;
         let searchKeyword = "";
 
-        // --- 2. 介面初始化 ---
+        // --- 2. 初始化 ---
         const toolboxEl = document.getElementById('toolbox');
         const moodGrid = document.getElementById('mood-grid-container');
         const searchInput = document.getElementById('search-input');
@@ -337,7 +354,7 @@
         function initApp() {
             renderMoodButtons();
             updateResults();
-            initPetSystem(); // 初始化精靈
+            initPetSystem(); // 啟動精靈系統
         }
 
         function renderMoodButtons() {
@@ -357,7 +374,6 @@
                 if(selectedMoods.has(btn.dataset.id)) btn.classList.add('active');
                 else btn.classList.remove('active');
             });
-            
             if(isFavFilterActive) favFabBtn.classList.add('active');
             else favFabBtn.classList.remove('active');
 
@@ -369,7 +385,6 @@
                 const matchFav = !isFavFilterActive || favorites.includes(item.id);
                 return matchKeyword && matchMood && matchFav;
             });
-
             renderFeatures(filtered);
         }
 
@@ -399,7 +414,6 @@
             });
         }
 
-        // --- 3. 互動邏輯 ---
         function toggleMood(moodId) {
             if (selectedMoods.has(moodId)) selectedMoods.delete(moodId);
             else selectedMoods.add(moodId);
@@ -441,7 +455,6 @@
             updateResults();
         }
 
-        // --- 4. History API ---
         function ensureHistoryState() {
             if (window.location.hash !== '#filter' && window.location.hash !== '#feature') {
                 history.pushState({ type: 'filter' }, null, '#filter');
@@ -463,23 +476,49 @@
             resetAllFilters();
         });
 
-        // --- 5. 👻 療癒小精靈系統 (Pet System) ---
-        
+        // --- ☁️ 麵團精靈系統 (Pet System Logic) ---
+        // 這一段代碼是獨立的，只要複製到任何 HTML 檔案的 <script> 標籤內，
+        // 配合上方的 CSS 和 HTML 結構，精靈就能跨頁面運作。
+
         const petEl = document.getElementById('spirit-pet');
-        const petToggleIcon = document.getElementById('pet-toggle-icon');
+        const petToggleBtn = document.getElementById('pet-toggle-btn');
         const petToggleLabel = document.getElementById('pet-toggle-label');
         const petSpeech = document.getElementById('pet-speech');
         
-        let isPetActive = JSON.parse(localStorage.getItem('safeSpacePetActive')) ?? true; // 預設開啟
+        let isPetActive = JSON.parse(localStorage.getItem('safeSpacePetActive')) ?? true; 
         let petMoveInterval;
+        let isDragging = false;
+        let audioCtx = null; // 用於音效
 
+        // 顏文字語錄
         const comfortMessages = [
-            "記得喝水喔 💧", "深呼吸～", "我在這裡陪你", "你做得很好", 
-            "休息一下吧", "慢慢來，沒關係", "今天天空很美嗎？", 
-            "抱抱 ( >ω<)", "放輕鬆～", "你的感受很重要"
+            "記得喝水喔 ( ˘ ³˘)♥", "深呼吸～ ( ´ ▽ ` )ﾉ", "我在這裡陪你 (´• ω •`)", 
+            "你做得很好 (๑•̀ㅂ•́)و✧", "休息一下吧 _(:3 」∠ )_", "慢慢來，沒關係 (・∀・)", 
+            "今天天空很美嗎？ (❁´◡`❁)", "抱抱 (つ´ω`)つ", "放輕鬆～ (￣▽￣)~*", 
+            "你的感受很重要 (｡•́︿•̀｡)", "我會一直陪著你 ( >ω<)"
         ];
 
         function initPetSystem() {
+            // 1. 讀取上次位置 (跨頁面關鍵)
+            const savedX = localStorage.getItem('petX');
+            const savedY = localStorage.getItem('petY');
+            
+            if (savedX && savedY) {
+                petEl.style.left = savedX + 'px';
+                petEl.style.top = savedY + 'px';
+            } else {
+                // 預設位置
+                petEl.style.left = (window.innerWidth - 100) + 'px';
+                petEl.style.top = '100px';
+            }
+
+            // 2. 綁定開關事件
+            petToggleBtn.onclick = togglePetSystem;
+            
+            // 3. 綁定拖曳與互動事件
+            setupPetInteraction();
+
+            // 4. 初始化狀態
             updatePetVisibility();
             if (isPetActive) startPetBehavior();
         }
@@ -491,7 +530,8 @@
             
             if (isPetActive) {
                 startPetBehavior();
-                showSpeech("我回來了！", 2000);
+                playPopSound();
+                showSpeech("我回來了！(≧∇≦)/", 2000);
             } else {
                 stopPetBehavior();
             }
@@ -500,24 +540,20 @@
         function updatePetVisibility() {
             if (isPetActive) {
                 petEl.style.display = 'block';
-                petToggleIcon.innerText = '👻'; // 開啟狀態 Icon
-                petToggleLabel.innerText = '伴侶';
-                petToggleLabel.style.opacity = '1';
+                petToggleLabel.innerText = '召喚麵團';
+                petToggleBtn.style.opacity = '1';
             } else {
                 petEl.style.display = 'none';
-                petToggleIcon.innerText = '💤'; // 關閉狀態 Icon
                 petToggleLabel.innerText = '休息中';
-                petToggleLabel.style.opacity = '0.6';
+                petToggleBtn.style.opacity = '0.6';
             }
         }
 
         function startPetBehavior() {
-            // 初始位置
-            movePetRandomly();
-            // 每 8~15 秒移動一次
+            // 每 12 秒自動移動一次 (如果使用者沒有在拖曳)
             petMoveInterval = setInterval(() => {
-                movePetRandomly();
-            }, 10000);
+                if(!isDragging) movePetRandomly();
+            }, 12000);
         }
 
         function stopPetBehavior() {
@@ -525,26 +561,124 @@
         }
 
         function movePetRandomly() {
-            // 隨機計算位置，保留邊距以免被切到
-            const maxX = window.innerWidth - 80;
-            const maxY = window.innerHeight - 80;
+            // 增加 class 讓移動變平滑
+            petEl.classList.add('auto-moving');
             
+            const maxX = window.innerWidth - 90;
+            const maxY = window.innerHeight - 90;
             const randomX = Math.max(20, Math.random() * maxX);
-            const randomY = Math.max(80, Math.random() * maxY); // 避開 Header
+            const randomY = Math.max(80, Math.random() * maxY); // 避開頂部
 
             petEl.style.left = randomX + 'px';
             petEl.style.top = randomY + 'px';
+
+            // 移動完儲存新位置
+            localStorage.setItem('petX', randomX);
+            localStorage.setItem('petY', randomY);
         }
 
-        function interactWithPet() {
-            // 1. 抖動動畫
-            petEl.querySelector('.pet-body').classList.remove('pet-shake');
-            void petEl.offsetWidth; // Trigger reflow
-            petEl.querySelector('.pet-body').classList.add('pet-shake');
+        // --- 互動：拖曳 (Drag) 與 點擊 (Click) 分流 ---
+        function setupPetInteraction() {
+            let startX, startY, initialLeft, initialTop;
+            let moveDistance = 0;
 
-            // 2. 隨機說話
+            // 支援滑鼠與觸控
+            const startDrag = (e) => {
+                if(!isPetActive) return;
+                isDragging = true;
+                petEl.classList.remove('auto-moving'); // 拖曳時移除平滑過渡，讓它緊跟手指
+                
+                const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+                const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+                
+                startX = clientX;
+                startY = clientY;
+                initialLeft = petEl.offsetLeft;
+                initialTop = petEl.offsetTop;
+                moveDistance = 0;
+
+                // 播放音效解鎖 AudioContext
+                if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            };
+
+            const doDrag = (e) => {
+                if (!isDragging) return;
+                e.preventDefault(); // 防止手機滾動
+                
+                const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+                const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+                
+                const dx = clientX - startX;
+                const dy = clientY - startY;
+                
+                moveDistance += Math.abs(dx) + Math.abs(dy);
+
+                petEl.style.left = (initialLeft + dx) + 'px';
+                petEl.style.top = (initialTop + dy) + 'px';
+            };
+
+            const endDrag = () => {
+                if (!isDragging) return;
+                isDragging = false;
+                
+                // 儲存位置
+                localStorage.setItem('petX', parseInt(petEl.style.left));
+                localStorage.setItem('petY', parseInt(petEl.style.top));
+
+                // 判斷是「點擊」還是「拖曳」
+                // 如果移動距離很小，視為點擊
+                if (moveDistance < 10) {
+                    triggerInteraction();
+                }
+            };
+
+            petEl.addEventListener('mousedown', startDrag);
+            window.addEventListener('mousemove', doDrag);
+            window.addEventListener('mouseup', endDrag);
+
+            petEl.addEventListener('touchstart', startDrag, {passive: false});
+            window.addEventListener('touchmove', doDrag, {passive: false});
+            window.addEventListener('touchend', endDrag);
+        }
+
+        function triggerInteraction() {
+            // 1. 震動 (Haptic)
+            if (navigator.vibrate) navigator.vibrate(50);
+
+            // 2. 聲音 (Audio)
+            playPopSound();
+
+            // 3. 視覺動畫
+            const body = petEl.querySelector('.pet-svg-body');
+            body.classList.remove('pet-shake');
+            void petEl.offsetWidth; 
+            body.classList.add('pet-shake');
+
+            // 4. 說話
             const msg = comfortMessages[Math.floor(Math.random() * comfortMessages.length)];
             showSpeech(msg, 3000);
+        }
+
+        // Web Audio API 合成可愛的 Pop 聲
+        function playPopSound() {
+            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+
+            const oscillator = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+
+            oscillator.type = 'sine';
+            oscillator.frequency.setValueAtTime(800, audioCtx.currentTime);
+            oscillator.frequency.exponentialRampToValueAtTime(100, audioCtx.currentTime + 0.1);
+
+            gainNode.gain.setValueAtTime(0.5, audioCtx.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
+
+            oscillator.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+
+            oscillator.start();
+            oscillator.stop(audioCtx.currentTime + 0.1);
         }
 
         function showSpeech(text, duration) {
