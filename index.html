@@ -12,26 +12,21 @@
     <style>
         /* --- 🎨 視覺風格設計 --- */
         :root {
-            --primary: #7A9F6E;       /* 溫暖抹茶綠 */
+            --primary: #7A9F6E;
             --primary-dark: #58754F;
-            --primary-light: #EBF2EA; /* 極淺綠背景 */
-            
-            --bg: #FCFAF7;            /* 米色紙張質感 */
+            --primary-light: #EBF2EA;
+            --bg: #FCFAF7;
             --card-bg: #FFFFFF;
-            
-            --text-main: #5C5552;     /* 深暖灰 */
+            --text-main: #5C5552;
             --text-sub: #9E9894;
-            
-            --accent-warm: #D67D68;   /* 豆沙紅 (愛心色) */
-            
+            --accent-warm: #D67D68; /* 豆沙紅 */
             --radius-box: 24px;
-            --radius-btn: 16px;       /* 情緒按鈕的圓角 */
-            
+            --radius-btn: 16px;
             --shadow-soft: 0 8px 20px rgba(122, 159, 110, 0.15);
         }
 
         body {
-            font-family: "Zen Maru Gothic", sans-serif; /* 全站圓體 */
+            font-family: "Zen Maru Gothic", sans-serif;
             background-color: var(--bg);
             color: var(--text-main);
             margin: 0;
@@ -41,221 +36,132 @@
             align-items: center;
             min-height: 100vh;
             line-height: 1.6;
-            -webkit-tap-highlight-color: transparent; /* 移除手機點擊藍框 */
+            -webkit-tap-highlight-color: transparent;
         }
 
-        /* --- Header --- */
-        header { 
-            text-align: center; 
-            margin-bottom: 24px; 
-            margin-top: 10px;
-        }
-        
-        h1 { 
-            font-weight: 900; /* 最粗體，像馬克筆寫的標題 */
-            font-size: 2.4rem;
-            margin: 0; 
-            color: var(--primary); 
-            letter-spacing: 1px;
-        }
-        
-        p.subtitle { 
-            font-size: 1rem; 
-            color: var(--text-sub); 
-            margin-top: 5px; 
-            font-weight: 500;
-        }
+        header { text-align: center; margin-bottom: 24px; margin-top: 10px; }
+        h1 { font-weight: 900; font-size: 2.4rem; margin: 0; color: var(--primary); letter-spacing: 1px; }
+        p.subtitle { font-size: 1rem; color: var(--text-sub); margin-top: 5px; font-weight: 500; }
 
         /* --- 🔍 搜尋欄 --- */
-        .search-container {
-            width: 100%;
-            max-width: 500px;
-            margin-bottom: 24px;
-        }
+        .search-container { width: 100%; max-width: 500px; margin-bottom: 24px; }
         #search-input {
-            width: 100%;
-            padding: 16px 24px;
-            border-radius: 50px;
-            border: 2px solid white;
-            background: white;
-            font-size: 1rem;
-            font-family: "Zen Maru Gothic", sans-serif;
-            font-weight: 700;
-            color: var(--text-main);
-            outline: none;
-            box-shadow: var(--shadow-soft);
-            box-sizing: border-box;
+            width: 100%; padding: 16px 24px; border-radius: 50px;
+            border: 2px solid white; background: white;
+            font-size: 1rem; font-family: "Zen Maru Gothic", sans-serif; font-weight: 700;
+            color: var(--text-main); outline: none;
+            box-shadow: var(--shadow-soft); box-sizing: border-box;
             transition: all 0.3s;
         }
-        #search-input:focus {
-            border-color: var(--primary);
-        }
+        #search-input:focus { border-color: var(--primary); }
         #search-input::placeholder { color: #D1CEC7; font-weight: 500; }
 
-        /* --- 🚑 情緒快篩區 (Layout 更新) --- */
+        /* --- 🚑 情緒快篩區 --- */
         .triage-section {
-            width: 100%;
-            max-width: 500px;
+            width: 100%; max-width: 500px;
             background: var(--primary-light);
-            padding: 24px;
-            padding-bottom: 30px; /* 留給右下角按鈕空間 */
+            padding: 24px; padding-bottom: 30px;
             border-radius: var(--radius-box);
             margin-bottom: 32px;
-            position: relative; /* 為了定位右下角的愛心 */
+            position: relative;
             box-sizing: border-box;
-            box-shadow: inset 0 0 0 2px rgba(255,255,255,0.5); /* 像貼紙的白邊 */
+            box-shadow: inset 0 0 0 2px rgba(255,255,255,0.5);
         }
-        
         .triage-title { 
-            font-size: 1.1rem; 
-            margin-bottom: 16px; 
-            color: var(--primary-dark);
-            font-weight: 900;
-            text-align: center;
+            font-size: 1.1rem; margin-bottom: 16px; 
+            color: var(--primary-dark); font-weight: 900; text-align: center; 
         }
 
-        /* 情緒按鈕網格：3列 x 2行 */
+        /* 3列 x 2行 */
         .mood-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr; /* 兩欄 */
-            gap: 12px;
-            margin-bottom: 10px;
+            display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 10px;
         }
         
         .mood-btn {
-            background: white;
-            border: none;
-            color: var(--text-main);
-            padding: 12px 10px;
-            border-radius: var(--radius-btn);
-            font-size: 0.95rem;
-            cursor: pointer;
-            transition: all 0.2s;
-            font-family: "Zen Maru Gothic", sans-serif;
-            font-weight: 700;
-            box-shadow: 0 4px 0 rgba(0,0,0,0.05); /* 像按鍵的立體感 */
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            background: white; border: none; color: var(--text-main);
+            padding: 12px 10px; border-radius: var(--radius-btn);
+            font-size: 0.95rem; cursor: pointer; transition: all 0.2s;
+            font-family: "Zen Maru Gothic", sans-serif; font-weight: 700;
+            box-shadow: 0 4px 0 rgba(0,0,0,0.05);
+            display: flex; align-items: center; justify-content: center;
         }
-        .mood-btn:active {
-            transform: translateY(4px);
-            box-shadow: none;
-        }
+        .mood-btn:active { transform: translateY(4px); box-shadow: none; }
+        
+        /* 多選狀態樣式 */
         .mood-btn.active {
-            background: var(--primary);
-            color: white;
-            box-shadow: inset 0 3px 5px rgba(0,0,0,0.1); /* 按下去的凹陷感 */
+            background: var(--primary); color: white;
+            box-shadow: inset 0 3px 5px rgba(0,0,0,0.1);
             transform: translateY(2px);
         }
 
-        /* 右下角：我的最愛 (愛心收藏按鈕) */
+        /* 右下角：我的最愛 (顏色翻轉) */
         .fav-fab-container {
-            position: absolute;
-            bottom: -15px; /* 稍微突出盒子一點點，更有層次 */
-            right: 15px;
-            z-index: 10;
+            position: absolute; bottom: -15px; right: 15px; z-index: 10;
         }
         .fav-fab {
-            width: 70px;
-            height: 70px;
-            background-color: var(--accent-warm);
+            width: 70px; height: 70px;
+            background-color: white; /* 改成白色背景 */
+            color: var(--accent-warm); /* 改成紅色文字圖示 */
             border-radius: 50%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 6px 15px rgba(214, 125, 104, 0.4);
-            cursor: pointer;
-            transition: transform 0.2s;
-            border: 3px solid white;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            box-shadow: 0 6px 15px rgba(122, 159, 110, 0.2);
+            cursor: pointer; transition: all 0.2s;
+            border: 3px solid white; /* 稍微加粗白邊 */
         }
         .fav-fab:active { transform: scale(0.9); }
-        .fav-fab.active { background-color: #C06048; transform: scale(0.95); box-shadow: inset 0 3px 5px rgba(0,0,0,0.2); }
+        
+        /* 收藏被選中時的狀態 (紅底白字) */
+        .fav-fab.active {
+            background-color: var(--accent-warm);
+            color: white;
+            transform: scale(0.95);
+            box-shadow: inset 0 3px 5px rgba(0,0,0,0.2);
+        }
         
         .fav-icon { font-size: 1.4rem; line-height: 1; margin-bottom: 2px; }
-        .fav-text { font-size: 0.75rem; color: white; font-weight: 900; line-height: 1; }
+        .fav-text { font-size: 0.75rem; font-weight: 900; line-height: 1; }
 
         /* --- 🛠️ 工具箱列表 --- */
         .toolbox-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 16px;
-            width: 100%;
-            max-width: 500px;
-            padding-bottom: 40px;
+            display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
+            width: 100%; max-width: 500px; padding-bottom: 40px;
         }
-
         .feature-card {
-            background: var(--card-bg);
-            border-radius: var(--radius-box);
-            padding: 20px 15px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            box-shadow: var(--shadow-soft);
-            cursor: pointer;
-            transition: transform 0.2s;
-            height: 145px;
-            position: relative;
+            background: var(--card-bg); border-radius: var(--radius-box);
+            padding: 20px 15px; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; text-align: center;
+            box-shadow: var(--shadow-soft); cursor: pointer;
+            transition: transform 0.2s; height: 145px; position: relative;
         }
         .feature-card:active { transform: scale(0.96); }
-        
         .card-icon { font-size: 2.8rem; margin-bottom: 8px; }
-        .card-title { 
-            font-size: 1.1rem; 
-            color: var(--text-main);
-            font-weight: 700;
-        }
-        .card-tag { font-size: 0.8rem; color: #B0B0B0; margin-top: 5px; font-weight: 500;}
+        .card-title { font-size: 1.1rem; color: var(--text-main); font-weight: 700; }
+        .card-tag { font-size: 0.8rem; color: #B0B0B0; margin-top: 5px; font-weight: 500; }
 
-        /* 卡片上的小愛心 */
         .card-fav-btn {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            font-size: 1.2rem;
-            color: #EEE;
-            padding: 8px;
-            z-index: 5;
-            transition: color 0.3s;
+            position: absolute; top: 10px; right: 10px;
+            font-size: 1.2rem; color: #EEE; padding: 8px;
+            z-index: 5; transition: color 0.3s;
         }
         .card-fav-btn.is-active { color: var(--accent-warm); }
 
-        /* --- 📱 功能畫面 (Modal) --- */
+        /* --- 📱 Modal --- */
         #active-feature-container {
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: var(--bg);
-            z-index: 1000;
-            display: none; /* JS 控制 */
-            flex-direction: column;
-            padding: 24px;
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: var(--bg); z-index: 1000;
+            display: none; flex-direction: column; padding: 24px;
             animation: slideUp 0.3s ease-out;
         }
         @keyframes slideUp {
             from { transform: translateY(20px); opacity: 0; }
             to { transform: translateY(0); opacity: 1; }
         }
-
-        .modal-header {
-            display: flex;
-            justify-content: flex-end;
-            margin-bottom: 40px;
-        }
+        .modal-header { display: flex; justify-content: flex-end; margin-bottom: 40px; }
         .close-btn {
-            padding: 10px 20px;
-            background: #EBEAE6;
-            border-radius: 20px;
-            border: none;
-            cursor: pointer;
-            font-family: "Zen Maru Gothic", sans-serif;
-            font-weight: 700;
-            color: var(--text-main);
+            padding: 10px 20px; background: #EBEAE6; border-radius: 20px;
+            border: none; cursor: pointer; font-family: "Zen Maru Gothic", sans-serif;
+            font-weight: 700; color: var(--text-main);
         }
-
     </style>
 </head>
 <body>
@@ -271,17 +177,16 @@
 
     <section class="triage-section">
         <div class="triage-title">現在的心情像什麼天氣？</div>
-        
         <div class="mood-grid" id="mood-grid-container">
             </div>
-
-        <div style="text-align:center; margin-top:15px; font-size:0.9rem; color:var(--text-sub); cursor:pointer; text-decoration:underline;" onclick="resetFilter()">
+        <div style="text-align:center; margin-top:15px; font-size:0.9rem; color:var(--text-sub); cursor:pointer; text-decoration:underline;" onclick="resetAllFilters()">
             顯示全部功能
         </div>
-
-        <div class="fav-fab-container" onclick="filterFavorites()">
+        
+        <div class="fav-fab-container" onclick="toggleFavFilter()">
             <div class="fav-fab" id="fav-fab-btn">
-                <div class="fav-icon">🤍</div> <div class="fav-text">收藏</div>
+                <div class="fav-icon">❤</div>
+                <div class="fav-text">收藏</div>
             </div>
         </div>
     </section>
@@ -293,7 +198,6 @@
         <div class="modal-header">
             <button class="close-btn" onclick="history.back()">關閉 ✕</button>
         </div>
-        
         <div style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center;">
             <h2 id="feature-title-display" style="text-align: center; font-size: 2rem; color: var(--primary); margin-bottom: 20px; font-weight:900;">功能名稱</h2>
             <div id="feature-content-area" style="text-align: center;">
@@ -322,7 +226,6 @@
             { id: 'sos', name: '安全網 SOS', icon: '🆘', tag: '危機求助', moods: ['panic', 'low'], keywords: '求救,電話' }
         ];
 
-        // 這裡確保只有 6 個選項，符合 3x2 佈局
         const moodOptions = [
             { id: 'anxious', label: '😰 焦慮慌張' },
             { id: 'low', label: '😞 低落無力' },
@@ -332,9 +235,12 @@
             { id: 'panic', label: '🆘 快崩潰了' }
         ];
 
+        // 狀態管理
         let favorites = JSON.parse(localStorage.getItem('safeSpaceFavs')) || [];
+        let selectedMoods = new Set(); // 使用 Set 來管理多選
+        let isFavFilterActive = false; // 收藏篩選開關
+        let searchKeyword = "";
 
-        // --- 🏗️ 2. 建構介面 ---
         const toolboxEl = document.getElementById('toolbox');
         const moodGrid = document.getElementById('mood-grid-container');
         const searchInput = document.getElementById('search-input');
@@ -342,20 +248,62 @@
 
         function initApp() {
             renderMoodButtons();
-            renderFeatures(featuresDB);
+            updateResults(); // 初始渲染
         }
 
-        // 產生 3x2 情緒按鈕
+        // --- 渲染 UI 元件 ---
         function renderMoodButtons() {
             moodGrid.innerHTML = '';
             moodOptions.forEach(mood => {
                 const btn = document.createElement('button');
                 btn.className = 'mood-btn';
                 btn.innerText = mood.label;
-                btn.dataset.mood = mood.id; // 方便識別
-                btn.onclick = () => filterByMood(mood.id, btn);
+                btn.dataset.id = mood.id;
+                // 多選：點擊切換狀態
+                btn.onclick = () => toggleMood(mood.id);
                 moodGrid.appendChild(btn);
             });
+        }
+
+        // --- 核心邏輯：更新篩選結果 ---
+        function updateResults() {
+            // 1. 更新按鈕視覺狀態
+            document.querySelectorAll('.mood-btn').forEach(btn => {
+                if(selectedMoods.has(btn.dataset.id)) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+
+            if(isFavFilterActive) {
+                favFabBtn.classList.add('active');
+            } else {
+                favFabBtn.classList.remove('active');
+            }
+
+            // 2. 篩選資料
+            let filtered = featuresDB.filter(item => {
+                // A. 關鍵字搜尋
+                const matchKeyword = searchKeyword === "" || 
+                                     item.name.includes(searchKeyword) || 
+                                     item.keywords.includes(searchKeyword) || 
+                                     item.tag.includes(searchKeyword);
+                
+                // B. 情緒篩選 (多選邏輯：只要符合其中一個選中的情緒即可，若沒選則全部符合)
+                // 邏輯：Item的情緒陣列 與 SelectedMoods 有交集
+                const itemMoodsSet = new Set(item.moods);
+                const hasMoodIntersection = [...selectedMoods].some(mood => itemMoodsSet.has(mood));
+                const matchMood = selectedMoods.size === 0 || hasMoodIntersection;
+
+                // C. 收藏篩選
+                const matchFav = !isFavFilterActive || favorites.includes(item.id);
+
+                return matchKeyword && matchMood && matchFav;
+            });
+
+            // 3. 渲染卡片
+            renderFeatures(filtered);
         }
 
         function renderFeatures(list) {
@@ -369,7 +317,7 @@
                 const card = document.createElement('div');
                 card.className = 'feature-card';
                 card.innerHTML = `
-                    <div class="card-fav-btn ${isFav ? 'is-active' : ''}" onclick="toggleFavorite(event, '${feature.id}')">
+                    <div class="card-fav-btn ${isFav ? 'is-active' : ''}" onclick="toggleCardFav(event, '${feature.id}')">
                         ${isFav ? '❤️' : '🤍'}
                     </div>
                     <div class="card-icon">${feature.icon}</div>
@@ -384,10 +332,28 @@
             });
         }
 
-        // --- ❤️ 3. 收藏與過濾 ---
-        
-        // 切換愛心狀態
-        function toggleFavorite(event, id) {
+        // --- 互動邏輯 ---
+
+        // 1. 切換情緒 (多選)
+        function toggleMood(moodId) {
+            if (selectedMoods.has(moodId)) {
+                selectedMoods.delete(moodId);
+            } else {
+                selectedMoods.add(moodId);
+            }
+            ensureHistoryState(); // 確保有歷史紀錄可以「返回」
+            updateResults();
+        }
+
+        // 2. 切換收藏篩選
+        function toggleFavFilter() {
+            isFavFilterActive = !isFavFilterActive;
+            ensureHistoryState();
+            updateResults();
+        }
+
+        // 3. 卡片上的愛心切換
+        function toggleCardFav(event, id) {
             event.stopPropagation();
             if (favorites.includes(id)) {
                 favorites = favorites.filter(favId => favId !== id);
@@ -396,11 +362,11 @@
             }
             localStorage.setItem('safeSpaceFavs', JSON.stringify(favorites));
             
-            // 如果目前正在看「我的最愛」，需要重繪
-            if (favFabBtn.classList.contains('active')) {
-                filterFavorites();
+            // 只有當「收藏篩選」開啟時，才需要重繪整個列表(因為項目可能要消失)
+            // 否則只更新 UI 顯示即可 (避免畫面閃爍)
+            if(isFavFilterActive) {
+                updateResults();
             } else {
-                // 原地更新圖示
                 const btn = event.currentTarget;
                 const isNowFav = favorites.includes(id);
                 btn.innerHTML = isNowFav ? '❤️' : '🤍';
@@ -408,72 +374,59 @@
             }
         }
 
-        // 按下右下角大愛心：篩選最愛
-        function filterFavorites() {
-            // 清除其他情緒按鈕的 active
-            document.querySelectorAll('.mood-btn').forEach(btn => btn.classList.remove('active'));
-            searchInput.value = '';
-            
-            // 啟用自己
-            favFabBtn.classList.add('active');
-            
-            const favList = featuresDB.filter(item => favorites.includes(item.id));
-            renderFeatures(favList);
-        }
-
-        // 按下情緒按鈕
-        function filterByMood(moodId, clickedBtn) {
-            // 清除最愛的 active
-            favFabBtn.classList.remove('active');
-            
-            document.querySelectorAll('.mood-btn').forEach(btn => btn.classList.remove('active'));
-            clickedBtn.classList.add('active');
-            searchInput.value = '';
-
-            const filtered = featuresDB.filter(item => item.moods.includes(moodId));
-            renderFeatures(filtered);
-        }
-
-        function resetFilter() {
-            favFabBtn.classList.remove('active');
-            document.querySelectorAll('.mood-btn').forEach(btn => btn.classList.remove('active'));
-            searchInput.value = '';
-            renderFeatures(featuresDB);
-        }
-        
-        // 搜尋監聽
+        // 4. 搜尋
         searchInput.addEventListener('input', (e) => {
-            const keyword = e.target.value.toLowerCase().trim();
-            favFabBtn.classList.remove('active');
-            document.querySelectorAll('.mood-btn').forEach(btn => btn.classList.remove('active'));
-
-            if (keyword === '') { renderFeatures(featuresDB); return; }
-            const filtered = featuresDB.filter(item => 
-                item.name.includes(keyword) || item.keywords.includes(keyword) || item.tag.includes(keyword)
-            );
-            renderFeatures(filtered);
+            searchKeyword = e.target.value.toLowerCase().trim();
+            if(searchKeyword !== "") ensureHistoryState();
+            updateResults();
         });
 
-        // --- 📱 4. 功能開關與手機返回鍵優化 (History API) ---
+        // 5. 重置所有
+        function resetAllFilters() {
+            selectedMoods.clear();
+            isFavFilterActive = false;
+            searchKeyword = "";
+            searchInput.value = "";
+            
+            // 這裡不一定要 pushState，如果是在篩選狀態下按重置，
+            // 其實是回到了最原始狀態，視情況可能需要 back() 或單純重繪
+            // 為了簡單，我們單純重繪
+            updateResults();
+        }
+
+        // --- 📱 History API 魔法 (返回鍵邏輯) ---
         
+        // 這個函數負責：當使用者開始篩選時，推入一個歷史狀態
+        // 這樣按返回鍵時，我們就可以捕捉到，並執行「清除篩選」
+        function ensureHistoryState() {
+            // 檢查當前 URL 是否已經有 #filter hash，如果沒有才 push
+            if (window.location.hash !== '#filter' && window.location.hash !== '#feature') {
+                history.pushState({ type: 'filter' }, null, '#filter');
+            }
+        }
+
         const modal = document.getElementById('active-feature-container');
         const title = document.getElementById('feature-title-display');
 
         function openFeature(feature) {
-            // 1. 顯示 Modal
             modal.style.display = 'flex';
             title.innerText = feature.name;
-            
-            // 2. 推送一個狀態到歷史紀錄
-            // 這樣按手機的「返回」，就會觸發 popstate，而不是離開網頁
-            history.pushState({ modalOpen: true }, null, "#feature");
+            // 打開 Modal 時，推入新的歷史狀態
+            history.pushState({ type: 'modal' }, null, "#feature");
         }
 
-        // 監聽歷史紀錄變化 (按了上一頁)
+        // 監聽歷史紀錄變化 (按了手機返回鍵)
         window.addEventListener('popstate', function(event) {
-            // 當 popstate 發生時，代表使用者按了返回
-            // 我們直接把 modal 關掉
-            modal.style.display = 'none';
+            // 1. 如果 Modal 是開著的 -> 關閉 Modal
+            if (modal.style.display === 'flex') {
+                modal.style.display = 'none';
+                return; // 結束，不繼續執行
+            }
+
+            // 2. 如果 Modal 沒開，但之前是在 #filter 狀態下按返回 -> 清空篩選
+            // 當返回發生，hash 變回空，或者 state 為 null
+            // 我們簡單粗暴一點：只要在首頁觸發 popstate，就重置篩選
+            resetAllFilters();
         });
 
         initApp();
