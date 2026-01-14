@@ -12,20 +12,38 @@
     <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700;900&display=swap" rel="stylesheet">
 
     <style>
-        /* --- 🎨 核心視覺變數 --- */
+        /* --- 🎨 核心視覺變數 (日夜切換系統) --- */
         :root {
-            --primary: #7A9F6E;
+            /* 日間模式 (預設) */
+            --primary: #7A9F6E;       /* 抹茶綠 */
             --primary-dark: #58754F;
             --primary-light: #EBF2EA;
-            --bg: #FCFAF7;
+            --bg: #FCFAF7;            /* 米白 */
             --card-bg: #FFFFFF;
-            --text-main: #5C5552;
+            --text-main: #5C5552;     /* 深暖灰 */
             --text-sub: #9E9894;
             --accent-warm: #D67D68;
             --radius-box: 24px;
             --radius-btn: 16px;
             --shadow-soft: 0 8px 20px rgba(122, 159, 110, 0.15);
             --glass: rgba(255, 255, 255, 0.90);
+            --border-color: rgba(0,0,0,0.05);
+            --pet-glow: drop-shadow(0 4px 6px rgba(0,0,0,0.15)); /* 麵團陰影 */
+        }
+
+        /* 🌙 深色模式 (溫暖的深夜可可色) */
+        body.dark-mode {
+            --primary: #9BC58B;       /* 亮一點的綠，對比才夠 */
+            --primary-dark: #BCE0AF;
+            --primary-light: #3D3A37; /* 深卡其背景 */
+            --bg: #2C2927;            /* 深咖啡黑 */
+            --card-bg: #383533;       /* 稍微亮一點的灰褐 */
+            --text-main: #EDE8E4;     /* 暖白 */
+            --text-sub: #ACA59F;      /* 暖灰 */
+            --shadow-soft: 0 8px 20px rgba(0, 0, 0, 0.4);
+            --glass: rgba(44, 41, 39, 0.90);
+            --border-color: rgba(255,255,255,0.1);
+            --pet-glow: drop-shadow(0 0 10px rgba(255, 255, 255, 0.2)); /* 夜晚發光 */
         }
 
         body {
@@ -40,42 +58,51 @@
             min-height: 100vh;
             line-height: 1.6;
             -webkit-tap-highlight-color: transparent;
-            overflow-x: hidden;
+            /* 關鍵：預設隱藏捲軸，等 Splash 結束才打開 */
+            overflow: hidden; 
+            transition: background-color 0.5s, color 0.5s;
         }
 
-        /* --- 🎬 質感啟動畫面 (Redesigned) --- */
+        /* --- 🎬 啟動畫面 (動態敘事版) --- */
         #splash-screen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background-color: var(--bg); z-index: 9999;
             display: flex; flex-direction: column;
             align-items: center; justify-content: center;
             transition: opacity 0.8s ease-out;
+            /* 防止手機滑動看到後面 */
+            touch-action: none; 
         }
         
-        .splash-content {
-            text-align: center;
-            animation: fadeInUp 1s ease-out;
-        }
+        .splash-content { text-align: center; position: relative; }
 
         .splash-logo-container {
             width: 140px; height: 140px; margin: 0 auto 30px auto;
             position: relative;
+            /* 1. 麵團慢慢進來 (從上方降落) */
+            animation: doughEnter 2s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+            opacity: 0; /* 初始隱藏 */
         }
 
-        /* 中央的禪意麵團 */
+        /* 禪意麵團 */
         .zen-dough {
             width: 100%; height: 100%;
-            animation: deepBreathe 6s ease-in-out infinite;
-            filter: drop-shadow(0 10px 15px rgba(122, 159, 110, 0.2));
+            /* 2. 進場後接續呼吸動畫 */
+            animation: deepBreathe 6s ease-in-out infinite 2s; /* 延遲2秒等進場完 */
+            filter: var(--pet-glow);
         }
 
         .splash-title {
             font-size: 1.8rem; font-weight: 900; color: var(--primary);
             letter-spacing: 2px; margin-bottom: 5px;
+            /* 3. 標題慢慢出現 */
+            opacity: 0;
+            animation: fadeInUp 1.5s ease-out 1.5s forwards;
         }
         .splash-subtitle {
             font-size: 0.9rem; color: var(--text-sub); font-weight: 500;
-            margin-bottom: 50px; opacity: 0.8;
+            margin-bottom: 50px; opacity: 0;
+            animation: fadeInUp 1.5s ease-out 1.8s forwards;
         }
 
         .start-btn {
@@ -87,9 +114,17 @@
             box-shadow: 0 5px 15px rgba(122, 159, 110, 0.3);
             transition: all 0.3s;
             letter-spacing: 1px;
+            opacity: 0;
+            /* 4. 按鈕淡入 + 搖動一下 */
+            animation: fadeInUp 1s ease-out 2.5s forwards, shakeBtn 0.5s ease-in-out 3s;
         }
-        .start-btn:active { transform: scale(0.95); box-shadow: 0 2px 5px rgba(122, 159, 110, 0.3); }
+        .start-btn:active { transform: scale(0.95); }
 
+        /* 動畫定義 */
+        @keyframes doughEnter {
+            0% { transform: translateY(-50px) scale(0.8); opacity: 0; }
+            100% { transform: translateY(0) scale(1); opacity: 1; }
+        }
         @keyframes deepBreathe {
             0%, 100% { transform: scale(1) translateY(0); }
             50% { transform: scale(1.05) translateY(-5px); }
@@ -98,25 +133,31 @@
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
         }
+        @keyframes shakeBtn {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(-5deg); }
+            75% { transform: rotate(5deg); }
+        }
 
 
         /* --- 🏠 主介面 --- */
+        /* 標題顏色與啟動頁同步 var(--primary) */
         header { text-align: center; margin-bottom: 24px; margin-top: 20px; width: 100%; max-width: 500px;}
-        h1 { font-weight: 900; font-size: 2rem; margin: 0; color: var(--text-main); letter-spacing: 1px; }
+        h1 { font-weight: 900; font-size: 2rem; margin: 0; color: var(--primary); letter-spacing: 1px; transition: color 0.5s; }
         p.subtitle { font-size: 0.95rem; color: var(--text-sub); margin-top: 5px; font-weight: 500; }
 
         /* --- 🔍 搜尋欄 --- */
         .search-container { width: 100%; max-width: 500px; margin-bottom: 24px; }
         #search-input {
             width: 100%; padding: 16px 24px; border-radius: 50px;
-            border: 2px solid white; background: white;
+            border: 2px solid transparent; background: var(--card-bg);
             font-size: 1rem; font-family: "Zen Maru Gothic", sans-serif; font-weight: 700;
             color: var(--text-main); outline: none;
             box-shadow: var(--shadow-soft); box-sizing: border-box;
             transition: all 0.3s;
         }
         #search-input:focus { border-color: var(--primary); }
-        #search-input::placeholder { color: #D1CEC7; font-weight: 500; }
+        #search-input::placeholder { color: var(--text-sub); font-weight: 500; opacity: 0.7; }
 
         /* --- 🚑 情緒快篩區 --- */
         .triage-section {
@@ -127,7 +168,8 @@
             margin-bottom: 32px;
             position: relative;
             box-sizing: border-box;
-            box-shadow: inset 0 0 0 2px rgba(255,255,255,0.5);
+            box-shadow: inset 0 0 0 2px rgba(255,255,255,0.1); /* 微調深色模式下的邊框 */
+            transition: background 0.5s;
         }
         .triage-title { 
             font-size: 1.1rem; margin-bottom: 16px; 
@@ -140,7 +182,7 @@
         }
         
         .mood-card {
-            background: white; border: 3px solid transparent; 
+            background: var(--card-bg); border: 3px solid transparent; 
             color: var(--text-main);
             padding: 10px 5px; border-radius: var(--radius-btn);
             cursor: pointer; transition: all 0.2s;
@@ -150,9 +192,9 @@
         }
         .mood-card:active { transform: translateY(4px); box-shadow: none; }
         .mood-card.active {
-            background: #FFF; 
+            background: var(--card-bg);
             transform: translateY(2px);
-            box-shadow: inset 0 3px 5px rgba(0,0,0,0.1);
+            box-shadow: inset 0 3px 5px rgba(0,0,0,0.2);
         }
         
         .mood-icon-svg { width: 60px; height: 60px; margin-bottom: 5px; }
@@ -161,7 +203,7 @@
         /* --- 🛠️ 工具箱列表 --- */
         .toolbox-grid {
             display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
-            width: 100%; max-width: 500px; padding-bottom: 100px; /* 留空間給浮動按鈕 */
+            width: 100%; max-width: 500px; padding-bottom: 100px;
         }
         .feature-card {
             background: var(--card-bg); border-radius: var(--radius-box);
@@ -178,34 +220,36 @@
             margin-bottom: 10px; 
             position: relative;
         }
-        .feature-svg { width: 100%; height: 100%; }
+        .feature-svg { width: 100%; height: 100%; filter: var(--pet-glow); }
 
         .card-title { font-size: 1.1rem; color: var(--text-main); font-weight: 700; margin-bottom: 2px;}
-        .card-tag { font-size: 0.8rem; color: #B0B0B0; font-weight: 500; }
+        .card-tag { font-size: 0.8rem; color: var(--text-sub); font-weight: 500; }
         
         .card-fav-btn {
             position: absolute; top: 10px; right: 10px;
             font-size: 1.2rem; color: #EEE; padding: 8px;
             z-index: 5; transition: color 0.3s;
         }
-        .card-fav-btn.is-active { color: var(--accent-warm); }
+        /* 深色模式下愛心底色調整 */
+        body.dark-mode .card-fav-btn { color: #555; }
+        .card-fav-btn.is-active { color: var(--accent-warm) !important; }
 
         .fav-fab-container { position: absolute; bottom: -15px; right: 15px; z-index: 10; }
         .fav-fab {
             width: 70px; height: 70px;
-            background-color: white; color: var(--accent-warm);
+            background-color: var(--card-bg); color: var(--accent-warm);
             border-radius: 50%;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
             box-shadow: 0 6px 15px rgba(122, 159, 110, 0.2);
             cursor: pointer; transition: all 0.2s;
-            border: 3px solid white;
+            border: 3px solid var(--card-bg);
         }
         .fav-fab:active { transform: scale(0.9); }
         .fav-fab.active { background-color: var(--accent-warm); color: white; transform: scale(0.95); }
         .fav-icon { font-size: 1.4rem; line-height: 1; margin-bottom: 2px; }
         .fav-text { font-size: 0.75rem; font-weight: 900; line-height: 1; }
 
-        /* --- 📱 Feature Modal --- */
+        /* --- 📱 Modal --- */
         #active-feature-container {
             position: fixed; top: 0; left: 0; right: 0; bottom: 0;
             background: var(--bg); z-index: 1000;
@@ -218,26 +262,28 @@
         }
         .modal-header { display: flex; justify-content: flex-end; margin-bottom: 40px; }
         .close-btn {
-            padding: 10px 20px; background: #EBEAE6; border-radius: 20px;
+            padding: 10px 20px; background: var(--primary-light); border-radius: 20px;
             border: none; cursor: pointer; font-family: "Zen Maru Gothic", sans-serif;
             font-weight: 700; color: var(--text-main);
         }
 
-        /* --- ⚙️ 設定齒輪 (左下角) --- */
+        /* --- ⚙️ 設定齒輪 (更明顯精緻) --- */
         .settings-fab {
             position: fixed; bottom: 30px; left: 20px; z-index: 2000;
-            width: 55px; height: 55px;
-            background: rgba(255,255,255,0.9); backdrop-filter: blur(5px);
+            width: 60px; height: 60px; /* 加大 */
+            background: var(--card-bg); 
+            backdrop-filter: blur(10px);
             border-radius: 50%;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            /* 加強陰影與邊框光澤 */
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15), 0 0 0 1px rgba(255,255,255,0.5);
             display: flex; align-items: center; justify-content: center;
-            cursor: pointer; transition: transform 0.3s;
-            border: 1px solid white;
+            cursor: pointer; transition: all 0.3s;
         }
-        .settings-fab:active { transform: rotate(45deg) scale(0.9); }
-        .gear-icon { width: 30px; height: 30px; fill: var(--text-main); }
+        .settings-fab:hover { transform: scale(1.05); }
+        .settings-fab:active { transform: rotate(90deg) scale(0.95); }
+        .gear-icon { width: 32px; height: 32px; fill: var(--text-main); }
 
-        /* --- ⚙️ 設定 Modal (升級版) --- */
+        /* --- ⚙️ 設定 Modal (溫暖磨砂質感) --- */
         #settings-modal {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.4); z-index: 3000;
@@ -250,15 +296,15 @@
             width: 85%; max-width: 360px;
             border-radius: var(--radius-box);
             padding: 24px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255,255,255,0.8);
+            box-shadow: 0 15px 50px rgba(0,0,0,0.3);
+            backdrop-filter: blur(25px);
+            border: 1px solid var(--border-color);
             transform: scale(0.9); transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             max-height: 80vh; overflow-y: auto;
         }
         #settings-modal.show .settings-content { transform: scale(1); }
         
-        .settings-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 2px solid rgba(0,0,0,0.05); padding-bottom: 10px; }
+        .settings-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 2px solid var(--border-color); padding-bottom: 10px; }
         .settings-title { font-size: 1.3rem; font-weight: 900; color: var(--text-main); }
         
         .setting-section-title {
@@ -268,27 +314,28 @@
 
         .setting-item {
             display: flex; align-items: center; justify-content: space-between;
-            padding: 12px 0; border-bottom: 1px solid rgba(0,0,0,0.05);
+            padding: 12px 0; border-bottom: 1px solid var(--border-color);
         }
         .setting-item:last-child { border-bottom: none; }
         
         .st-label { font-weight: 700; color: var(--text-main); display: flex; align-items: center; gap: 10px; font-size: 0.95rem; }
         .st-icon { font-size: 1.2rem; width: 25px; text-align: center; }
         
-        /* 輸入框樣式 */
         .setting-input {
-            border: 2px solid #EEE; background: rgba(255,255,255,0.5);
+            border: 2px solid var(--border-color); background: rgba(255,255,255,0.1);
             padding: 8px 12px; border-radius: 12px;
             font-family: inherit; font-weight: 700; color: var(--text-main);
             width: 120px; text-align: right; outline: none; transition: border 0.3s;
         }
-        .setting-input:focus { border-color: var(--primary); background: white; }
+        .setting-input:focus { border-color: var(--primary); background: var(--card-bg); }
 
-        /* Toggle Switch */
         .toggle-switch {
             width: 46px; height: 26px; background: #DDD;
             border-radius: 20px; position: relative; cursor: pointer; transition: background 0.3s;
         }
+        /* 深色模式下的 Toggle 背景變深一點 */
+        body.dark-mode .toggle-switch { background: #555; }
+        
         .toggle-switch::after {
             content: ''; position: absolute; top: 3px; left: 3px;
             width: 20px; height: 20px; background: white;
@@ -299,15 +346,14 @@
         .toggle-switch.active::after { left: 23px; }
 
         .btn-action {
-            width: 100%; padding: 12px; background: white;
-            border: 1px solid #EEE; border-radius: 12px;
+            width: 100%; padding: 12px; background: var(--card-bg);
+            border: 1px solid var(--border-color); border-radius: 12px;
             font-weight: 700; color: var(--text-main); margin-top: 5px;
             cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
             transition: background 0.2s;
         }
-        .btn-action:active { background: #F5F5F5; }
-        .google-btn { color: #4285F4; border-color: #4285F4; }
-        .danger-btn { color: #FF6B6B; border-color: #FF6B6B; margin-top: 10px; }
+        .btn-action:active { filter: brightness(0.95); }
+        .danger-btn { color: #FF6B6B; border-color: #FF6B6B; margin-top: 10px; background: transparent; }
 
 
         /* --- ☁️ 麵團精靈本體 --- */
@@ -320,7 +366,7 @@
         #spirit-pet.auto-moving { transition: top 3s ease-in-out, left 3s ease-in-out; }
         .pet-svg-body {
             width: 100%; height: 100%;
-            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.15));
+            filter: var(--pet-glow); /* 支援夜間發光 */
             animation: petFloat 4s ease-in-out infinite;
         }
         @keyframes petFloat {
@@ -338,7 +384,7 @@
         .pet-speech-bubble {
             position: absolute; top: -60px; left: 50%;
             transform: translateX(-50%) scale(0);
-            background: white; padding: 10px 16px; border-radius: 18px;
+            background: var(--card-bg); padding: 10px 16px; border-radius: 18px;
             font-size: 0.9rem; color: var(--text-main); font-weight: 700;
             white-space: nowrap; box-shadow: 0 4px 15px rgba(0,0,0,0.15);
             opacity: 0; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
@@ -347,9 +393,10 @@
         .pet-speech-bubble::after {
             content: ''; position: absolute; bottom: -8px; left: 50%;
             transform: translateX(-50%); border-width: 8px 8px 0; border-style: solid;
-            border-color: white transparent transparent transparent;
+            border-color: var(--card-bg) transparent transparent transparent;
         }
         .pet-speech-bubble.show { transform: translateX(-50%) scale(1); opacity: 1; top: -75px; }
+        /* 顏文字專用字體 (強制 Arial) */
         .kaomoji { font-family: "Arial", sans-serif; font-weight: normal; display: inline-block; }
 
         /* --- SVG 動畫關鍵影格 --- */
@@ -404,15 +451,14 @@
                 <div class="st-label"><span class="st-icon">✏️</span> 你的稱呼</div>
                 <input type="text" id="nickname-input" class="setting-input" placeholder="旅人" maxlength="8">
             </div>
-            <div class="setting-item">
-                <div class="st-label"><span class="st-icon">👤</span> 帳戶綁定</div>
-                <button class="btn-action google-btn" style="width:auto; padding:6px 12px; font-size:0.75rem;">
-                    G 登入
-                </button>
-            </div>
 
             <div class="setting-section-title">環境體驗</div>
             
+            <div class="setting-item">
+                <div class="st-label"><span class="st-icon">🌙</span> 溫暖深色模式</div>
+                <div class="toggle-switch" id="setting-dark-toggle"></div>
+            </div>
+
             <div class="setting-item">
                 <div class="st-label"><span class="st-icon">🎵</span> 背景音樂</div>
                 <div class="toggle-switch" id="setting-music-toggle"></div>
@@ -426,8 +472,12 @@
             <div class="setting-item">
                 <div class="st-label">
                     <span class="st-icon">
-                        <svg viewBox="0 0 100 100" fill="none" style="width:20px;height:20px;vertical-align:middle;">
-                            <path d="M50 20C30 20 10 35 10 60C10 85 25 95 50 95C75 95 90 85 90 60C90 35 70 20 50 20Z" fill="var(--text-main)" />
+                        <svg viewBox="0 0 100 100" fill="none" style="width:22px;height:22px;vertical-align:middle;">
+                            <path d="M50 15C30 15 10 30 10 60C10 85 25 95 50 95C75 95 90 85 90 60C90 30 70 15 50 15Z" fill="#FFFFFF" stroke="#5C5552" stroke-width="3"/>
+                            <circle cx="35" cy="55" r="4" fill="#5C5552"/>
+                            <circle cx="65" cy="55" r="4" fill="#5C5552"/>
+                            <circle cx="28" cy="62" r="3" fill="#FFD1DC" opacity="0.8"/>
+                            <circle cx="72" cy="62" r="3" fill="#FFD1DC" opacity="0.8"/>
                         </svg>
                     </span> 
                     麵團精靈
@@ -440,14 +490,13 @@
                 <div style="font-size:0.8rem; font-weight:700; color:var(--primary);">繁體中文</div>
             </div>
 
-            <div class="setting-section-title">資料管理</div>
-            <button class="btn-action" style="font-size:0.8rem;">📥 匯出療癒紀錄</button>
-            <button class="btn-action danger-btn" style="font-size:0.8rem;" onclick="resetAppData()">🗑️ 清除所有資料 (重置)</button>
+            <div class="setting-section-title">系統</div>
+            <button class="btn-action danger-btn" style="font-size:0.8rem;" onclick="resetAppData()">🗑️ 重置所有資料</button>
 
-            <div style="margin-top:20px; padding-top:15px; border-top:1px solid #EEE;">
-                <div style="font-size:0.7rem; color:#AAA; text-align:center;">
-                    Safe Space v1.2<br>
-                    Designed by 杜的貼身助理
+            <div style="margin-top:20px; padding-top:15px; border-top:1px solid var(--border-color);">
+                <div style="font-size:0.7rem; color:var(--text-sub); text-align:center;">
+                    Designed by 杜智平/杜皮<br>
+                    Safe Space v1.3
                 </div>
             </div>
         </div>
@@ -513,7 +562,7 @@
 
     <script>
         // ============================================
-        // 1. 資料庫 (可與後端分離)
+        // 1. 資料庫 (SVG 渲染引擎)
         // ============================================
 
         // --- SVG 元件 ---
@@ -637,6 +686,7 @@
         let isMusicOn = JSON.parse(localStorage.getItem('safeSpaceMusicOn')) ?? true; 
         let isSfxOn = JSON.parse(localStorage.getItem('safeSpaceSfxOn')) ?? true; 
         let isPetActive = JSON.parse(localStorage.getItem('safeSpacePetActive')) ?? true; 
+        let isDarkMode = JSON.parse(localStorage.getItem('safeSpaceDarkMode')) ?? false;
         
         let selectedMoods = new Set();
         let isFavFilterActive = false;
@@ -649,6 +699,7 @@
         const favFabBtn = document.getElementById('fav-fab-btn');
         const petEl = document.getElementById('spirit-pet');
         const greetingTitle = document.getElementById('greeting-title');
+        const splashScreen = document.getElementById('splash-screen');
         
         // 設定相關 DOM
         const settingsModal = document.getElementById('settings-modal');
@@ -656,21 +707,25 @@
         const musicToggle = document.getElementById('setting-music-toggle');
         const sfxToggle = document.getElementById('setting-sfx-toggle');
         const petToggle = document.getElementById('setting-pet-toggle');
+        const darkToggle = document.getElementById('setting-dark-toggle');
 
         function initApp() {
+            // 套用深色模式
+            if (isDarkMode) document.body.classList.add('dark-mode');
+
             renderMoodButtons();
             updateResults();
             initPetSystem();
-            initSettings(); // 初始化設定監聽與狀態
-            updateGreeting(); // 設定標題
+            initSettings(); 
+            updateGreeting(); 
             
             // 綁定 Splash 點擊 (觸發 AudioContext 與自動播放)
-            const splashScreen = document.getElementById('splash-screen');
             const splashBtn = document.getElementById('splash-start-btn');
             splashBtn.onclick = () => {
                 splashScreen.style.opacity = '0';
                 setTimeout(() => {
                     splashScreen.style.display = 'none';
+                    document.body.style.overflow = 'auto'; // 開放捲動
                 }, 800);
                 
                 // 啟動音訊核心
@@ -689,9 +744,10 @@
                 else if (hour < 18) greet = "下午好";
                 else greet = "晚安";
                 
-                greetingTitle.innerText = `${greet}，${userNickname}`;
+                // 強制顏文字用 Arial，避免跑版
+                greetingTitle.innerHTML = `${greet}，${userNickname} <span class="kaomoji" style="font-size:0.8em; margin-left:5px;">( ˘ ³˘)</span>`;
             } else {
-                greetingTitle.innerText = "Safe Space";
+                greetingTitle.innerHTML = 'Safe Space <span class="kaomoji" style="font-size:0.8em; margin-left:5px;">( ˘ ³˘)</span>';
             }
         }
 
@@ -705,7 +761,17 @@
                 updateGreeting();
             });
 
-            // 2. 音樂開關
+            // 2. 深色模式
+            updateToggleUI(darkToggle, isDarkMode);
+            darkToggle.onclick = () => {
+                isDarkMode = !isDarkMode;
+                localStorage.setItem('safeSpaceDarkMode', isDarkMode);
+                updateToggleUI(darkToggle, isDarkMode);
+                if(isDarkMode) document.body.classList.add('dark-mode');
+                else document.body.classList.remove('dark-mode');
+            };
+
+            // 3. 音樂開關
             updateToggleUI(musicToggle, isMusicOn);
             musicToggle.onclick = () => {
                 isMusicOn = !isMusicOn;
@@ -721,7 +787,7 @@
                 }
             };
 
-            // 3. 音效開關
+            // 4. 音效開關
             updateToggleUI(sfxToggle, isSfxOn);
             sfxToggle.onclick = () => {
                 isSfxOn = !isSfxOn;
@@ -729,7 +795,7 @@
                 updateToggleUI(sfxToggle, isSfxOn);
             };
 
-            // 4. 精靈開關
+            // 5. 精靈開關
             updateToggleUI(petToggle, isPetActive);
             petToggle.onclick = () => {
                 isPetActive = !isPetActive;
@@ -748,14 +814,17 @@
             settingsModal.style.display = 'flex';
             void settingsModal.offsetWidth; 
             settingsModal.classList.add('show');
+            // 推入歷史紀錄以支援返回鍵關閉
+            history.pushState({ type: 'settings' }, null, "#settings");
         }
         function closeSettings(e) {
-            if(e.target === settingsModal) toggleSettings();
+            if(e.target === settingsModal) {
+                history.back(); // 觸發 popstate 來關閉
+            }
         }
         function toggleSettings() {
             if(settingsModal.classList.contains('show')) {
-                settingsModal.classList.remove('show');
-                setTimeout(() => { settingsModal.style.display = 'none'; }, 300);
+                history.back();
             } else {
                 openSettings();
             }
@@ -899,11 +968,23 @@
             featureTitle.innerText = feature.name;
             history.pushState({ type: 'modal' }, null, "#feature");
         }
+        
+        // 處理返回鍵邏輯 (Settings & Features)
         window.addEventListener('popstate', function(event) {
+            // 1. 如果設定 Modal 開著，就關掉
+            if (settingsModal.classList.contains('show')) {
+                settingsModal.classList.remove('show');
+                setTimeout(() => { settingsModal.style.display = 'none'; }, 300);
+                return;
+            }
+
+            // 2. 如果功能 Modal 開著，就關掉
             if (modal.style.display === 'flex') {
                 modal.style.display = 'none';
                 return;
             }
+            
+            // 3. 其他情況重置篩選
             resetAllFilters();
         });
 
