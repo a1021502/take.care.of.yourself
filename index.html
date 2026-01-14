@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>心靈急救箱</title>
+    <title>Safe Space</title>
     
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg viewBox='0 0 100 100' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M50 15C30 15 10 30 10 60C10 85 25 95 50 95C75 95 90 85 90 60C90 30 70 15 50 15Z' fill='%23FFFFFF' stroke='%23E0E0E0' stroke-width='3'/%3E%3Ccircle cx='35' cy='55' r='4' fill='%235C5552'/%3E%3Ccircle cx='65' cy='55' r='4' fill='%235C5552'/%3E%3Ccircle cx='28' cy='62' r='3' fill='%23FFD1DC' opacity='0.8'/%3E%3Ccircle cx='72' cy='62' r='3' fill='%23FFD1DC' opacity='0.8'/%3E%3C/svg%3E">
 
@@ -12,7 +12,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700;900&display=swap" rel="stylesheet">
 
     <style>
-        /* --- 🎨 視覺風格 --- */
+        /* --- 🎨 核心視覺變數 --- */
         :root {
             --primary: #7A9F6E;
             --primary-dark: #58754F;
@@ -25,6 +25,7 @@
             --radius-box: 24px;
             --radius-btn: 16px;
             --shadow-soft: 0 8px 20px rgba(122, 159, 110, 0.15);
+            --glass: rgba(255, 255, 255, 0.90);
         }
 
         body {
@@ -42,9 +43,67 @@
             overflow-x: hidden;
         }
 
-        header { text-align: center; margin-bottom: 24px; margin-top: 50px; }
-        h1 { font-weight: 900; font-size: 2.4rem; margin: 0; color: var(--primary); letter-spacing: 1px; }
-        p.subtitle { font-size: 1rem; color: var(--text-sub); margin-top: 5px; font-weight: 500; }
+        /* --- 🎬 質感啟動畫面 (Redesigned) --- */
+        #splash-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: var(--bg); z-index: 9999;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            transition: opacity 0.8s ease-out;
+        }
+        
+        .splash-content {
+            text-align: center;
+            animation: fadeInUp 1s ease-out;
+        }
+
+        .splash-logo-container {
+            width: 140px; height: 140px; margin: 0 auto 30px auto;
+            position: relative;
+        }
+
+        /* 中央的禪意麵團 */
+        .zen-dough {
+            width: 100%; height: 100%;
+            animation: deepBreathe 6s ease-in-out infinite;
+            filter: drop-shadow(0 10px 15px rgba(122, 159, 110, 0.2));
+        }
+
+        .splash-title {
+            font-size: 1.8rem; font-weight: 900; color: var(--primary);
+            letter-spacing: 2px; margin-bottom: 5px;
+        }
+        .splash-subtitle {
+            font-size: 0.9rem; color: var(--text-sub); font-weight: 500;
+            margin-bottom: 50px; opacity: 0.8;
+        }
+
+        .start-btn {
+            font-size: 1rem; color: white; font-weight: 700;
+            padding: 14px 40px; 
+            background: var(--primary);
+            border: none;
+            border-radius: 50px; cursor: pointer;
+            box-shadow: 0 5px 15px rgba(122, 159, 110, 0.3);
+            transition: all 0.3s;
+            letter-spacing: 1px;
+        }
+        .start-btn:active { transform: scale(0.95); box-shadow: 0 2px 5px rgba(122, 159, 110, 0.3); }
+
+        @keyframes deepBreathe {
+            0%, 100% { transform: scale(1) translateY(0); }
+            50% { transform: scale(1.05) translateY(-5px); }
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+
+        /* --- 🏠 主介面 --- */
+        header { text-align: center; margin-bottom: 24px; margin-top: 20px; width: 100%; max-width: 500px;}
+        h1 { font-weight: 900; font-size: 2rem; margin: 0; color: var(--text-main); letter-spacing: 1px; }
+        p.subtitle { font-size: 0.95rem; color: var(--text-sub); margin-top: 5px; font-weight: 500; }
 
         /* --- 🔍 搜尋欄 --- */
         .search-container { width: 100%; max-width: 500px; margin-bottom: 24px; }
@@ -75,9 +134,8 @@
             color: var(--primary-dark); font-weight: 900; text-align: center; 
         }
 
-        /* 情緒按鈕 Grid 改版 */
         .mood-grid {
-            display: grid; grid-template-columns: 1fr 1fr 1fr; /* 3欄比較好看圖 */
+            display: grid; grid-template-columns: 1fr 1fr 1fr; 
             gap: 12px; margin-bottom: 10px;
         }
         
@@ -92,7 +150,7 @@
         }
         .mood-card:active { transform: translateY(4px); box-shadow: none; }
         .mood-card.active {
-            background: #FFF; /* 保持白色底，突顯邊框 */
+            background: #FFF; 
             transform: translateY(2px);
             box-shadow: inset 0 3px 5px rgba(0,0,0,0.1);
         }
@@ -103,7 +161,7 @@
         /* --- 🛠️ 工具箱列表 --- */
         .toolbox-grid {
             display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
-            width: 100%; max-width: 500px; padding-bottom: 40px;
+            width: 100%; max-width: 500px; padding-bottom: 100px; /* 留空間給浮動按鈕 */
         }
         .feature-card {
             background: var(--card-bg); border-radius: var(--radius-box);
@@ -111,11 +169,10 @@
             align-items: center; justify-content: flex-start; text-align: center;
             box-shadow: var(--shadow-soft); cursor: pointer;
             transition: transform 0.2s; height: 160px; position: relative;
-            overflow: hidden; /* 防止動畫跑出去 */
+            overflow: hidden; 
         }
         .feature-card:active { transform: scale(0.96); }
         
-        /* 新的圖示容器 */
         .card-visual { 
             width: 90px; height: 90px; 
             margin-bottom: 10px; 
@@ -126,7 +183,6 @@
         .card-title { font-size: 1.1rem; color: var(--text-main); font-weight: 700; margin-bottom: 2px;}
         .card-tag { font-size: 0.8rem; color: #B0B0B0; font-weight: 500; }
         
-        /* 收藏按鈕 (原樣) */
         .card-fav-btn {
             position: absolute; top: 10px; right: 10px;
             font-size: 1.2rem; color: #EEE; padding: 8px;
@@ -134,7 +190,6 @@
         }
         .card-fav-btn.is-active { color: var(--accent-warm); }
 
-        /* 收藏與重置 (原樣) */
         .fav-fab-container { position: absolute; bottom: -15px; right: 15px; z-index: 10; }
         .fav-fab {
             width: 70px; height: 70px;
@@ -150,7 +205,7 @@
         .fav-icon { font-size: 1.4rem; line-height: 1; margin-bottom: 2px; }
         .fav-text { font-size: 0.75rem; font-weight: 900; line-height: 1; }
 
-        /* --- 📱 Modal --- */
+        /* --- 📱 Feature Modal --- */
         #active-feature-container {
             position: fixed; top: 0; left: 0; right: 0; bottom: 0;
             background: var(--bg); z-index: 1000;
@@ -168,29 +223,94 @@
             font-weight: 700; color: var(--text-main);
         }
 
-        /* --- ☁️ 麵團精靈系統 + 音樂控制 --- */
-        .controls-wrapper {
-            position: fixed; top: 20px; left: 20px; z-index: 2000;
-            display: flex; flex-direction: column; gap: 10px; align-items: flex-start;
+        /* --- ⚙️ 設定齒輪 (左下角) --- */
+        .settings-fab {
+            position: fixed; bottom: 30px; left: 20px; z-index: 2000;
+            width: 55px; height: 55px;
+            background: rgba(255,255,255,0.9); backdrop-filter: blur(5px);
+            border-radius: 50%;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; transition: transform 0.3s;
+            border: 1px solid white;
+        }
+        .settings-fab:active { transform: rotate(45deg) scale(0.9); }
+        .gear-icon { width: 30px; height: 30px; fill: var(--text-main); }
+
+        /* --- ⚙️ 設定 Modal (升級版) --- */
+        #settings-modal {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.4); z-index: 3000;
+            display: none; align-items: center; justify-content: center;
+            opacity: 0; transition: opacity 0.3s;
+        }
+        #settings-modal.show { opacity: 1; }
+        .settings-content {
+            background: var(--glass);
+            width: 85%; max-width: 360px;
+            border-radius: var(--radius-box);
+            padding: 24px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.8);
+            transform: scale(0.9); transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            max-height: 80vh; overflow-y: auto;
+        }
+        #settings-modal.show .settings-content { transform: scale(1); }
+        
+        .settings-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 2px solid rgba(0,0,0,0.05); padding-bottom: 10px; }
+        .settings-title { font-size: 1.3rem; font-weight: 900; color: var(--text-main); }
+        
+        .setting-section-title {
+            font-size: 0.85rem; font-weight: 900; color: var(--primary);
+            margin-top: 15px; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px;
         }
 
-        .sys-btn {
-            display: flex; align-items: center; gap: 8px;
-            background: rgba(255,255,255,0.9);
-            backdrop-filter: blur(5px);
-            padding: 6px 14px;
-            border-radius: 30px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            cursor: pointer; transition: all 0.2s;
-            border: 1px solid rgba(0,0,0,0.05);
-            -webkit-user-select: none; user-select: none;
+        .setting-item {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 12px 0; border-bottom: 1px solid rgba(0,0,0,0.05);
         }
-        .sys-btn:active { transform: scale(0.95); }
-        .sys-icon { width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;}
-        .sys-text { font-size: 0.85rem; font-weight: 700; color: var(--primary); }
-        .sys-btn.off { opacity: 0.6; grayscale: 1; }
+        .setting-item:last-child { border-bottom: none; }
+        
+        .st-label { font-weight: 700; color: var(--text-main); display: flex; align-items: center; gap: 10px; font-size: 0.95rem; }
+        .st-icon { font-size: 1.2rem; width: 25px; text-align: center; }
+        
+        /* 輸入框樣式 */
+        .setting-input {
+            border: 2px solid #EEE; background: rgba(255,255,255,0.5);
+            padding: 8px 12px; border-radius: 12px;
+            font-family: inherit; font-weight: 700; color: var(--text-main);
+            width: 120px; text-align: right; outline: none; transition: border 0.3s;
+        }
+        .setting-input:focus { border-color: var(--primary); background: white; }
 
-        /* 精靈本體 */
+        /* Toggle Switch */
+        .toggle-switch {
+            width: 46px; height: 26px; background: #DDD;
+            border-radius: 20px; position: relative; cursor: pointer; transition: background 0.3s;
+        }
+        .toggle-switch::after {
+            content: ''; position: absolute; top: 3px; left: 3px;
+            width: 20px; height: 20px; background: white;
+            border-radius: 50%; box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            transition: left 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .toggle-switch.active { background: var(--primary); }
+        .toggle-switch.active::after { left: 23px; }
+
+        .btn-action {
+            width: 100%; padding: 12px; background: white;
+            border: 1px solid #EEE; border-radius: 12px;
+            font-weight: 700; color: var(--text-main); margin-top: 5px;
+            cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
+            transition: background 0.2s;
+        }
+        .btn-action:active { background: #F5F5F5; }
+        .google-btn { color: #4285F4; border-color: #4285F4; }
+        .danger-btn { color: #FF6B6B; border-color: #FF6B6B; margin-top: 10px; }
+
+
+        /* --- ☁️ 麵團精靈本體 --- */
         #spirit-pet {
             position: fixed; width: 80px; height: 80px; z-index: 2001;
             cursor: grab; touch-action: none; display: none;
@@ -232,7 +352,7 @@
         .pet-speech-bubble.show { transform: translateX(-50%) scale(1); opacity: 1; top: -75px; }
         .kaomoji { font-family: "Arial", sans-serif; font-weight: normal; display: inline-block; }
 
-        /* --- SVG 動畫關鍵影格 (全域) --- */
+        /* --- SVG 動畫關鍵影格 --- */
         @keyframes blink { 0%, 90%, 100% { transform: scaleY(1); } 95% { transform: scaleY(0.1); } }
         @keyframes sway { 0%, 100% { transform: rotate(-5deg); } 50% { transform: rotate(5deg); } }
         @keyframes breathe { 0%, 100% { transform: scale(0.95); } 50% { transform: scale(1.05); } }
@@ -243,26 +363,93 @@
         @keyframes muscleFlex { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
         @keyframes lidOpen { 0%, 100% { transform: rotate(0); } 50% { transform: rotate(-20deg) translateY(-5px); } }
         @keyframes conveyorMove { 0% { transform: translateX(0); opacity: 1; } 100% { transform: translateX(40px); opacity: 0; } }
-        @keyframes pulseRed { 0%, 100% { fill: #FF6B6B; } 50% { fill: #FF0000; } }
 
     </style>
 </head>
 <body>
 
-    <div class="controls-wrapper">
-        <div class="sys-btn" id="pet-toggle-btn">
-            <div class="sys-icon">
-                <svg viewBox="0 0 100 100" fill="none" style="width:20px;height:20px;">
-                    <path d="M50 20C30 20 10 35 10 60C10 85 25 95 50 95C75 95 90 85 90 60C90 35 70 20 50 20Z" fill="#FFFFFF" stroke="#CCCCCC" stroke-width="8"/>
-                    <circle cx="35" cy="55" r="5" fill="#5C5552"/>
-                    <circle cx="65" cy="55" r="5" fill="#5C5552"/>
+    <div id="splash-screen">
+        <div class="splash-content">
+            <div class="splash-logo-container">
+                <svg viewBox="0 0 100 100" fill="none" class="zen-dough">
+                    <path d="M50 15C30 15 10 30 10 60C10 85 25 95 50 95C75 95 90 85 90 60C90 30 70 15 50 15Z" fill="#FFFFFF" stroke="#5C5552" stroke-width="2.5"/>
+                    <circle cx="28" cy="62" r="3.5" fill="#FFD1DC" opacity="0.8"/>
+                    <circle cx="72" cy="62" r="3.5" fill="#FFD1DC" opacity="0.8"/>
+                    <path d="M28 55 Q35 58 42 55" stroke="#5C5552" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+                    <path d="M58 55 Q65 58 72 55" stroke="#5C5552" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+                    <path d="M45 68 Q50 71 55 68" stroke="#5C5552" stroke-width="2" fill="none" opacity="0.8"/>
                 </svg>
             </div>
-            <div class="sys-text" id="pet-toggle-label">召喚麵團</div>
+            <div class="splash-title">Safe Space</div>
+            <div class="splash-subtitle">屬於你的心靈避風港</div>
+            <button class="start-btn" id="splash-start-btn">進入空間</button>
         </div>
-        <div class="sys-btn" id="music-toggle-btn">
-            <div class="sys-icon" id="music-icon">🎵</div>
-            <div class="sys-text" id="music-label">背景音樂</div>
+    </div>
+
+    <div class="settings-fab" onclick="openSettings()">
+        <svg class="gear-icon" viewBox="0 0 24 24">
+            <path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L3.16 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.04.64.09.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/>
+        </svg>
+    </div>
+
+    <div id="settings-modal" onclick="closeSettings(event)">
+        <div class="settings-content">
+            <div class="settings-header">
+                <div class="settings-title">個人設定</div>
+                <button class="close-btn" style="padding: 5px 12px; font-size: 0.8rem;" onclick="toggleSettings()">✕</button>
+            </div>
+
+            <div class="setting-section-title">我的檔案</div>
+            <div class="setting-item">
+                <div class="st-label"><span class="st-icon">✏️</span> 你的稱呼</div>
+                <input type="text" id="nickname-input" class="setting-input" placeholder="旅人" maxlength="8">
+            </div>
+            <div class="setting-item">
+                <div class="st-label"><span class="st-icon">👤</span> 帳戶綁定</div>
+                <button class="btn-action google-btn" style="width:auto; padding:6px 12px; font-size:0.75rem;">
+                    G 登入
+                </button>
+            </div>
+
+            <div class="setting-section-title">環境體驗</div>
+            
+            <div class="setting-item">
+                <div class="st-label"><span class="st-icon">🎵</span> 背景音樂</div>
+                <div class="toggle-switch" id="setting-music-toggle"></div>
+            </div>
+
+            <div class="setting-item">
+                <div class="st-label"><span class="st-icon">🔊</span> 互動音效 (SFX)</div>
+                <div class="toggle-switch" id="setting-sfx-toggle"></div>
+            </div>
+
+            <div class="setting-item">
+                <div class="st-label">
+                    <span class="st-icon">
+                        <svg viewBox="0 0 100 100" fill="none" style="width:20px;height:20px;vertical-align:middle;">
+                            <path d="M50 20C30 20 10 35 10 60C10 85 25 95 50 95C75 95 90 85 90 60C90 35 70 20 50 20Z" fill="var(--text-main)" />
+                        </svg>
+                    </span> 
+                    麵團精靈
+                </div>
+                <div class="toggle-switch" id="setting-pet-toggle"></div>
+            </div>
+
+            <div class="setting-item">
+                <div class="st-label"><span class="st-icon">🌐</span> 語言 / Language</div>
+                <div style="font-size:0.8rem; font-weight:700; color:var(--primary);">繁體中文</div>
+            </div>
+
+            <div class="setting-section-title">資料管理</div>
+            <button class="btn-action" style="font-size:0.8rem;">📥 匯出療癒紀錄</button>
+            <button class="btn-action danger-btn" style="font-size:0.8rem;" onclick="resetAppData()">🗑️ 清除所有資料 (重置)</button>
+
+            <div style="margin-top:20px; padding-top:15px; border-top:1px solid #EEE;">
+                <div style="font-size:0.7rem; color:#AAA; text-align:center;">
+                    Safe Space v1.2<br>
+                    Designed by 杜的貼身助理
+                </div>
+            </div>
         </div>
     </div>
 
@@ -284,7 +471,7 @@
     </div>
 
     <header>
-        <h1>Safe Space</h1>
+        <h1 id="greeting-title">Safe Space</h1>
         <p class="subtitle">在這裡，你不需要勉強自己。</p>
     </header>
 
@@ -326,244 +513,94 @@
 
     <script>
         // ============================================
-        // 1. 資料庫 (SVG 渲染引擎)
+        // 1. 資料庫 (可與後端分離)
         // ============================================
 
-        // 共用的麵團身體 SVG Path
+        // --- SVG 元件 ---
         const DOUGH_BODY = `<path d="M50 15C30 15 10 30 10 60C10 85 25 95 50 95C75 95 90 85 90 60C90 30 70 15 50 15Z" fill="#FFFFFF" stroke="#5C5552" stroke-width="2.5"/>`;
         const CHEEKS = `<circle cx="28" cy="62" r="3.5" fill="#FFD1DC" opacity="0.9"/><circle cx="72" cy="62" r="3.5" fill="#FFD1DC" opacity="0.9"/>`;
 
-        // 生成情緒 Icon SVG
         function getMoodIcon(moodId) {
             let content = '';
             switch(moodId) {
-                case 'anxious': // 焦慮：發抖、汗滴
-                    content = `
-                        ${DOUGH_BODY} ${CHEEKS}
-                        <g style="animation: sway 0.2s infinite">
-                            <circle cx="35" cy="55" r="4" fill="#5C5552"/>
-                            <circle cx="65" cy="55" r="4" fill="#5C5552"/>
-                            <path d="M45 68 Q50 72 55 68" stroke="#5C5552" stroke-width="2" fill="none"/>
-                        </g>
-                        <path d="M20 30 Q20 40 25 40 Q30 40 30 30" fill="#A0C4FF" style="animation: tearDrop 1s infinite"/>
-                    `;
+                case 'anxious': 
+                    content = `${DOUGH_BODY} ${CHEEKS}<g style="animation: sway 0.2s infinite"><circle cx="35" cy="55" r="4" fill="#5C5552"/><circle cx="65" cy="55" r="4" fill="#5C5552"/><path d="M45 68 Q50 72 55 68" stroke="#5C5552" stroke-width="2" fill="none"/></g><path d="M20 30 Q20 40 25 40 Q30 40 30 30" fill="#A0C4FF" style="animation: tearDrop 1s infinite"/>`;
                     break;
-                case 'low': // 低落：融化扁扁的
-                    content = `
-                        <path d="M50 35C30 35 10 45 10 70C10 90 25 95 50 95C75 95 90 90 90 70C90 45 70 35 50 35Z" fill="#FFFFFF" stroke="#5C5552" stroke-width="2.5"/>
-                        ${CHEEKS}
-                        <path d="M30 60 L40 65" stroke="#5C5552" stroke-width="2" stroke-linecap="round"/>
-                        <path d="M70 60 L60 65" stroke="#5C5552" stroke-width="2" stroke-linecap="round"/>
-                        <path d="M45 75 Q50 70 55 75" stroke="#5C5552" stroke-width="2" fill="none"/>
-                    `;
+                case 'low': 
+                    content = `<path d="M50 35C30 35 10 45 10 70C10 90 25 95 50 95C75 95 90 90 90 70C90 45 70 35 50 35Z" fill="#FFFFFF" stroke="#5C5552" stroke-width="2.5"/>${CHEEKS}<path d="M30 60 L40 65" stroke="#5C5552" stroke-width="2" stroke-linecap="round"/><path d="M70 60 L60 65" stroke="#5C5552" stroke-width="2" stroke-linecap="round"/><path d="M45 75 Q50 70 55 75" stroke="#5C5552" stroke-width="2" fill="none"/>`;
                     break;
-                case 'angry': // 生氣：漲紅、冒煙
-                    content = `
-                        ${DOUGH_BODY}
-                        <path d="M30 50 L40 55" stroke="#5C5552" stroke-width="2.5"/>
-                        <path d="M70 50 L60 55" stroke="#5C5552" stroke-width="2.5"/>
-                        <circle cx="35" cy="60" r="3" fill="#5C5552"/>
-                        <circle cx="65" cy="60" r="3" fill="#5C5552"/>
-                        <path d="M45 75 Q50 70 55 75" stroke="#5C5552" stroke-width="2" fill="none"/>
-                        <path d="M50 10 L50 5" stroke="#FF6B6B" stroke-width="3" style="animation: floatItem 0.5s infinite"/>
-                        <path d="M60 12 L62 6" stroke="#FF6B6B" stroke-width="3" style="animation: floatItem 0.6s infinite"/>
-                    `;
+                case 'angry':
+                    content = `${DOUGH_BODY}<path d="M30 50 L40 55" stroke="#5C5552" stroke-width="2.5"/><path d="M70 50 L60 55" stroke="#5C5552" stroke-width="2.5"/><circle cx="35" cy="60" r="3" fill="#5C5552"/><circle cx="65" cy="60" r="3" fill="#5C5552"/><path d="M45 75 Q50 70 55 75" stroke="#5C5552" stroke-width="2" fill="none"/><path d="M50 10 L50 5" stroke="#FF6B6B" stroke-width="3" style="animation: floatItem 0.5s infinite"/><path d="M60 12 L62 6" stroke="#FF6B6B" stroke-width="3" style="animation: floatItem 0.6s infinite"/>`;
                     break;
-                case 'numb': // 麻木：虛線、空洞眼
-                    content = `
-                        <path d="M50 15C30 15 10 30 10 60C10 85 25 95 50 95C75 95 90 85 90 60C90 30 70 15 50 15Z" fill="#FFFFFF" stroke="#5C5552" stroke-width="2.5" stroke-dasharray="4 4"/>
-                        <circle cx="28" cy="62" r="3.5" fill="#DDD" opacity="0.9"/><circle cx="72" cy="62" r="3.5" fill="#DDD" opacity="0.9"/>
-                        <circle cx="35" cy="55" r="4" stroke="#5C5552" stroke-width="2" fill="none"/>
-                        <circle cx="65" cy="55" r="4" stroke="#5C5552" stroke-width="2" fill="none"/>
-                        <line x1="45" y1="70" x2="55" y2="70" stroke="#5C5552" stroke-width="2"/>
-                    `;
+                case 'numb':
+                    content = `<path d="M50 15C30 15 10 30 10 60C10 85 25 95 50 95C75 95 90 85 90 60C90 30 70 15 50 15Z" fill="#FFFFFF" stroke="#5C5552" stroke-width="2.5" stroke-dasharray="4 4"/><circle cx="28" cy="62" r="3.5" fill="#DDD" opacity="0.9"/><circle cx="72" cy="62" r="3.5" fill="#DDD" opacity="0.9"/><circle cx="35" cy="55" r="4" stroke="#5C5552" stroke-width="2" fill="none"/><circle cx="65" cy="55" r="4" stroke="#5C5552" stroke-width="2" fill="none"/><line x1="45" y1="70" x2="55" y2="70" stroke="#5C5552" stroke-width="2"/>`;
                     break;
-                case 'confused': // 迷惘：蚊香眼
-                    content = `
-                        ${DOUGH_BODY} ${CHEEKS}
-                        <g style="animation: spinEye 3s linear infinite; transform-origin: 35px 55px">
-                            <path d="M35 55 m-3 0 a 3 3 0 1 0 6 0 a 3 3 0 1 0 -6 0" stroke="#5C5552" stroke-width="1.5" fill="none"/>
-                        </g>
-                        <g style="animation: spinEye 3s linear infinite reverse; transform-origin: 65px 55px">
-                            <path d="M65 55 m-3 0 a 3 3 0 1 0 6 0 a 3 3 0 1 0 -6 0" stroke="#5C5552" stroke-width="1.5" fill="none"/>
-                        </g>
-                        <path d="M48 70 Q50 68 52 70" stroke="#5C5552" stroke-width="2"/>
-                    `;
+                case 'confused':
+                    content = `${DOUGH_BODY} ${CHEEKS}<g style="animation: spinEye 3s linear infinite; transform-origin: 35px 55px"><path d="M35 55 m-3 0 a 3 3 0 1 0 6 0 a 3 3 0 1 0 -6 0" stroke="#5C5552" stroke-width="1.5" fill="none"/></g><g style="animation: spinEye 3s linear infinite reverse; transform-origin: 65px 55px"><path d="M65 55 m-3 0 a 3 3 0 1 0 6 0 a 3 3 0 1 0 -6 0" stroke="#5C5552" stroke-width="1.5" fill="none"/></g><path d="M48 70 Q50 68 52 70" stroke="#5C5552" stroke-width="2"/>`;
                     break;
-                case 'panic': // 崩潰：揮手
-                    content = `
-                        <g style="animation: panicWave 0.2s infinite">
-                             ${DOUGH_BODY} ${CHEEKS}
-                            <circle cx="35" cy="55" r="5" fill="#5C5552"/>
-                            <circle cx="65" cy="55" r="5" fill="#5C5552"/>
-                            <ellipse cx="50" cy="72" rx="6" ry="8" fill="#5C5552"/>
-                            <path d="M10 60 L0 50" stroke="#5C5552" stroke-width="3"/>
-                            <path d="M90 60 L100 50" stroke="#5C5552" stroke-width="3"/>
-                        </g>
-                    `;
+                case 'panic': 
+                    content = `<g style="animation: panicWave 0.2s infinite">${DOUGH_BODY} ${CHEEKS}<circle cx="35" cy="55" r="5" fill="#5C5552"/><circle cx="65" cy="55" r="5" fill="#5C5552"/><ellipse cx="50" cy="72" rx="6" ry="8" fill="#5C5552"/><path d="M10 60 L0 50" stroke="#5C5552" stroke-width="3"/><path d="M90 60 L100 50" stroke="#5C5552" stroke-width="3"/></g>`;
                     break;
             }
             return `<svg viewBox="0 0 100 100" fill="none" class="mood-icon-svg">${content}</svg>`;
         }
 
-        // 生成功能 Icon SVG
         function getFeatureIcon(id) {
             let content = '';
-            // 預設眼睛嘴巴
             let eyes = `<circle cx="35" cy="55" r="4" fill="#5C5552"/><circle cx="65" cy="55" r="4" fill="#5C5552"/>`;
             let mouth = `<path d="M45 68 Q50 72 55 68" stroke="#5C5552" stroke-width="2" fill="none"/>`;
 
             switch(id) {
-                case 'dbt_cards': // 自我照顧卡：興奮拿卡
-                    content = `
-                        ${DOUGH_BODY} ${CHEEKS} ${eyes} 
-                        <path d="M45 65 Q50 75 55 65" stroke="#5C5552" stroke-width="2" fill="none"/>
-                        <rect x="60" y="40" width="20" height="30" rx="2" fill="white" stroke="#5C5552" stroke-width="2" transform="rotate(15 60 40)" style="animation: floatItem 2s infinite"/>
-                        <path d="M65 45 L75 50" stroke="#FFD1DC" stroke-width="2"/>
-                    `;
+                case 'dbt_cards':
+                    content = `${DOUGH_BODY} ${CHEEKS} ${eyes} <path d="M45 65 Q50 75 55 65" stroke="#5C5552" stroke-width="2" fill="none"/><rect x="60" y="40" width="20" height="30" rx="2" fill="white" stroke="#5C5552" stroke-width="2" transform="rotate(15 60 40)" style="animation: floatItem 2s infinite"/><path d="M65 45 L75 50" stroke="#FFD1DC" stroke-width="2"/>`;
                     break;
-                case 'quotes': // 療癒金句：幸福表情說話，對話框
-                    content = `
-                        ${DOUGH_BODY} ${CHEEKS}
-                        <path d="M30 55 Q35 50 40 55" stroke="#5C5552" stroke-width="2" fill="none"/>
-                        <path d="M60 55 Q65 50 70 55" stroke="#5C5552" stroke-width="2" fill="none"/>
-                        <circle cx="50" cy="68" r="4" fill="#5C5552"/>
-                        <path d="M70 20 H90 V35 H70 L65 40 V20 Z" fill="white" stroke="#5C5552" stroke-width="2"/>
-                        <circle cx="76" cy="28" r="1.5" fill="#5C5552"/><circle cx="80" cy="28" r="1.5" fill="#5C5552"/><circle cx="84" cy="28" r="1.5" fill="#5C5552"/>
-                    `;
+                case 'quotes':
+                    content = `${DOUGH_BODY} ${CHEEKS} <path d="M30 55 Q35 50 40 55" stroke="#5C5552" stroke-width="2" fill="none"/><path d="M60 55 Q65 50 70 55" stroke="#5C5552" stroke-width="2" fill="none"/><circle cx="50" cy="68" r="4" fill="#5C5552"/><path d="M70 20 H90 V35 H70 L65 40 V20 Z" fill="white" stroke="#5C5552" stroke-width="2"/><circle cx="76" cy="28" r="1.5" fill="#5C5552"/><circle cx="80" cy="28" r="1.5" fill="#5C5552"/><circle cx="84" cy="28" r="1.5" fill="#5C5552"/>`;
                     break;
-                case 'tarot': // 塔羅：閉眼拿水晶球
-                    content = `
-                        ${DOUGH_BODY} ${CHEEKS}
-                        <path d="M30 55 L40 55" stroke="#5C5552" stroke-width="2"/>
-                        <path d="M60 55 L70 55" stroke="#5C5552" stroke-width="2"/>
-                        <circle cx="50" cy="80" r="12" fill="#E0F7FA" stroke="#5C5552" stroke-width="1.5" opacity="0.8"/>
-                        <path d="M50 75 L52 77" stroke="white" stroke-width="2"/>
-                    `;
+                case 'tarot':
+                    content = `${DOUGH_BODY} ${CHEEKS} <path d="M30 55 L40 55" stroke="#5C5552" stroke-width="2"/><path d="M60 55 L70 55" stroke="#5C5552" stroke-width="2"/><circle cx="50" cy="80" r="12" fill="#E0F7FA" stroke="#5C5552" stroke-width="1.5" opacity="0.8"/><path d="M50 75 L52 77" stroke="white" stroke-width="2"/>`;
                     break;
-                case 'answer_book': // 解答之書：戴眼鏡拿書(側面)
-                    content = `
-                        ${DOUGH_BODY} ${CHEEKS} ${eyes} ${mouth}
-                        <circle cx="35" cy="55" r="7" stroke="#5C5552" stroke-width="1.5" fill="none"/>
-                        <circle cx="65" cy="55" r="7" stroke="#5C5552" stroke-width="1.5" fill="none"/>
-                        <line x1="42" y1="55" x2="58" y2="55" stroke="#5C5552" stroke-width="1.5"/>
-                        <rect x="75" y="50" width="15" height="25" fill="#5C5552" transform="rotate(10)"/>
-                        <rect x="78" y="52" width="2" height="21" fill="white" transform="rotate(10)"/>
-                    `;
+                case 'answer_book':
+                    content = `${DOUGH_BODY} ${CHEEKS} ${eyes} ${mouth} <circle cx="35" cy="55" r="7" stroke="#5C5552" stroke-width="1.5" fill="none"/><circle cx="65" cy="55" r="7" stroke="#5C5552" stroke-width="1.5" fill="none"/><line x1="42" y1="55" x2="58" y2="55" stroke="#5C5552" stroke-width="1.5"/><rect x="75" y="50" width="15" height="25" fill="#5C5552" transform="rotate(10)"/><rect x="78" y="52" width="2" height="21" fill="white" transform="rotate(10)"/>`;
                     break;
-                case 'questions': // 問句：閉眼思考，問號
-                    content = `
-                        ${DOUGH_BODY} ${CHEEKS}
-                        <path d="M30 58 L40 58" stroke="#5C5552" stroke-width="2"/>
-                        <path d="M60 58 L70 58" stroke="#5C5552" stroke-width="2"/>
-                        <text x="15" y="30" font-size="20" fill="#5C5552" style="animation: floatItem 2s infinite">?</text>
-                        <text x="75" y="30" font-size="16" fill="#5C5552" style="animation: floatItem 3s infinite reverse">?</text>
-                    `;
+                case 'questions':
+                    content = `${DOUGH_BODY} ${CHEEKS} <path d="M30 58 L40 58" stroke="#5C5552" stroke-width="2"/><path d="M60 58 L70 58" stroke="#5C5552" stroke-width="2"/><text x="15" y="30" font-size="20" fill="#5C5552" style="animation: floatItem 2s infinite">?</text><text x="75" y="30" font-size="16" fill="#5C5552" style="animation: floatItem 3s infinite reverse">?</text>`;
                     break;
-                case 'jokes': // 笑話：大笑
-                    content = `
-                        ${DOUGH_BODY} ${CHEEKS}
-                        <path d="M30 50 L35 55 L40 50" stroke="#5C5552" stroke-width="2" fill="none"/>
-                        <path d="M60 50 L65 55 L70 50" stroke="#5C5552" stroke-width="2" fill="none"/>
-                        <path d="M40 65 Q50 80 60 65" fill="#5C5552"/>
-                        <path d="M10 60 Q5 50 15 50" stroke="#5C5552" stroke-width="2" fill="none" style="animation: sway 0.5s infinite"/>
-                        <path d="M90 60 Q95 50 85 50" stroke="#5C5552" stroke-width="2" fill="none" style="animation: sway 0.5s infinite"/>
-                    `;
+                case 'jokes':
+                    content = `${DOUGH_BODY} ${CHEEKS} <path d="M30 50 L35 55 L40 50" stroke="#5C5552" stroke-width="2" fill="none"/><path d="M60 50 L65 55 L70 50" stroke="#5C5552" stroke-width="2" fill="none"/><path d="M40 65 Q50 80 60 65" fill="#5C5552"/><path d="M10 60 Q5 50 15 50" stroke="#5C5552" stroke-width="2" fill="none" style="animation: sway 0.5s infinite"/><path d="M90 60 Q95 50 85 50" stroke="#5C5552" stroke-width="2" fill="none" style="animation: sway 0.5s infinite"/>`;
                     break;
-                case 'animals': // 毛孩：貓耳、鬍鬚、尾巴
-                    content = `
-                        ${DOUGH_BODY} ${CHEEKS} ${eyes} ${mouth}
-                        <path d="M30 20 L40 5 L50 20" fill="white" stroke="#5C5552" stroke-width="2.5"/>
-                        <path d="M50 20 L60 5 L70 20" fill="white" stroke="#5C5552" stroke-width="2.5"/>
-                        <line x1="20" y1="60" x2="5" y2="55" stroke="#5C5552" stroke-width="1.5"/>
-                        <line x1="20" y1="65" x2="5" y2="70" stroke="#5C5552" stroke-width="1.5"/>
-                        <line x1="80" y1="60" x2="95" y2="55" stroke="#5C5552" stroke-width="1.5"/>
-                        <line x1="80" y1="65" x2="95" y2="70" stroke="#5C5552" stroke-width="1.5"/>
-                        <path d="M85 80 Q95 80 95 60" stroke="#5C5552" stroke-width="3" fill="none" stroke-linecap="round" style="animation: sway 2s infinite"/>
-                    `;
+                case 'animals':
+                    content = `${DOUGH_BODY} ${CHEEKS} ${eyes} ${mouth} <path d="M30 20 L40 5 L50 20" fill="white" stroke="#5C5552" stroke-width="2.5"/><path d="M50 20 L60 5 L70 20" fill="white" stroke="#5C5552" stroke-width="2.5"/><line x1="20" y1="60" x2="5" y2="55" stroke="#5C5552" stroke-width="1.5"/><line x1="20" y1="65" x2="5" y2="70" stroke="#5C5552" stroke-width="1.5"/><line x1="80" y1="60" x2="95" y2="55" stroke="#5C5552" stroke-width="1.5"/><line x1="80" y1="65" x2="95" y2="70" stroke="#5C5552" stroke-width="1.5"/><path d="M85 80 Q95 80 95 60" stroke="#5C5552" stroke-width="3" fill="none" stroke-linecap="round" style="animation: sway 2s infinite"/>`;
                     break;
-                case 'tasks': // 成就：肌肉認真
-                    content = `
-                        <g style="animation: muscleFlex 1.5s infinite">
-                            ${DOUGH_BODY} ${CHEEKS}
-                            <line x1="30" y1="48" x2="40" y2="55" stroke="#5C5552" stroke-width="2.5"/>
-                            <line x1="70" y1="48" x2="60" y2="55" stroke="#5C5552" stroke-width="2.5"/>
-                            <path d="M45 70 H55" stroke="#5C5552" stroke-width="2"/>
-                            <path d="M15 60 Q5 50 15 40" stroke="#5C5552" stroke-width="4" fill="none"/>
-                            <path d="M85 60 Q95 50 85 40" stroke="#5C5552" stroke-width="4" fill="none"/>
-                        </g>
-                    `;
+                case 'tasks':
+                    content = `<g style="animation: muscleFlex 1.5s infinite">${DOUGH_BODY} ${CHEEKS} <line x1="30" y1="48" x2="40" y2="55" stroke="#5C5552" stroke-width="2.5"/><line x1="70" y1="48" x2="60" y2="55" stroke="#5C5552" stroke-width="2.5"/><path d="M45 70 H55" stroke="#5C5552" stroke-width="2"/><path d="M15 60 Q5 50 15 40" stroke="#5C5552" stroke-width="4" fill="none"/><path d="M85 60 Q95 50 85 40" stroke="#5C5552" stroke-width="4" fill="none"/></g>`;
                     break;
-                case 'breathing': // 呼吸：全身縮放
-                    content = `
-                        <g style="animation: breathe 4s ease-in-out infinite">
-                            ${DOUGH_BODY} ${CHEEKS}
-                            <path d="M30 55 Q35 50 40 55" stroke="#5C5552" stroke-width="2" fill="none"/>
-                            <path d="M60 55 Q65 50 70 55" stroke="#5C5552" stroke-width="2" fill="none"/>
-                            <circle cx="50" cy="70" r="3" fill="#5C5552"/>
-                            <path d="M48 85 Q50 90 52 85" stroke="#5C5552" stroke-width="2"/>
-                        </g>
-                    `;
+                case 'breathing':
+                    content = `<g style="animation: breathe 4s ease-in-out infinite">${DOUGH_BODY} ${CHEEKS} <path d="M30 55 Q35 50 40 55" stroke="#5C5552" stroke-width="2" fill="none"/><path d="M60 55 Q65 50 70 55" stroke="#5C5552" stroke-width="2" fill="none"/><circle cx="50" cy="70" r="3" fill="#5C5552"/><path d="M48 85 Q50 90 52 85" stroke="#5C5552" stroke-width="2"/></g>`;
                     break;
-                case 'clicker': // 泡泡：眼睛發亮戳泡泡
-                    content = `
-                        ${DOUGH_BODY} ${CHEEKS} ${mouth}
-                        <circle cx="35" cy="55" r="4" fill="#5C5552"/><circle cx="37" cy="53" r="1.5" fill="white"/>
-                        <circle cx="65" cy="55" r="4" fill="#5C5552"/><circle cx="67" cy="53" r="1.5" fill="white"/>
-                        <circle cx="80" cy="40" r="5" stroke="#5C5552" fill="white" opacity="0.7"/>
-                        <circle cx="20" cy="80" r="4" stroke="#5C5552" fill="white" opacity="0.7"/>
-                        <path d="M80 60 L85 50" stroke="#5C5552" stroke-width="2.5" style="animation: floatItem 0.5s infinite"/>
-                    `;
+                case 'clicker':
+                    content = `${DOUGH_BODY} ${CHEEKS} ${mouth} <circle cx="35" cy="55" r="4" fill="#5C5552"/><circle cx="37" cy="53" r="1.5" fill="white"/><circle cx="65" cy="55" r="4" fill="#5C5552"/><circle cx="67" cy="53" r="1.5" fill="white"/><circle cx="80" cy="40" r="5" stroke="#5C5552" fill="white" opacity="0.7"/><circle cx="20" cy="80" r="4" stroke="#5C5552" fill="white" opacity="0.7"/><path d="M80 60 L85 50" stroke="#5C5552" stroke-width="2.5" style="animation: floatItem 0.5s infinite"/>`;
                     break;
-                case 'whiteboard': // 塗鴉：畫家帽、調色盤
-                    content = `
-                        ${DOUGH_BODY} ${CHEEKS} ${eyes} ${mouth}
-                        <path d="M30 20 Q50 5 70 20 H30 Z" fill="#5C5552"/>
-                        <rect x="48" y="10" width="4" height="6" fill="#5C5552"/>
-                        <circle cx="20" cy="70" r="10" fill="white" stroke="#5C5552" stroke-width="1.5"/>
-                        <circle cx="18" cy="68" r="2" fill="#FF6B6B"/>
-                        <circle cx="22" cy="72" r="2" fill="#4ECDC4"/>
-                        <line x1="80" y1="70" x2="90" y2="60" stroke="#5C5552" stroke-width="2"/>
-                    `;
+                case 'whiteboard':
+                    content = `${DOUGH_BODY} ${CHEEKS} ${eyes} ${mouth} <path d="M30 20 Q50 5 70 20 H30 Z" fill="#5C5552"/><rect x="48" y="10" width="4" height="6" fill="#5C5552"/><circle cx="20" cy="70" r="10" fill="white" stroke="#5C5552" stroke-width="1.5"/><circle cx="18" cy="68" r="2" fill="#FF6B6B"/><circle cx="22" cy="72" r="2" fill="#4ECDC4"/><line x1="80" y1="70" x2="90" y2="60" stroke="#5C5552" stroke-width="2"/>`;
                     break;
-                case 'conveyor': // 輸送帶：看著對話框遠去
-                    content = `
-                        ${DOUGH_BODY} ${CHEEKS} ${eyes}
-                        <path d="M45 68 Q50 72 55 68" stroke="#5C5552" stroke-width="2" fill="none"/>
-                        <rect x="60" y="30" width="15" height="10" rx="2" stroke="#5C5552" fill="white" style="animation: conveyorMove 2s linear infinite"/>
-                        <line x1="10" y1="85" x2="90" y2="85" stroke="#5C5552" stroke-width="2" stroke-dasharray="5 5"/>
-                    `;
+                case 'conveyor':
+                    content = `${DOUGH_BODY} ${CHEEKS} ${eyes} <path d="M45 68 Q50 72 55 68" stroke="#5C5552" stroke-width="2" fill="none"/><rect x="60" y="30" width="15" height="10" rx="2" stroke="#5C5552" fill="white" style="animation: conveyorMove 2s linear infinite"/><line x1="10" y1="85" x2="90" y2="85" stroke="#5C5552" stroke-width="2" stroke-dasharray="5 5"/>`;
                     break;
-                case 'worry_jar': // 煩惱寄放：頭打開，無線條
-                    content = `
-                         <path d="M50 35C30 35 10 45 10 60C10 85 25 95 50 95C75 95 90 85 90 60C90 45 70 35 50 35Z" fill="#FFFFFF" stroke="#5C5552" stroke-width="1.5" stroke-dasharray="2 2"/>
-                        ${CHEEKS} ${eyes} ${mouth}
-                        <g style="animation: lidOpen 3s infinite">
-                             <path d="M50 35 C30 35 10 45 10 50 L90 50 C90 45 70 35 50 35Z" fill="white" stroke="#5C5552" stroke-width="2"/>
-                        </g>
-                    `;
+                case 'worry_jar':
+                    content = `<path d="M50 35C30 35 10 45 10 60C10 85 25 95 50 95C75 95 90 85 90 60C90 45 70 35 50 35Z" fill="#FFFFFF" stroke="#5C5552" stroke-width="1.5" stroke-dasharray="2 2"/> ${CHEEKS} ${eyes} ${mouth} <g style="animation: lidOpen 3s infinite"> <path d="M50 35 C30 35 10 45 10 50 L90 50 C90 45 70 35 50 35Z" fill="white" stroke="#5C5552" stroke-width="2"/> </g>`;
                     break;
-                case 'sos': // 安全網：舉紅布條
-                    content = `
-                        ${DOUGH_BODY} ${CHEEKS}
-                        <path d="M35 55 L40 50 L35 45" stroke="#5C5552" stroke-width="2" fill="none"/> <path d="M65 55 L60 50 L65 45" stroke="#5C5552" stroke-width="2" fill="none"/>
-                        <path d="M45 70 Q50 65 55 70" stroke="#5C5552" stroke-width="2" fill="none"/>
-                        <rect x="20" y="80" width="60" height="15" fill="#FF6B6B" stroke="#5C5552" rx="2"/>
-                        <text x="32" y="91" font-family="Arial" font-weight="bold" font-size="10" fill="white">SOS</text>
-                        <path d="M20 75 L20 80" stroke="#5C5552" stroke-width="2"/>
-                        <path d="M80 75 L80 80" stroke="#5C5552" stroke-width="2"/>
-                    `;
+                case 'sos':
+                    content = `${DOUGH_BODY} ${CHEEKS} <path d="M35 55 L40 50 L35 45" stroke="#5C5552" stroke-width="2" fill="none"/><path d="M65 55 L60 50 L65 45" stroke="#5C5552" stroke-width="2" fill="none"/><path d="M45 70 Q50 65 55 70" stroke="#5C5552" stroke-width="2" fill="none"/><rect x="20" y="80" width="60" height="15" fill="#FF6B6B" stroke="#5C5552" rx="2"/><text x="32" y="91" font-family="Arial" font-weight="bold" font-size="10" fill="white">SOS</text><path d="M20 75 L20 80" stroke="#5C5552" stroke-width="2"/><path d="M80 75 L80 80" stroke="#5C5552" stroke-width="2"/>`;
+                    break;
+                default: 
+                    content = `${DOUGH_BODY} ${CHEEKS} ${eyes} ${mouth}`;
                     break;
             }
             return `<svg viewBox="0 0 100 100" fill="none" class="feature-svg">${content}</svg>`;
         }
 
-
-        // ============================================
-        // 2. APP 核心資料
-        // ============================================
-        
-        // 更新 featuresDB，移除 icon 屬性，改由 getFeatureIcon 動態生成
+        // --- 功能與情緒資料 ---
         const featuresDB = [
             { id: 'dbt_cards', name: '自我照顧卡', tag: 'DBT策略', moods: ['anxious', 'low', 'numb'], keywords: '卡片,抽卡,策略' },
             { id: 'quotes', name: '療癒金句', tag: '文字力量', moods: ['low', 'stress'], keywords: '語錄,句子,鼓勵' },
@@ -581,7 +618,6 @@
             { id: 'sos', name: '安全網 SOS', tag: '危機求助', moods: ['panic', 'low'], keywords: '求救,電話' }
         ];
 
-        // 增加 color 屬性給邊框用
         const moodOptions = [
             { id: 'anxious', label: '😰 焦慮慌張', color: '#A0C4FF' },
             { id: 'low', label: '😞 低落無力', color: '#5C5552' },
@@ -591,64 +627,184 @@
             { id: 'panic', label: '🆘 快崩潰了', color: '#FFADAD' }
         ];
 
+        // ============================================
+        // 2. 邏輯控制 (Logic Controller)
+        // ============================================
+
+        // 狀態變數
         let favorites = JSON.parse(localStorage.getItem('safeSpaceFavs')) || [];
+        let userNickname = localStorage.getItem('safeSpaceName') || "";
+        let isMusicOn = JSON.parse(localStorage.getItem('safeSpaceMusicOn')) ?? true; 
+        let isSfxOn = JSON.parse(localStorage.getItem('safeSpaceSfxOn')) ?? true; 
+        let isPetActive = JSON.parse(localStorage.getItem('safeSpacePetActive')) ?? true; 
+        
         let selectedMoods = new Set();
         let isFavFilterActive = false;
         let searchKeyword = "";
 
-        // --- 3. 初始化 ---
+        // DOM Elements
         const toolboxEl = document.getElementById('toolbox');
         const moodGrid = document.getElementById('mood-grid-container');
         const searchInput = document.getElementById('search-input');
         const favFabBtn = document.getElementById('fav-fab-btn');
+        const petEl = document.getElementById('spirit-pet');
+        const greetingTitle = document.getElementById('greeting-title');
+        
+        // 設定相關 DOM
+        const settingsModal = document.getElementById('settings-modal');
+        const nicknameInput = document.getElementById('nickname-input');
+        const musicToggle = document.getElementById('setting-music-toggle');
+        const sfxToggle = document.getElementById('setting-sfx-toggle');
+        const petToggle = document.getElementById('setting-pet-toggle');
 
         function initApp() {
             renderMoodButtons();
             updateResults();
             initPetSystem();
-            initMusicSystem(); // 啟動音樂引擎
+            initSettings(); // 初始化設定監聽與狀態
+            updateGreeting(); // 設定標題
+            
+            // 綁定 Splash 點擊 (觸發 AudioContext 與自動播放)
+            const splashScreen = document.getElementById('splash-screen');
+            const splashBtn = document.getElementById('splash-start-btn');
+            splashBtn.onclick = () => {
+                splashScreen.style.opacity = '0';
+                setTimeout(() => {
+                    splashScreen.style.display = 'none';
+                }, 800);
+                
+                // 啟動音訊核心
+                resumeAudioContext();
+                if(isMusicOn) playNextNote(); // 自動播放
+            };
         }
 
-        // 渲染情緒按鈕 (升級版)
+        function updateGreeting() {
+            if (userNickname && userNickname.trim() !== "") {
+                const hour = new Date().getHours();
+                let greet = "你好";
+                if (hour < 6) greet = "夜深了";
+                else if (hour < 11) greet = "早安";
+                else if (hour < 14) greet = "午安";
+                else if (hour < 18) greet = "下午好";
+                else greet = "晚安";
+                
+                greetingTitle.innerText = `${greet}，${userNickname}`;
+            } else {
+                greetingTitle.innerText = "Safe Space";
+            }
+        }
+
+        // --- 設定功能整合 ---
+        function initSettings() {
+            // 1. 暱稱
+            nicknameInput.value = userNickname;
+            nicknameInput.addEventListener('input', (e) => {
+                userNickname = e.target.value;
+                localStorage.setItem('safeSpaceName', userNickname);
+                updateGreeting();
+            });
+
+            // 2. 音樂開關
+            updateToggleUI(musicToggle, isMusicOn);
+            musicToggle.onclick = () => {
+                isMusicOn = !isMusicOn;
+                localStorage.setItem('safeSpaceMusicOn', isMusicOn);
+                updateToggleUI(musicToggle, isMusicOn);
+                
+                if (isMusicOn) {
+                    resumeAudioContext();
+                    if (!bgmTimeout) playNextNote();
+                } else {
+                    clearTimeout(bgmTimeout);
+                    bgmTimeout = null;
+                }
+            };
+
+            // 3. 音效開關
+            updateToggleUI(sfxToggle, isSfxOn);
+            sfxToggle.onclick = () => {
+                isSfxOn = !isSfxOn;
+                localStorage.setItem('safeSpaceSfxOn', isSfxOn);
+                updateToggleUI(sfxToggle, isSfxOn);
+            };
+
+            // 4. 精靈開關
+            updateToggleUI(petToggle, isPetActive);
+            petToggle.onclick = () => {
+                isPetActive = !isPetActive;
+                localStorage.setItem('safeSpacePetActive', isPetActive);
+                updateToggleUI(petToggle, isPetActive);
+                updatePetVisibility();
+            };
+        }
+
+        function updateToggleUI(el, isActive) {
+            if(isActive) el.classList.add('active');
+            else el.classList.remove('active');
+        }
+
+        function openSettings() {
+            settingsModal.style.display = 'flex';
+            void settingsModal.offsetWidth; 
+            settingsModal.classList.add('show');
+        }
+        function closeSettings(e) {
+            if(e.target === settingsModal) toggleSettings();
+        }
+        function toggleSettings() {
+            if(settingsModal.classList.contains('show')) {
+                settingsModal.classList.remove('show');
+                setTimeout(() => { settingsModal.style.display = 'none'; }, 300);
+            } else {
+                openSettings();
+            }
+        }
+
+        function resetAppData() {
+            if(confirm('確定要清除所有設定和收藏嗎？這將無法復原。')) {
+                localStorage.clear();
+                location.reload();
+            }
+        }
+
+
+        // --- 核心互動邏輯 ---
         function renderMoodButtons() {
             moodGrid.innerHTML = '';
             moodOptions.forEach(mood => {
                 const btn = document.createElement('div');
                 btn.className = 'mood-card';
                 btn.dataset.id = mood.id;
-                // 點擊事件
                 btn.onclick = () => toggleMood(mood.id);
-                
-                // 內容：SVG + 文字
                 btn.innerHTML = `
                     ${getMoodIcon(mood.id)}
                     <div class="mood-label">${mood.label}</div>
                 `;
-                
-                // 動態設置邊框顏色 CSS 變數 (選中時使用)
                 btn.style.setProperty('--mood-color', mood.color);
-
                 moodGrid.appendChild(btn);
             });
         }
 
-        // 更新結果 (含 Mood Active 樣式處理)
         function updateResults() {
+            // 更新按鈕樣式
             document.querySelectorAll('.mood-card').forEach(btn => {
                 const id = btn.dataset.id;
                 const moodData = moodOptions.find(m => m.id === id);
                 if(selectedMoods.has(id)) {
                     btn.classList.add('active');
-                    btn.style.borderColor = moodData.color; // 加上顏色邊框
+                    btn.style.borderColor = moodData.color; 
                 } else {
                     btn.classList.remove('active');
                     btn.style.borderColor = 'transparent';
                 }
             });
 
+            // 更新收藏按鈕
             if(isFavFilterActive) favFabBtn.classList.add('active');
             else favFabBtn.classList.remove('active');
 
+            // 篩選邏輯
             let filtered = featuresDB.filter(item => {
                 const matchKeyword = searchKeyword === "" || item.name.includes(searchKeyword) || item.keywords.includes(searchKeyword) || item.tag.includes(searchKeyword);
                 const itemMoodsSet = new Set(item.moods);
@@ -670,7 +826,6 @@
                 const isFav = favorites.includes(feature.id);
                 const card = document.createElement('div');
                 card.className = 'feature-card';
-                // 這裡呼叫 getFeatureIcon
                 card.innerHTML = `
                     <div class="card-fav-btn ${isFav ? 'is-active' : ''}" onclick="toggleCardFav(event, '${feature.id}')">
                         ${isFav ? '❤️' : '🤍'}
@@ -705,6 +860,9 @@
             if (favorites.includes(id)) favorites = favorites.filter(favId => favId !== id);
             else favorites.push(id);
             localStorage.setItem('safeSpaceFavs', JSON.stringify(favorites));
+            
+            if (isSfxOn) { /* 可以在這裡加一個輕微的點擊音效 */ }
+            
             if(isFavFilterActive) updateResults();
             else {
                 const btn = event.currentTarget;
@@ -735,10 +893,10 @@
         }
         
         const modal = document.getElementById('active-feature-container');
-        const title = document.getElementById('feature-title-display');
+        const featureTitle = document.getElementById('feature-title-display');
         function openFeature(feature) {
             modal.style.display = 'flex';
-            title.innerText = feature.name;
+            featureTitle.innerText = feature.name;
             history.pushState({ type: 'modal' }, null, "#feature");
         }
         window.addEventListener('popstate', function(event) {
@@ -751,14 +909,9 @@
 
 
         // ============================================
-        // 4. 麵團精靈系統 (含防連點與呼吸聲)
+        // 3. 麵團精靈系統
         // ============================================
-        const petEl = document.getElementById('spirit-pet');
-        const petToggleBtn = document.getElementById('pet-toggle-btn');
-        const petToggleLabel = document.getElementById('pet-toggle-label');
-        const petSpeech = document.getElementById('pet-speech');
         
-        let isPetActive = JSON.parse(localStorage.getItem('safeSpacePetActive')) ?? true; 
         let petMoveInterval;
         let isDragging = false;
         let audioCtx = null;
@@ -771,12 +924,10 @@
             '我在這裡陪你 <span class="kaomoji">(´• ω •`)</span>', 
             '你做得很好 <span class="kaomoji">(๑•̀ㅂ•́)و✧</span>', 
             '休息一下吧 <span class="kaomoji">_(:3 」∠ )_</span>', 
-            '慢慢來，沒關係 <span class="kaomoji">(・∀・)</span>', 
-            '今天天空很美嗎？ <span class="kaomoji">(❁´◡`❁)</span>', 
-            '抱抱 <span class="kaomoji">(つ´ω`)つ</span>', 
+            '慢慢來 <span class="kaomoji">(・∀・)</span>', 
             '放輕鬆～ <span class="kaomoji">(￣▽￣)~*</span>', 
-            '你的感受很重要 <span class="kaomoji">(｡•́︿•̀｡)</span>', 
-            '我會一直陪著你 <span class="kaomoji">( >ω<)</span>'
+            '感受當下 <span class="kaomoji">(❁´◡`❁)</span>', 
+            '抱抱 <span class="kaomoji">(つ´ω`)つ</span>'
         ];
 
         function initPetSystem() {
@@ -791,39 +942,24 @@
                 petEl.style.top = '100px';
             }
 
-            petToggleBtn.onclick = togglePetSystem;
             setupPetInteraction();
             updatePetVisibility();
             if (isPetActive) startPetBehavior();
         }
 
-        function togglePetSystem() {
-            isPetActive = !isPetActive;
-            localStorage.setItem('safeSpacePetActive', isPetActive);
-            updatePetVisibility();
-            
+        function updatePetVisibility() {
             if (isPetActive) {
+                petEl.style.display = 'block';
                 startPetBehavior();
-                playExhaleSound();
-                showSpeech('我回來了！<span class="kaomoji">(≧∇≦)/</span>', 3500);
+                showSpeech('我回來了！', 2000);
             } else {
+                petEl.style.display = 'none';
                 stopPetBehavior();
             }
         }
 
-        function updatePetVisibility() {
-            if (isPetActive) {
-                petEl.style.display = 'block';
-                petToggleLabel.innerText = '召喚麵團';
-                petToggleBtn.classList.remove('off');
-            } else {
-                petEl.style.display = 'none';
-                petToggleLabel.innerText = '休息中';
-                petToggleBtn.classList.add('off');
-            }
-        }
-
         function startPetBehavior() {
+            clearInterval(petMoveInterval);
             petMoveInterval = setInterval(() => {
                 if(!isDragging) movePetRandomly();
             }, 12000);
@@ -848,38 +984,28 @@
         }
 
         function setupPetInteraction() {
-            let startX, startY, initialLeft, initialTop;
-            let moveDistance = 0;
+            let startX, startY, initialLeft, initialTop, moveDistance = 0;
 
             const startDrag = (e) => {
                 if(!isPetActive) return;
                 isDragging = true;
                 petEl.classList.remove('auto-moving'); 
-                
                 const clientX = e.touches ? e.touches[0].clientX : e.clientX;
                 const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-                
-                startX = clientX;
-                startY = clientY;
-                initialLeft = petEl.offsetLeft;
-                initialTop = petEl.offsetTop;
+                startX = clientX; startY = clientY;
+                initialLeft = petEl.offsetLeft; initialTop = petEl.offsetTop;
                 moveDistance = 0;
-
-                resumeAudioContext(); // 確保音訊環境已啟動
+                resumeAudioContext(); 
             };
 
             const doDrag = (e) => {
                 if (!isDragging) return;
                 e.preventDefault(); 
-                
                 const clientX = e.touches ? e.touches[0].clientX : e.clientX;
                 const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-                
                 const dx = clientX - startX;
                 const dy = clientY - startY;
-                
                 moveDistance += Math.abs(dx) + Math.abs(dy);
-
                 petEl.style.left = (initialLeft + dx) + 'px';
                 petEl.style.top = (initialTop + dy) + 'px';
             };
@@ -887,10 +1013,8 @@
             const endDrag = (e) => {
                 if (!isDragging) return;
                 isDragging = false;
-                
                 localStorage.setItem('petX', parseInt(petEl.style.left));
                 localStorage.setItem('petY', parseInt(petEl.style.top));
-
                 if (moveDistance < 10) {
                     const now = Date.now();
                     if (now - lastInteractionTime > 300) { 
@@ -899,11 +1023,9 @@
                     }
                 }
             };
-
             petEl.addEventListener('mousedown', startDrag);
             window.addEventListener('mousemove', doDrag);
             window.addEventListener('mouseup', endDrag);
-
             petEl.addEventListener('touchstart', startDrag, {passive: false});
             window.addEventListener('touchmove', doDrag, {passive: false});
             window.addEventListener('touchend', endDrag);
@@ -911,7 +1033,7 @@
 
         function triggerInteraction() {
             if (navigator.vibrate) navigator.vibrate(50);
-            playExhaleSound();
+            if (isSfxOn) playExhaleSound();
             const body = petEl.querySelector('.pet-svg-body');
             body.classList.remove('pet-shake');
             void petEl.offsetWidth; 
@@ -920,42 +1042,9 @@
             showSpeech(msg, 3500);
         }
 
-        function playExhaleSound() {
-            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            if (audioCtx.state === 'suspended') audioCtx.resume();
-
-            const duration = 4.0; 
-            const bufferSize = audioCtx.sampleRate * duration;
-            const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
-            const data = buffer.getChannelData(0);
-
-            for (let i = 0; i < bufferSize; i++) {
-                data[i] = Math.random() * 2 - 1;
-            }
-
-            const noise = audioCtx.createBufferSource();
-            noise.buffer = buffer;
-
-            const filter = audioCtx.createBiquadFilter();
-            filter.type = 'lowpass';
-            filter.frequency.setValueAtTime(400, audioCtx.currentTime);
-            filter.frequency.linearRampToValueAtTime(100, audioCtx.currentTime + duration);
-
-            const gainNode = audioCtx.createGain();
-            gainNode.gain.setValueAtTime(0, audioCtx.currentTime);
-            gainNode.gain.linearRampToValueAtTime(0.15, audioCtx.currentTime + 0.5); 
-            gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration); 
-
-            noise.connect(filter);
-            filter.connect(gainNode);
-            gainNode.connect(audioCtx.destination);
-
-            noise.start();
-            noise.stop(audioCtx.currentTime + duration);
-        }
-
         function showSpeech(text, duration) {
             if (speechTimeout) clearTimeout(speechTimeout);
+            const petSpeech = document.getElementById('pet-speech');
             petSpeech.innerHTML = text; 
             petSpeech.classList.add('show');
             speechTimeout = setTimeout(() => {
@@ -963,120 +1052,79 @@
             }, duration);
         }
 
+        // ============================================
+        // 4. 音效系統 (Audio System)
+        // ============================================
+
+        let bgmTimeout;
+        let lastFreq = 220; 
+        const scaleFreqs = [130.81, 146.83, 164.81, 196.00, 220.00, 261.63, 293.66, 329.63, 392.00, 440.00];
+
         function resumeAudioContext() {
             if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
             if (audioCtx.state === 'suspended') audioCtx.resume();
         }
 
-        // ============================================
-        // 5. 背景音樂引擎 (Generative BGM)
-        // ============================================
-        
-        const musicToggleBtn = document.getElementById('music-toggle-btn');
-        const musicLabel = document.getElementById('music-label');
-        let isMusicOn = JSON.parse(localStorage.getItem('safeSpaceMusicOn')) ?? true; // 預設開啟
-        let bgmTimeout;
-        let lastFreq = 220; // 初始頻率 (A3)
-        
-        // 五聲音階 (Pentatonic Scale) C Major: C, D, E, G, A
-        // 頻率表 (低沈版)
-        const scaleFreqs = [
-            130.81, 146.83, 164.81, 196.00, 220.00, // C3 - A3
-            261.63, 293.66, 329.63, 392.00, 440.00  // C4 - A4
-        ];
-
-        function initMusicSystem() {
-            updateMusicBtn();
-            musicToggleBtn.onclick = () => {
-                isMusicOn = !isMusicOn;
-                localStorage.setItem('safeSpaceMusicOn', isMusicOn);
-                updateMusicBtn();
-                
-                if (isMusicOn) {
-                    resumeAudioContext();
-                    playNextNote();
-                } else {
-                    clearTimeout(bgmTimeout);
-                }
-            };
-            
-            // 如果預設開啟，等待第一次點擊頁面後開始播放 (瀏覽器政策)
-            if (isMusicOn) {
-                const startAudio = () => {
-                    resumeAudioContext();
-                    playNextNote();
-                    document.removeEventListener('click', startAudio);
-                    document.removeEventListener('touchstart', startAudio);
-                };
-                document.addEventListener('click', startAudio);
-                document.addEventListener('touchstart', startAudio);
-            }
-        }
-
-        function updateMusicBtn() {
-            if (isMusicOn) {
-                musicLabel.innerText = '音樂開啟';
-                musicToggleBtn.classList.remove('off');
-            } else {
-                musicLabel.innerText = '音樂關閉';
-                musicToggleBtn.classList.add('off');
-            }
+        function playExhaleSound() {
+            if(!isSfxOn) return;
+            resumeAudioContext();
+            const duration = 4.0; 
+            const bufferSize = audioCtx.sampleRate * duration;
+            const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+            const data = buffer.getChannelData(0);
+            for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
+            const noise = audioCtx.createBufferSource();
+            noise.buffer = buffer;
+            const filter = audioCtx.createBiquadFilter();
+            filter.type = 'lowpass';
+            filter.frequency.setValueAtTime(400, audioCtx.currentTime);
+            filter.frequency.linearRampToValueAtTime(100, audioCtx.currentTime + duration);
+            const gainNode = audioCtx.createGain();
+            gainNode.gain.setValueAtTime(0, audioCtx.currentTime);
+            gainNode.gain.linearRampToValueAtTime(0.15, audioCtx.currentTime + 0.5); 
+            gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration); 
+            noise.connect(filter); filter.connect(gainNode); gainNode.connect(audioCtx.destination);
+            noise.start(); noise.stop(audioCtx.currentTime + duration);
         }
 
         function playNextNote() {
             if (!isMusicOn) return;
-            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            resumeAudioContext();
 
-            // 1. 選擇下一個音 (不重複，且音高相近)
+            // 選擇音高邏輯
             let possibleIndices = [];
             const currentIdx = scaleFreqs.indexOf(lastFreq);
-            
-            // 允許上下移動 1 或 2 個音階，防止大跳躍
             [-2, -1, 1, 2].forEach(step => {
                 const idx = currentIdx + step;
                 if (idx >= 0 && idx < scaleFreqs.length) possibleIndices.push(idx);
             });
-            
-            // 如果找不到 (比如第一次執行)，就隨機選
             if (possibleIndices.length === 0) possibleIndices = [3, 4, 5, 6];
-
             const nextIdx = possibleIndices[Math.floor(Math.random() * possibleIndices.length)];
             const freq = scaleFreqs[nextIdx];
             lastFreq = freq;
 
-            // 2. 播放這個音
+            // 產生聲音
             const osc = audioCtx.createOscillator();
             const gain = audioCtx.createGain();
-            const filter = audioCtx.createBiquadFilter(); // 用 filter 讓聲音變厚
-
-            // 使用 Triangle 波形比 Sine 厚實，比 Square 柔和
+            const filter = audioCtx.createBiquadFilter(); 
             osc.type = 'triangle';
             osc.frequency.value = freq;
-
-            // 濾波器設定：讓高頻稍微被切掉，聲音更溫暖
             filter.type = 'lowpass';
             filter.frequency.value = 400; 
-
-            // 音量包絡 (Envelope)：淡入 -> 持續 -> 淡出
             const now = audioCtx.currentTime;
-            const duration = 2.5; // 每個音持續久一點，造成重疊感
-
+            const duration = 10.0; 
             gain.gain.setValueAtTime(0, now);
-            gain.gain.linearRampToValueAtTime(0.08, now + 0.5); // Attack
-            gain.gain.exponentialRampToValueAtTime(0.001, now + duration); // Release
+            gain.gain.linearRampToValueAtTime(0.08, now + 1.0); 
+            gain.gain.exponentialRampToValueAtTime(0.001, now + duration); 
+            osc.connect(filter); filter.connect(gain); gain.connect(audioCtx.destination);
+            osc.start(); osc.stop(now + duration);
 
-            osc.connect(filter);
-            filter.connect(gain);
-            gain.connect(audioCtx.destination);
-
-            osc.start();
-            osc.stop(now + duration);
-
-            // 3. 預約下一個音 (隨機時間間隔 1.5s - 2.5s)
-            const nextTime = 1500 + Math.random() * 1000;
+            // 預約下一個音 (隨機 +1秒邏輯已包含)
+            const nextTime = 2000 + Math.random() * 1500;
             bgmTimeout = setTimeout(playNextNote, nextTime);
         }
 
+        // 啟動
         initApp();
     </script>
 </body>
