@@ -12,16 +12,15 @@
     <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700;900&display=swap" rel="stylesheet">
 
     <style>
-        /* =========================================
-           1. CSS 變數系統 (Design System)
-           ========================================= */
+        /* --- 🎨 核心視覺變數 (日夜切換系統) --- */
         :root {
-            --primary: #7A9F6E;
+            /* 日間模式 (預設) */
+            --primary: #7A9F6E;       /* 抹茶綠 */
             --primary-dark: #58754F;
             --primary-light: #EBF2EA;
-            --bg: #FCFAF7;
+            --bg: #FCFAF7;            /* 米白 */
             --card-bg: #FFFFFF;
-            --text-main: #5C5552;
+            --text-main: #5C5552;     /* 深暖灰 */
             --text-sub: #9E9894;
             --accent-warm: #D67D68;
             --radius-box: 24px;
@@ -29,21 +28,22 @@
             --shadow-soft: 0 8px 20px rgba(122, 159, 110, 0.15);
             --glass: rgba(255, 255, 255, 0.90);
             --border-color: rgba(0,0,0,0.05);
-            --pet-glow: drop-shadow(0 4px 6px rgba(0,0,0,0.15));
+            --pet-glow: drop-shadow(0 4px 6px rgba(0,0,0,0.15)); /* 麵團陰影 */
         }
 
+        /* 🌙 深色模式 (溫暖的深夜可可色) */
         body.dark-mode {
-            --primary: #9BC58B;
+            --primary: #9BC58B;       /* 亮一點的綠，對比才夠 */
             --primary-dark: #BCE0AF;
-            --primary-light: #3D3A37;
-            --bg: #2C2927;
-            --card-bg: #383533;
-            --text-main: #EDE8E4;
-            --text-sub: #ACA59F;
+            --primary-light: #3D3A37; /* 深卡其背景 */
+            --bg: #2C2927;            /* 深咖啡黑 */
+            --card-bg: #383533;       /* 稍微亮一點的灰褐 */
+            --text-main: #EDE8E4;     /* 暖白 */
+            --text-sub: #ACA59F;      /* 暖灰 */
             --shadow-soft: 0 8px 20px rgba(0, 0, 0, 0.4);
             --glass: rgba(44, 41, 39, 0.90);
             --border-color: rgba(255,255,255,0.1);
-            --pet-glow: drop-shadow(0 0 10px rgba(255, 255, 255, 0.2));
+            --pet-glow: drop-shadow(0 0 10px rgba(255, 255, 255, 0.2)); /* 夜晚發光 */
         }
 
         body {
@@ -56,38 +56,46 @@
             flex-direction: column;
             align-items: center;
             min-height: 100vh;
-            /* 修正：使用 dvh 解決手機瀏覽器網址列遮擋問題 */
-            min-height: 100dvh; 
             line-height: 1.6;
             -webkit-tap-highlight-color: transparent;
+            /* 關鍵：預設隱藏捲軸，等 Splash 結束才打開 */
             overflow: hidden; 
             transition: background-color 0.5s, color 0.5s;
         }
 
-        /* --- 🎬 啟動畫面 --- */
+        /* --- 🎬 啟動畫面 (動態敘事版) --- */
         #splash-screen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background-color: var(--bg); z-index: 9999;
             display: flex; flex-direction: column;
             align-items: center; justify-content: center;
             transition: opacity 0.8s ease-out;
+            /* 防止手機滑動看到後面 */
             touch-action: none; 
         }
+        
         .splash-content { text-align: center; position: relative; }
+
         .splash-logo-container {
             width: 140px; height: 140px; margin: 0 auto 30px auto;
             position: relative;
+            /* 1. 麵團慢慢進來 (從上方降落) */
             animation: doughEnter 2s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-            opacity: 0; 
+            opacity: 0; /* 初始隱藏 */
         }
+
+        /* 禪意麵團 */
         .zen-dough {
             width: 100%; height: 100%;
-            animation: deepBreathe 6s ease-in-out infinite 2s; 
+            /* 2. 進場後接續呼吸動畫 */
+            animation: deepBreathe 6s ease-in-out infinite 2s; /* 延遲2秒等進場完 */
             filter: var(--pet-glow);
         }
+
         .splash-title {
             font-size: 1.8rem; font-weight: 900; color: var(--primary);
             letter-spacing: 2px; margin-bottom: 5px;
+            /* 3. 標題慢慢出現 */
             opacity: 0;
             animation: fadeInUp 1.5s ease-out 1.5s forwards;
         }
@@ -96,6 +104,7 @@
             margin-bottom: 50px; opacity: 0;
             animation: fadeInUp 1.5s ease-out 1.8s forwards;
         }
+
         .start-btn {
             font-size: 1rem; color: white; font-weight: 700;
             padding: 14px 40px; 
@@ -106,15 +115,38 @@
             transition: all 0.3s;
             letter-spacing: 1px;
             opacity: 0;
+            /* 4. 按鈕淡入 + 搖動一下 */
             animation: fadeInUp 1s ease-out 2.5s forwards, shakeBtn 0.5s ease-in-out 3s;
         }
-        .start-btn:active { transform: scale(0.95); box-shadow: 0 2px 5px rgba(122, 159, 110, 0.3); }
+        .start-btn:active { transform: scale(0.95); }
+
+        /* 動畫定義 */
+        @keyframes doughEnter {
+            0% { transform: translateY(-50px) scale(0.8); opacity: 0; }
+            100% { transform: translateY(0) scale(1); opacity: 1; }
+        }
+        @keyframes deepBreathe {
+            0%, 100% { transform: scale(1) translateY(0); }
+            50% { transform: scale(1.05) translateY(-5px); }
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes shakeBtn {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(-5deg); }
+            75% { transform: rotate(5deg); }
+        }
+
 
         /* --- 🏠 主介面 --- */
+        /* 標題顏色與啟動頁同步 var(--primary) */
         header { text-align: center; margin-bottom: 24px; margin-top: 20px; width: 100%; max-width: 500px;}
         h1 { font-weight: 900; font-size: 2rem; margin: 0; color: var(--primary); letter-spacing: 1px; transition: color 0.5s; }
         p.subtitle { font-size: 0.95rem; color: var(--text-sub); margin-top: 5px; font-weight: 500; }
 
+        /* --- 🔍 搜尋欄 --- */
         .search-container { width: 100%; max-width: 500px; margin-bottom: 24px; }
         #search-input {
             width: 100%; padding: 16px 24px; border-radius: 50px;
@@ -127,6 +159,7 @@
         #search-input:focus { border-color: var(--primary); }
         #search-input::placeholder { color: var(--text-sub); font-weight: 500; opacity: 0.7; }
 
+        /* --- 🚑 情緒快篩區 --- */
         .triage-section {
             width: 100%; max-width: 500px;
             background: var(--primary-light);
@@ -135,46 +168,80 @@
             margin-bottom: 32px;
             position: relative;
             box-sizing: border-box;
-            box-shadow: inset 0 0 0 2px rgba(255,255,255,0.1); 
+            box-shadow: inset 0 0 0 2px rgba(255,255,255,0.1); /* 微調深色模式下的邊框 */
             transition: background 0.5s;
         }
-        .triage-title { font-size: 1.1rem; margin-bottom: 16px; color: var(--primary-dark); font-weight: 900; text-align: center; }
+        .triage-title { 
+            font-size: 1.1rem; margin-bottom: 16px; 
+            color: var(--primary-dark); font-weight: 900; text-align: center; 
+        }
 
-        .mood-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 10px; }
+        .mood-grid {
+            display: grid; grid-template-columns: 1fr 1fr 1fr; 
+            gap: 12px; margin-bottom: 10px;
+        }
+        
         .mood-card {
             background: var(--card-bg); border: 3px solid transparent; 
-            color: var(--text-main); padding: 10px 5px; border-radius: var(--radius-btn);
+            color: var(--text-main);
+            padding: 10px 5px; border-radius: var(--radius-btn);
             cursor: pointer; transition: all 0.2s;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
-            box-shadow: 0 4px 0 rgba(0,0,0,0.05); height: 110px;
+            box-shadow: 0 4px 0 rgba(0,0,0,0.05);
+            height: 110px;
         }
         .mood-card:active { transform: translateY(4px); box-shadow: none; }
-        .mood-card.active { background: var(--card-bg); transform: translateY(2px); box-shadow: inset 0 3px 5px rgba(0,0,0,0.2); }
+        .mood-card.active {
+            background: var(--card-bg);
+            transform: translateY(2px);
+            box-shadow: inset 0 3px 5px rgba(0,0,0,0.2);
+        }
+        
         .mood-icon-svg { width: 60px; height: 60px; margin-bottom: 5px; }
         .mood-label { font-size: 0.85rem; font-weight: 700; line-height: 1.2; text-align: center;}
 
-        .toolbox-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; width: 100%; max-width: 500px; padding-bottom: 100px; }
+        /* --- 🛠️ 工具箱列表 --- */
+        .toolbox-grid {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
+            width: 100%; max-width: 500px; padding-bottom: 100px;
+        }
         .feature-card {
             background: var(--card-bg); border-radius: var(--radius-box);
             padding: 20px 10px; display: flex; flex-direction: column;
             align-items: center; justify-content: flex-start; text-align: center;
             box-shadow: var(--shadow-soft); cursor: pointer;
-            transition: transform 0.2s; height: 160px; position: relative; overflow: hidden; 
+            transition: transform 0.2s; height: 160px; position: relative;
+            overflow: hidden; 
         }
         .feature-card:active { transform: scale(0.96); }
-        .card-visual { width: 90px; height: 90px; margin-bottom: 10px; position: relative; }
+        
+        .card-visual { 
+            width: 90px; height: 90px; 
+            margin-bottom: 10px; 
+            position: relative;
+        }
         .feature-svg { width: 100%; height: 100%; filter: var(--pet-glow); }
+
         .card-title { font-size: 1.1rem; color: var(--text-main); font-weight: 700; margin-bottom: 2px;}
         .card-tag { font-size: 0.8rem; color: var(--text-sub); font-weight: 500; }
-        .card-fav-btn { position: absolute; top: 10px; right: 10px; font-size: 1.2rem; color: #EEE; padding: 8px; z-index: 5; transition: color 0.3s; }
+        
+        .card-fav-btn {
+            position: absolute; top: 10px; right: 10px;
+            font-size: 1.2rem; color: #EEE; padding: 8px;
+            z-index: 5; transition: color 0.3s;
+        }
+        /* 深色模式下愛心底色調整 */
         body.dark-mode .card-fav-btn { color: #555; }
         .card-fav-btn.is-active { color: var(--accent-warm) !important; }
 
         .fav-fab-container { position: absolute; bottom: -15px; right: 15px; z-index: 10; }
         .fav-fab {
-            width: 70px; height: 70px; background-color: var(--card-bg); color: var(--accent-warm);
-            border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center;
-            box-shadow: 0 6px 15px rgba(122, 159, 110, 0.2); cursor: pointer; transition: all 0.2s;
+            width: 70px; height: 70px;
+            background-color: var(--card-bg); color: var(--accent-warm);
+            border-radius: 50%;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            box-shadow: 0 6px 15px rgba(122, 159, 110, 0.2);
+            cursor: pointer; transition: all 0.2s;
             border: 3px solid var(--card-bg);
         }
         .fav-fab:active { transform: scale(0.9); }
@@ -182,12 +249,16 @@
         .fav-icon { font-size: 1.4rem; line-height: 1; margin-bottom: 2px; }
         .fav-text { font-size: 0.75rem; font-weight: 900; line-height: 1; }
 
-        /* --- 📱 Modal 容器 (關鍵：這將是未來新功能的注入點) --- */
+        /* --- 📱 Modal --- */
         #active-feature-container {
             position: fixed; top: 0; left: 0; right: 0; bottom: 0;
             background: var(--bg); z-index: 1000;
             display: none; flex-direction: column; padding: 24px;
             animation: slideUp 0.3s ease-out;
+        }
+        @keyframes slideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
         }
         .modal-header { display: flex; justify-content: flex-end; margin-bottom: 40px; }
         .close-btn {
@@ -196,11 +267,14 @@
             font-weight: 700; color: var(--text-main);
         }
 
-        /* --- ⚙️ 設定齒輪 --- */
+        /* --- ⚙️ 設定齒輪 (更明顯精緻) --- */
         .settings-fab {
             position: fixed; bottom: 30px; left: 20px; z-index: 2000;
-            width: 60px; height: 60px; background: var(--card-bg); 
-            backdrop-filter: blur(10px); border-radius: 50%;
+            width: 60px; height: 60px; /* 加大 */
+            background: var(--card-bg); 
+            backdrop-filter: blur(10px);
+            border-radius: 50%;
+            /* 加強陰影與邊框光澤 */
             box-shadow: 0 8px 25px rgba(0,0,0,0.15), 0 0 0 1px rgba(255,255,255,0.5);
             display: flex; align-items: center; justify-content: center;
             cursor: pointer; transition: all 0.3s;
@@ -209,7 +283,7 @@
         .settings-fab:active { transform: rotate(90deg) scale(0.95); }
         .gear-icon { width: 32px; height: 32px; fill: var(--text-main); }
 
-        /* --- ⚙️ 設定 Modal --- */
+        /* --- ⚙️ 設定 Modal (溫暖磨砂質感) --- */
         #settings-modal {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.4); z-index: 3000;
@@ -218,50 +292,114 @@
         }
         #settings-modal.show { opacity: 1; }
         .settings-content {
-            background: var(--glass); width: 85%; max-width: 360px;
-            border-radius: var(--radius-box); padding: 24px;
-            box-shadow: 0 15px 50px rgba(0,0,0,0.3); backdrop-filter: blur(25px);
+            background: var(--glass);
+            width: 85%; max-width: 360px;
+            border-radius: var(--radius-box);
+            padding: 24px;
+            box-shadow: 0 15px 50px rgba(0,0,0,0.3);
+            backdrop-filter: blur(25px);
             border: 1px solid var(--border-color);
             transform: scale(0.9); transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            max-height: 80dvh; overflow-y: auto;
+            max-height: 80vh; overflow-y: auto;
         }
         #settings-modal.show .settings-content { transform: scale(1); }
+        
         .settings-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 2px solid var(--border-color); padding-bottom: 10px; }
         .settings-title { font-size: 1.3rem; font-weight: 900; color: var(--text-main); }
-        .setting-section-title { font-size: 0.85rem; font-weight: 900; color: var(--primary); margin-top: 15px; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; }
-        .setting-item { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--border-color); }
+        
+        .setting-section-title {
+            font-size: 0.85rem; font-weight: 900; color: var(--primary);
+            margin-top: 15px; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px;
+        }
+
+        .setting-item {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 12px 0; border-bottom: 1px solid var(--border-color);
+        }
         .setting-item:last-child { border-bottom: none; }
+        
         .st-label { font-weight: 700; color: var(--text-main); display: flex; align-items: center; gap: 10px; font-size: 0.95rem; }
         .st-icon { font-size: 1.2rem; width: 25px; text-align: center; }
-        .setting-input { border: 2px solid var(--border-color); background: rgba(255,255,255,0.1); padding: 8px 12px; border-radius: 12px; font-family: inherit; font-weight: 700; color: var(--text-main); width: 120px; text-align: right; outline: none; transition: border 0.3s; }
+        
+        .setting-input {
+            border: 2px solid var(--border-color); background: rgba(255,255,255,0.1);
+            padding: 8px 12px; border-radius: 12px;
+            font-family: inherit; font-weight: 700; color: var(--text-main);
+            width: 120px; text-align: right; outline: none; transition: border 0.3s;
+        }
         .setting-input:focus { border-color: var(--primary); background: var(--card-bg); }
-        .toggle-switch { width: 46px; height: 26px; background: #DDD; border-radius: 20px; position: relative; cursor: pointer; transition: background 0.3s; }
+
+        .toggle-switch {
+            width: 46px; height: 26px; background: #DDD;
+            border-radius: 20px; position: relative; cursor: pointer; transition: background 0.3s;
+        }
+        /* 深色模式下的 Toggle 背景變深一點 */
         body.dark-mode .toggle-switch { background: #555; }
-        .toggle-switch::after { content: ''; position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; background: white; border-radius: 50%; box-shadow: 0 2px 5px rgba(0,0,0,0.2); transition: left 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        
+        .toggle-switch::after {
+            content: ''; position: absolute; top: 3px; left: 3px;
+            width: 20px; height: 20px; background: white;
+            border-radius: 50%; box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            transition: left 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
         .toggle-switch.active { background: var(--primary); }
         .toggle-switch.active::after { left: 23px; }
-        .btn-action { width: 100%; padding: 12px; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; font-weight: 700; color: var(--text-main); margin-top: 5px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: background 0.2s; }
+
+        .btn-action {
+            width: 100%; padding: 12px; background: var(--card-bg);
+            border: 1px solid var(--border-color); border-radius: 12px;
+            font-weight: 700; color: var(--text-main); margin-top: 5px;
+            cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
+            transition: background 0.2s;
+        }
         .btn-action:active { filter: brightness(0.95); }
         .danger-btn { color: #FF6B6B; border-color: #FF6B6B; margin-top: 10px; background: transparent; }
 
+
         /* --- ☁️ 麵團精靈本體 --- */
-        #spirit-pet { position: fixed; width: 80px; height: 80px; z-index: 2001; cursor: grab; touch-action: none; display: none; -webkit-tap-highlight-color: transparent; }
+        #spirit-pet {
+            position: fixed; width: 80px; height: 80px; z-index: 2001;
+            cursor: grab; touch-action: none; display: none;
+            -webkit-tap-highlight-color: transparent;
+        }
         #spirit-pet:active { cursor: grabbing; }
         #spirit-pet.auto-moving { transition: top 3s ease-in-out, left 3s ease-in-out; }
-        .pet-svg-body { width: 100%; height: 100%; filter: var(--pet-glow); animation: petFloat 4s ease-in-out infinite; }
+        .pet-svg-body {
+            width: 100%; height: 100%;
+            filter: var(--pet-glow); /* 支援夜間發光 */
+            animation: petFloat 4s ease-in-out infinite;
+        }
+        @keyframes petFloat {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-6px) scale(1.03); }
+        }
         .pet-shake { animation: shake 0.4s ease-in-out; }
-        .pet-speech-bubble { position: absolute; top: -60px; left: 50%; transform: translateX(-50%) scale(0); background: var(--card-bg); padding: 10px 16px; border-radius: 18px; font-size: 0.9rem; color: var(--text-main); font-weight: 700; white-space: nowrap; box-shadow: 0 4px 15px rgba(0,0,0,0.15); opacity: 0; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); pointer-events: none; border: 2px solid var(--primary-light); z-index: 2002; }
-        .pet-speech-bubble::after { content: ''; position: absolute; bottom: -8px; left: 50%; transform: translateX(-50%); border-width: 8px 8px 0; border-style: solid; border-color: var(--card-bg) transparent transparent transparent; }
+        @keyframes shake {
+            0% { transform: rotate(0deg); }
+            25% { transform: rotate(-10deg); }
+            50% { transform: rotate(10deg); }
+            75% { transform: rotate(-5deg); }
+            100% { transform: rotate(0deg); }
+        }
+        .pet-speech-bubble {
+            position: absolute; top: -60px; left: 50%;
+            transform: translateX(-50%) scale(0);
+            background: var(--card-bg); padding: 10px 16px; border-radius: 18px;
+            font-size: 0.9rem; color: var(--text-main); font-weight: 700;
+            white-space: nowrap; box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+            opacity: 0; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            pointer-events: none; border: 2px solid var(--primary-light); z-index: 2002;
+        }
+        .pet-speech-bubble::after {
+            content: ''; position: absolute; bottom: -8px; left: 50%;
+            transform: translateX(-50%); border-width: 8px 8px 0; border-style: solid;
+            border-color: var(--card-bg) transparent transparent transparent;
+        }
         .pet-speech-bubble.show { transform: translateX(-50%) scale(1); opacity: 1; top: -75px; }
+        /* 顏文字專用字體 (強制 Arial) */
         .kaomoji { font-family: "Arial", sans-serif; font-weight: normal; display: inline-block; }
 
-        /* 動畫 */
-        @keyframes doughEnter { 0% { transform: translateY(-50px) scale(0.8); opacity: 0; } 100% { transform: translateY(0) scale(1); opacity: 1; } }
-        @keyframes deepBreathe { 0%, 100% { transform: scale(1) translateY(0); } 50% { transform: scale(1.05) translateY(-5px); } }
-        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes shakeBtn { 0%, 100% { transform: rotate(0deg); } 25% { transform: rotate(-5deg); } 75% { transform: rotate(5deg); } }
-        @keyframes petFloat { 0%, 100% { transform: translateY(0) scale(1); } 50% { transform: translateY(-6px) scale(1.03); } }
-        @keyframes shake { 0% { transform: rotate(0deg); } 25% { transform: rotate(-10deg); } 50% { transform: rotate(10deg); } 75% { transform: rotate(-5deg); } 100% { transform: rotate(0deg); } }
+        /* --- SVG 動畫關鍵影格 --- */
         @keyframes blink { 0%, 90%, 100% { transform: scaleY(1); } 95% { transform: scaleY(0.1); } }
         @keyframes sway { 0%, 100% { transform: rotate(-5deg); } 50% { transform: rotate(5deg); } }
         @keyframes breathe { 0%, 100% { transform: scale(0.95); } 50% { transform: scale(1.05); } }
@@ -272,8 +410,154 @@
         @keyframes muscleFlex { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
         @keyframes lidOpen { 0%, 100% { transform: rotate(0); } 50% { transform: rotate(-20deg) translateY(-5px); } }
         @keyframes conveyorMove { 0% { transform: translateX(0); opacity: 1; } 100% { transform: translateX(40px); opacity: 0; } }
-        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+/* === DBT 卡片專屬樣式 === */
 
+/* 1. 預設模式 (亮色) */
+.dbt-card-container {
+    background: #FFF5EB; /* 原本的暖橘白 */
+    padding: 20px;
+    border-radius: 15px;
+    text-align: center;
+    animation: fadeIn 0.5s;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+}
+
+.dbt-text {
+    font-size: 1.2rem;
+    color: #555; /* 深灰字 */
+    min-height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    line-height: 1.6;
+}
+
+.dbt-btn {
+    background: #FF9F43;
+    color: white;
+    border: none;
+    padding: 12px 30px;
+    border-radius: 50px;
+    font-size: 1rem;
+    cursor: pointer;
+    margin-top: 20px;
+    box-shadow: 0 4px 10px rgba(255, 159, 67, 0.4);
+    transition: transform 0.1s;
+}
+
+/* 2. 深色模式 (Dark Mode) - 自動覆蓋上面的設定 */
+body.dark-mode .dbt-card-container {
+    background: #2d2d2d; /* 深灰底 */
+    box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+    border: 1px solid #444;
+}
+
+body.dark-mode .dbt-text {
+    color: #e0e0e0; /* 淺灰字 */
+}
+
+/* 按鈕在深色模式通常不用變，或者你可以改成稍微亮一點的橘色 */
+/* --- 解答之書專用樣式 (Namespace: .ab-) --- */
+.ab-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    perspective: 1000px; /* 3D 景深 */
+}
+
+.ab-instruction {
+    margin-bottom: 20px;
+    font-size: 0.9rem;
+    color: #666;
+    text-align: center;
+    opacity: 0.8;
+}
+
+/* 書本本體 */
+.ab-book {
+    width: 200px;
+    height: 260px;
+    position: relative;
+    transform-style: preserve-3d;
+    transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    cursor: pointer;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+}
+
+.ab-book.ab-is-open {
+    transform: rotateY(-180deg) translateX(50%); /* 翻開效果 */
+}
+
+/* 書的各個面 */
+.ab-face {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden; /* 背面不可見 */
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* 封面 (Front) */
+.ab-cover {
+    background: linear-gradient(135deg, #2c3e50, #4ca1af);
+    color: white;
+    font-size: 1.5rem;
+    font-weight: bold;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+}
+.ab-cover::after {
+    content: "Tap to Ask";
+    font-size: 0.8rem;
+    margin-top: 10px;
+    font-weight: normal;
+    opacity: 0.8;
+}
+
+/* 內頁 (Back - 翻開後看到的答案頁) */
+.ab-page {
+    background: #fffbf0; /* 紙張色 */
+    color: #333;
+    transform: rotateY(180deg); /* 預先翻轉 */
+    z-index: 1;
+    padding: 20px;
+    text-align: center;
+    font-family: "Courier New", Courier, monospace; /* 打字機字體感 */
+    box-shadow: inset 5px 0 10px rgba(0,0,0,0.05); /* 裝訂陰影 */
+    border: 1px solid #ddd;
+}
+
+.ab-answer-text {
+    font-size: 1.2rem;
+    line-height: 1.6;
+    font-weight: 600;
+    opacity: 0; /* 預設隱藏，翻開後才顯示 */
+    transition: opacity 0.5s ease-in 0.4s;
+}
+
+.ab-book.ab-is-open .ab-answer-text {
+    opacity: 1;
+}
+
+/* --- Dark Mode 支援 --- */
+@media (prefers-color-scheme: dark) {
+    .ab-instruction { color: #aaa; }
+    .ab-cover { background: linear-gradient(135deg, #1a1a1a, #4a4a4a); }
+    .ab-page {
+        background: #2a2a2a;
+        color: #e0e0e0;
+        border-color: #444;
+        box-shadow: inset 5px 0 10px rgba(0,0,0,0.3);
+    }
+}
     </style>
 </head>
 <body>
@@ -316,18 +600,22 @@
             </div>
 
             <div class="setting-section-title">環境體驗</div>
+            
             <div class="setting-item">
                 <div class="st-label"><span class="st-icon">🌙</span> 溫暖深色模式</div>
                 <div class="toggle-switch" id="setting-dark-toggle"></div>
             </div>
+
             <div class="setting-item">
                 <div class="st-label"><span class="st-icon">🎵</span> 背景音樂</div>
                 <div class="toggle-switch" id="setting-music-toggle"></div>
             </div>
+
             <div class="setting-item">
                 <div class="st-label"><span class="st-icon">🔊</span> 互動音效 (SFX)</div>
                 <div class="toggle-switch" id="setting-sfx-toggle"></div>
             </div>
+
             <div class="setting-item">
                 <div class="st-label">
                     <span class="st-icon">
@@ -344,13 +632,18 @@
                 <div class="toggle-switch" id="setting-pet-toggle"></div>
             </div>
 
+            <div class="setting-item">
+                <div class="st-label"><span class="st-icon">🌐</span> 語言 / Language</div>
+                <div style="font-size:0.8rem; font-weight:700; color:var(--primary);">繁體中文</div>
+            </div>
+
             <div class="setting-section-title">系統</div>
             <button class="btn-action danger-btn" style="font-size:0.8rem;" onclick="resetAppData()">🗑️ 重置所有資料</button>
 
             <div style="margin-top:20px; padding-top:15px; border-top:1px solid var(--border-color);">
                 <div style="font-size:0.7rem; color:var(--text-sub); text-align:center;">
                     Designed by 杜智平/杜皮<br>
-                    Safe Space v1.4
+                    Safe Space v1.3
                 </div>
             </div>
         </div>
@@ -384,7 +677,8 @@
 
     <section class="triage-section">
         <div class="triage-title">現在的心情像什麼天氣？</div>
-        <div class="mood-grid" id="mood-grid-container"></div>
+        <div class="mood-grid" id="mood-grid-container">
+            </div>
         <div style="text-align:center; margin-top:15px; font-size:0.9rem; color:var(--text-sub); cursor:pointer; text-decoration:underline;" onclick="resetAllFilters()">
             顯示全部功能
         </div>
@@ -397,7 +691,8 @@
         </div>
     </section>
 
-    <section class="toolbox-grid" id="toolbox"></section>
+    <section class="toolbox-grid" id="toolbox">
+        </section>
 
     <div id="active-feature-container">
         <div class="modal-header">
@@ -413,49 +708,96 @@
     </div>
 
     <script>
+        
         // ============================================
-        // 1. Data & Assets
+        // 1. 資料庫 (SVG 渲染引擎)
         // ============================================
+
+        // --- SVG 元件 ---
         const DOUGH_BODY = `<path d="M50 15C30 15 10 30 10 60C10 85 25 95 50 95C75 95 90 85 90 60C90 30 70 15 50 15Z" fill="#FFFFFF" stroke="#5C5552" stroke-width="2.5"/>`;
         const CHEEKS = `<circle cx="28" cy="62" r="3.5" fill="#FFD1DC" opacity="0.9"/><circle cx="72" cy="62" r="3.5" fill="#FFD1DC" opacity="0.9"/>`;
 
         function getMoodIcon(moodId) {
-            let c = '';
+            let content = '';
             switch(moodId) {
-                case 'anxious': c = `${DOUGH_BODY} ${CHEEKS}<g style="animation: sway 0.2s infinite"><circle cx="35" cy="55" r="4" fill="#5C5552"/><circle cx="65" cy="55" r="4" fill="#5C5552"/><path d="M45 68 Q50 72 55 68" stroke="#5C5552" stroke-width="2" fill="none"/></g><path d="M20 30 Q20 40 25 40 Q30 40 30 30" fill="#A0C4FF" style="animation: tearDrop 1s infinite"/>`; break;
-                case 'low': c = `<path d="M50 35C30 35 10 45 10 70C10 90 25 95 50 95C75 95 90 90 90 70C90 45 70 35 50 35Z" fill="#FFFFFF" stroke="#5C5552" stroke-width="2.5"/>${CHEEKS}<path d="M30 60 L40 65" stroke="#5C5552" stroke-width="2" stroke-linecap="round"/><path d="M70 60 L60 65" stroke="#5C5552" stroke-width="2" stroke-linecap="round"/><path d="M45 75 Q50 70 55 75" stroke="#5C5552" stroke-width="2" fill="none"/>`; break;
-                case 'angry': c = `${DOUGH_BODY}<path d="M30 50 L40 55" stroke="#5C5552" stroke-width="2.5"/><path d="M70 50 L60 55" stroke="#5C5552" stroke-width="2.5"/><circle cx="35" cy="60" r="3" fill="#5C5552"/><circle cx="65" cy="60" r="3" fill="#5C5552"/><path d="M45 75 Q50 70 55 75" stroke="#5C5552" stroke-width="2" fill="none"/><path d="M50 10 L50 5" stroke="#FF6B6B" stroke-width="3" style="animation: floatItem 0.5s infinite"/><path d="M60 12 L62 6" stroke="#FF6B6B" stroke-width="3" style="animation: floatItem 0.6s infinite"/>`; break;
-                case 'numb': c = `<path d="M50 15C30 15 10 30 10 60C10 85 25 95 50 95C75 95 90 85 90 60C90 30 70 15 50 15Z" fill="#FFFFFF" stroke="#5C5552" stroke-width="2.5" stroke-dasharray="4 4"/><circle cx="28" cy="62" r="3.5" fill="#DDD" opacity="0.9"/><circle cx="72" cy="62" r="3.5" fill="#DDD" opacity="0.9"/><circle cx="35" cy="55" r="4" stroke="#5C5552" stroke-width="2" fill="none"/><circle cx="65" cy="55" r="4" stroke="#5C5552" stroke-width="2" fill="none"/><line x1="45" y1="70" x2="55" y2="70" stroke="#5C5552" stroke-width="2"/>`; break;
-                case 'confused': c = `${DOUGH_BODY} ${CHEEKS}<g style="animation: spinEye 3s linear infinite; transform-origin: 35px 55px"><path d="M35 55 m-3 0 a 3 3 0 1 0 6 0 a 3 3 0 1 0 -6 0" stroke="#5C5552" stroke-width="1.5" fill="none"/></g><g style="animation: spinEye 3s linear infinite reverse; transform-origin: 65px 55px"><path d="M65 55 m-3 0 a 3 3 0 1 0 6 0 a 3 3 0 1 0 -6 0" stroke="#5C5552" stroke-width="1.5" fill="none"/></g><path d="M48 70 Q50 68 52 70" stroke="#5C5552" stroke-width="2"/>`; break;
-                case 'panic': c = `<g style="animation: panicWave 0.2s infinite">${DOUGH_BODY} ${CHEEKS}<circle cx="35" cy="55" r="5" fill="#5C5552"/><circle cx="65" cy="55" r="5" fill="#5C5552"/><ellipse cx="50" cy="72" rx="6" ry="8" fill="#5C5552"/><path d="M10 60 L0 50" stroke="#5C5552" stroke-width="3"/><path d="M90 60 L100 50" stroke="#5C5552" stroke-width="3"/></g>`; break;
+                case 'anxious': 
+                    content = `${DOUGH_BODY} ${CHEEKS}<g style="animation: sway 0.2s infinite"><circle cx="35" cy="55" r="4" fill="#5C5552"/><circle cx="65" cy="55" r="4" fill="#5C5552"/><path d="M45 68 Q50 72 55 68" stroke="#5C5552" stroke-width="2" fill="none"/></g><path d="M20 30 Q20 40 25 40 Q30 40 30 30" fill="#A0C4FF" style="animation: tearDrop 1s infinite"/>`;
+                    break;
+                case 'low': 
+                    content = `<path d="M50 35C30 35 10 45 10 70C10 90 25 95 50 95C75 95 90 90 90 70C90 45 70 35 50 35Z" fill="#FFFFFF" stroke="#5C5552" stroke-width="2.5"/>${CHEEKS}<path d="M30 60 L40 65" stroke="#5C5552" stroke-width="2" stroke-linecap="round"/><path d="M70 60 L60 65" stroke="#5C5552" stroke-width="2" stroke-linecap="round"/><path d="M45 75 Q50 70 55 75" stroke="#5C5552" stroke-width="2" fill="none"/>`;
+                    break;
+                case 'angry':
+                    content = `${DOUGH_BODY}<path d="M30 50 L40 55" stroke="#5C5552" stroke-width="2.5"/><path d="M70 50 L60 55" stroke="#5C5552" stroke-width="2.5"/><circle cx="35" cy="60" r="3" fill="#5C5552"/><circle cx="65" cy="60" r="3" fill="#5C5552"/><path d="M45 75 Q50 70 55 75" stroke="#5C5552" stroke-width="2" fill="none"/><path d="M50 10 L50 5" stroke="#FF6B6B" stroke-width="3" style="animation: floatItem 0.5s infinite"/><path d="M60 12 L62 6" stroke="#FF6B6B" stroke-width="3" style="animation: floatItem 0.6s infinite"/>`;
+                    break;
+                case 'numb':
+                    content = `<path d="M50 15C30 15 10 30 10 60C10 85 25 95 50 95C75 95 90 85 90 60C90 30 70 15 50 15Z" fill="#FFFFFF" stroke="#5C5552" stroke-width="2.5" stroke-dasharray="4 4"/><circle cx="28" cy="62" r="3.5" fill="#DDD" opacity="0.9"/><circle cx="72" cy="62" r="3.5" fill="#DDD" opacity="0.9"/><circle cx="35" cy="55" r="4" stroke="#5C5552" stroke-width="2" fill="none"/><circle cx="65" cy="55" r="4" stroke="#5C5552" stroke-width="2" fill="none"/><line x1="45" y1="70" x2="55" y2="70" stroke="#5C5552" stroke-width="2"/>`;
+                    break;
+                case 'confused':
+                    content = `${DOUGH_BODY} ${CHEEKS}<g style="animation: spinEye 3s linear infinite; transform-origin: 35px 55px"><path d="M35 55 m-3 0 a 3 3 0 1 0 6 0 a 3 3 0 1 0 -6 0" stroke="#5C5552" stroke-width="1.5" fill="none"/></g><g style="animation: spinEye 3s linear infinite reverse; transform-origin: 65px 55px"><path d="M65 55 m-3 0 a 3 3 0 1 0 6 0 a 3 3 0 1 0 -6 0" stroke="#5C5552" stroke-width="1.5" fill="none"/></g><path d="M48 70 Q50 68 52 70" stroke="#5C5552" stroke-width="2"/>`;
+                    break;
+                case 'panic': 
+                    content = `<g style="animation: panicWave 0.2s infinite">${DOUGH_BODY} ${CHEEKS}<circle cx="35" cy="55" r="5" fill="#5C5552"/><circle cx="65" cy="55" r="5" fill="#5C5552"/><ellipse cx="50" cy="72" rx="6" ry="8" fill="#5C5552"/><path d="M10 60 L0 50" stroke="#5C5552" stroke-width="3"/><path d="M90 60 L100 50" stroke="#5C5552" stroke-width="3"/></g>`;
+                    break;
             }
-            return `<svg viewBox="0 0 100 100" fill="none" class="mood-icon-svg">${c}</svg>`;
+            return `<svg viewBox="0 0 100 100" fill="none" class="mood-icon-svg">${content}</svg>`;
         }
 
         function getFeatureIcon(id) {
-            let c = '';
+            let content = '';
             let eyes = `<circle cx="35" cy="55" r="4" fill="#5C5552"/><circle cx="65" cy="55" r="4" fill="#5C5552"/>`;
             let mouth = `<path d="M45 68 Q50 72 55 68" stroke="#5C5552" stroke-width="2" fill="none"/>`;
+
             switch(id) {
-                case 'dbt_cards': c = `${DOUGH_BODY} ${CHEEKS} ${eyes} <path d="M45 65 Q50 75 55 65" stroke="#5C5552" stroke-width="2" fill="none"/><rect x="60" y="40" width="20" height="30" rx="2" fill="white" stroke="#5C5552" stroke-width="2" transform="rotate(15 60 40)" style="animation: floatItem 2s infinite"/><path d="M65 45 L75 50" stroke="#FFD1DC" stroke-width="2"/>`; break;
-                case 'quotes': c = `${DOUGH_BODY} ${CHEEKS} <path d="M30 55 Q35 50 40 55" stroke="#5C5552" stroke-width="2" fill="none"/><path d="M60 55 Q65 50 70 55" stroke="#5C5552" stroke-width="2" fill="none"/><circle cx="50" cy="68" r="4" fill="#5C5552"/><path d="M70 20 H90 V35 H70 L65 40 V20 Z" fill="white" stroke="#5C5552" stroke-width="2"/><circle cx="76" cy="28" r="1.5" fill="#5C5552"/><circle cx="80" cy="28" r="1.5" fill="#5C5552"/><circle cx="84" cy="28" r="1.5" fill="#5C5552"/>`; break;
-                case 'tarot': c = `${DOUGH_BODY} ${CHEEKS} <path d="M30 55 L40 55" stroke="#5C5552" stroke-width="2"/><path d="M60 55 L70 55" stroke="#5C5552" stroke-width="2"/><circle cx="50" cy="80" r="12" fill="#E0F7FA" stroke="#5C5552" stroke-width="1.5" opacity="0.8"/><path d="M50 75 L52 77" stroke="white" stroke-width="2"/>`; break;
-                case 'answer_book': c = `${DOUGH_BODY} ${CHEEKS} ${eyes} ${mouth} <circle cx="35" cy="55" r="7" stroke="#5C5552" stroke-width="1.5" fill="none"/><circle cx="65" cy="55" r="7" stroke="#5C5552" stroke-width="1.5" fill="none"/><line x1="42" y1="55" x2="58" y2="55" stroke="#5C5552" stroke-width="1.5"/><rect x="75" y="50" width="15" height="25" fill="#5C5552" transform="rotate(10)"/><rect x="78" y="52" width="2" height="21" fill="white" transform="rotate(10)"/>`; break;
-                case 'questions': c = `${DOUGH_BODY} ${CHEEKS} <path d="M30 58 L40 58" stroke="#5C5552" stroke-width="2"/><path d="M60 58 L70 58" stroke="#5C5552" stroke-width="2"/><text x="15" y="30" font-size="20" fill="#5C5552" style="animation: floatItem 2s infinite">?</text><text x="75" y="30" font-size="16" fill="#5C5552" style="animation: floatItem 3s infinite reverse">?</text>`; break;
-                case 'jokes': c = `${DOUGH_BODY} ${CHEEKS} <path d="M30 50 L35 55 L40 50" stroke="#5C5552" stroke-width="2" fill="none"/><path d="M60 50 L65 55 L70 50" stroke="#5C5552" stroke-width="2" fill="none"/><path d="M40 65 Q50 80 60 65" fill="#5C5552"/><path d="M10 60 Q5 50 15 50" stroke="#5C5552" stroke-width="2" fill="none" style="animation: sway 0.5s infinite"/><path d="M90 60 Q95 50 85 50" stroke="#5C5552" stroke-width="2" fill="none" style="animation: sway 0.5s infinite"/>`; break;
-                case 'animals': c = `${DOUGH_BODY} ${CHEEKS} ${eyes} ${mouth} <path d="M30 20 L40 5 L50 20" fill="white" stroke="#5C5552" stroke-width="2.5"/><path d="M50 20 L60 5 L70 20" fill="white" stroke="#5C5552" stroke-width="2.5"/><line x1="20" y1="60" x2="5" y2="55" stroke="#5C5552" stroke-width="1.5"/><line x1="20" y1="65" x2="5" y2="70" stroke="#5C5552" stroke-width="1.5"/><line x1="80" y1="60" x2="95" y2="55" stroke="#5C5552" stroke-width="1.5"/><line x1="80" y1="65" x2="95" y2="70" stroke="#5C5552" stroke-width="1.5"/><path d="M85 80 Q95 80 95 60" stroke="#5C5552" stroke-width="3" fill="none" stroke-linecap="round" style="animation: sway 2s infinite"/>`; break;
-                case 'tasks': c = `<g style="animation: muscleFlex 1.5s infinite">${DOUGH_BODY} ${CHEEKS} <line x1="30" y1="48" x2="40" y2="55" stroke="#5C5552" stroke-width="2.5"/><line x1="70" y1="48" x2="60" y2="55" stroke="#5C5552" stroke-width="2.5"/><path d="M45 70 H55" stroke="#5C5552" stroke-width="2"/><path d="M15 60 Q5 50 15 40" stroke="#5C5552" stroke-width="4" fill="none"/><path d="M85 60 Q95 50 85 40" stroke="#5C5552" stroke-width="4" fill="none"/></g>`; break;
-                case 'breathing': c = `<g style="animation: breathe 4s ease-in-out infinite">${DOUGH_BODY} ${CHEEKS} <path d="M30 55 Q35 50 40 55" stroke="#5C5552" stroke-width="2" fill="none"/><path d="M60 55 Q65 50 70 55" stroke="#5C5552" stroke-width="2" fill="none"/><circle cx="50" cy="70" r="3" fill="#5C5552"/><path d="M48 85 Q50 90 52 85" stroke="#5C5552" stroke-width="2"/></g>`; break;
-                case 'clicker': c = `${DOUGH_BODY} ${CHEEKS} ${mouth} <circle cx="35" cy="55" r="4" fill="#5C5552"/><circle cx="37" cy="53" r="1.5" fill="white"/><circle cx="65" cy="55" r="4" fill="#5C5552"/><circle cx="67" cy="53" r="1.5" fill="white"/><circle cx="80" cy="40" r="5" stroke="#5C5552" fill="white" opacity="0.7"/><circle cx="20" cy="80" r="4" stroke="#5C5552" fill="white" opacity="0.7"/><path d="M80 60 L85 50" stroke="#5C5552" stroke-width="2.5" style="animation: floatItem 0.5s infinite"/>`; break;
-                case 'whiteboard': c = `${DOUGH_BODY} ${CHEEKS} ${eyes} ${mouth} <path d="M30 20 Q50 5 70 20 H30 Z" fill="#5C5552"/><rect x="48" y="10" width="4" height="6" fill="#5C5552"/><circle cx="20" cy="70" r="10" fill="white" stroke="#5C5552" stroke-width="1.5"/><circle cx="18" cy="68" r="2" fill="#FF6B6B"/><circle cx="22" cy="72" r="2" fill="#4ECDC4"/><line x1="80" y1="70" x2="90" y2="60" stroke="#5C5552" stroke-width="2"/>`; break;
-                case 'conveyor': c = `${DOUGH_BODY} ${CHEEKS} ${eyes} <path d="M45 68 Q50 72 55 68" stroke="#5C5552" stroke-width="2" fill="none"/><rect x="60" y="30" width="15" height="10" rx="2" stroke="#5C5552" fill="white" style="animation: conveyorMove 2s linear infinite"/><line x1="10" y1="85" x2="90" y2="85" stroke="#5C5552" stroke-width="2" stroke-dasharray="5 5"/>`; break;
-                case 'worry_jar': c = `<path d="M50 35C30 35 10 45 10 60C10 85 25 95 50 95C75 95 90 85 90 60C90 45 70 35 50 35Z" fill="#FFFFFF" stroke="#5C5552" stroke-width="1.5" stroke-dasharray="2 2"/> ${CHEEKS} ${eyes} ${mouth} <g style="animation: lidOpen 3s infinite"> <path d="M50 35 C30 35 10 45 10 50 L90 50 C90 45 70 35 50 35Z" fill="white" stroke="#5C5552" stroke-width="2"/> </g>`; break;
-                case 'sos': c = `${DOUGH_BODY} ${CHEEKS} <path d="M35 55 L40 50 L35 45" stroke="#5C5552" stroke-width="2" fill="none"/><path d="M65 55 L60 50 L65 45" stroke="#5C5552" stroke-width="2" fill="none"/><path d="M45 70 Q50 65 55 70" stroke="#5C5552" stroke-width="2" fill="none"/><rect x="20" y="80" width="60" height="15" fill="#FF6B6B" stroke="#5C5552" rx="2"/><text x="32" y="91" font-family="Arial" font-weight="bold" font-size="10" fill="white">SOS</text><path d="M20 75 L20 80" stroke="#5C5552" stroke-width="2"/><path d="M80 75 L80 80" stroke="#5C5552" stroke-width="2"/>`; break;
-                default: c = `${DOUGH_BODY} ${CHEEKS} ${eyes} ${mouth}`; break;
+                case 'dbt_cards':
+                    content = `${DOUGH_BODY} ${CHEEKS} ${eyes} <path d="M45 65 Q50 75 55 65" stroke="#5C5552" stroke-width="2" fill="none"/><rect x="60" y="40" width="20" height="30" rx="2" fill="white" stroke="#5C5552" stroke-width="2" transform="rotate(15 60 40)" style="animation: floatItem 2s infinite"/><path d="M65 45 L75 50" stroke="#FFD1DC" stroke-width="2"/>`;
+                    break;
+                case 'quotes':
+                    content = `${DOUGH_BODY} ${CHEEKS} <path d="M30 55 Q35 50 40 55" stroke="#5C5552" stroke-width="2" fill="none"/><path d="M60 55 Q65 50 70 55" stroke="#5C5552" stroke-width="2" fill="none"/><circle cx="50" cy="68" r="4" fill="#5C5552"/><path d="M70 20 H90 V35 H70 L65 40 V20 Z" fill="white" stroke="#5C5552" stroke-width="2"/><circle cx="76" cy="28" r="1.5" fill="#5C5552"/><circle cx="80" cy="28" r="1.5" fill="#5C5552"/><circle cx="84" cy="28" r="1.5" fill="#5C5552"/>`;
+                    break;
+                case 'tarot':
+                    content = `${DOUGH_BODY} ${CHEEKS} <path d="M30 55 L40 55" stroke="#5C5552" stroke-width="2"/><path d="M60 55 L70 55" stroke="#5C5552" stroke-width="2"/><circle cx="50" cy="80" r="12" fill="#E0F7FA" stroke="#5C5552" stroke-width="1.5" opacity="0.8"/><path d="M50 75 L52 77" stroke="white" stroke-width="2"/>`;
+                    break;
+                case 'answer_book':
+                    content = `${DOUGH_BODY} ${CHEEKS} ${eyes} ${mouth} <circle cx="35" cy="55" r="7" stroke="#5C5552" stroke-width="1.5" fill="none"/><circle cx="65" cy="55" r="7" stroke="#5C5552" stroke-width="1.5" fill="none"/><line x1="42" y1="55" x2="58" y2="55" stroke="#5C5552" stroke-width="1.5"/><rect x="75" y="50" width="15" height="25" fill="#5C5552" transform="rotate(10)"/><rect x="78" y="52" width="2" height="21" fill="white" transform="rotate(10)"/>`;
+                    break;
+                case 'questions':
+                    content = `${DOUGH_BODY} ${CHEEKS} <path d="M30 58 L40 58" stroke="#5C5552" stroke-width="2"/><path d="M60 58 L70 58" stroke="#5C5552" stroke-width="2"/><text x="15" y="30" font-size="20" fill="#5C5552" style="animation: floatItem 2s infinite">?</text><text x="75" y="30" font-size="16" fill="#5C5552" style="animation: floatItem 3s infinite reverse">?</text>`;
+                    break;
+                case 'jokes':
+                    content = `${DOUGH_BODY} ${CHEEKS} <path d="M30 50 L35 55 L40 50" stroke="#5C5552" stroke-width="2" fill="none"/><path d="M60 50 L65 55 L70 50" stroke="#5C5552" stroke-width="2" fill="none"/><path d="M40 65 Q50 80 60 65" fill="#5C5552"/><path d="M10 60 Q5 50 15 50" stroke="#5C5552" stroke-width="2" fill="none" style="animation: sway 0.5s infinite"/><path d="M90 60 Q95 50 85 50" stroke="#5C5552" stroke-width="2" fill="none" style="animation: sway 0.5s infinite"/>`;
+                    break;
+                case 'animals':
+                    content = `${DOUGH_BODY} ${CHEEKS} ${eyes} ${mouth} <path d="M30 20 L40 5 L50 20" fill="white" stroke="#5C5552" stroke-width="2.5"/><path d="M50 20 L60 5 L70 20" fill="white" stroke="#5C5552" stroke-width="2.5"/><line x1="20" y1="60" x2="5" y2="55" stroke="#5C5552" stroke-width="1.5"/><line x1="20" y1="65" x2="5" y2="70" stroke="#5C5552" stroke-width="1.5"/><line x1="80" y1="60" x2="95" y2="55" stroke="#5C5552" stroke-width="1.5"/><line x1="80" y1="65" x2="95" y2="70" stroke="#5C5552" stroke-width="1.5"/><path d="M85 80 Q95 80 95 60" stroke="#5C5552" stroke-width="3" fill="none" stroke-linecap="round" style="animation: sway 2s infinite"/>`;
+                    break;
+                case 'tasks':
+                    content = `<g style="animation: muscleFlex 1.5s infinite">${DOUGH_BODY} ${CHEEKS} <line x1="30" y1="48" x2="40" y2="55" stroke="#5C5552" stroke-width="2.5"/><line x1="70" y1="48" x2="60" y2="55" stroke="#5C5552" stroke-width="2.5"/><path d="M45 70 H55" stroke="#5C5552" stroke-width="2"/><path d="M15 60 Q5 50 15 40" stroke="#5C5552" stroke-width="4" fill="none"/><path d="M85 60 Q95 50 85 40" stroke="#5C5552" stroke-width="4" fill="none"/></g>`;
+                    break;
+                case 'breathing':
+                    content = `<g style="animation: breathe 4s ease-in-out infinite">${DOUGH_BODY} ${CHEEKS} <path d="M30 55 Q35 50 40 55" stroke="#5C5552" stroke-width="2" fill="none"/><path d="M60 55 Q65 50 70 55" stroke="#5C5552" stroke-width="2" fill="none"/><circle cx="50" cy="70" r="3" fill="#5C5552"/><path d="M48 85 Q50 90 52 85" stroke="#5C5552" stroke-width="2"/></g>`;
+                    break;
+                case 'clicker':
+                    content = `${DOUGH_BODY} ${CHEEKS} ${mouth} <circle cx="35" cy="55" r="4" fill="#5C5552"/><circle cx="37" cy="53" r="1.5" fill="white"/><circle cx="65" cy="55" r="4" fill="#5C5552"/><circle cx="67" cy="53" r="1.5" fill="white"/><circle cx="80" cy="40" r="5" stroke="#5C5552" fill="white" opacity="0.7"/><circle cx="20" cy="80" r="4" stroke="#5C5552" fill="white" opacity="0.7"/><path d="M80 60 L85 50" stroke="#5C5552" stroke-width="2.5" style="animation: floatItem 0.5s infinite"/>`;
+                    break;
+                case 'whiteboard':
+                    content = `${DOUGH_BODY} ${CHEEKS} ${eyes} ${mouth} <path d="M30 20 Q50 5 70 20 H30 Z" fill="#5C5552"/><rect x="48" y="10" width="4" height="6" fill="#5C5552"/><circle cx="20" cy="70" r="10" fill="white" stroke="#5C5552" stroke-width="1.5"/><circle cx="18" cy="68" r="2" fill="#FF6B6B"/><circle cx="22" cy="72" r="2" fill="#4ECDC4"/><line x1="80" y1="70" x2="90" y2="60" stroke="#5C5552" stroke-width="2"/>`;
+                    break;
+                case 'conveyor':
+                    content = `${DOUGH_BODY} ${CHEEKS} ${eyes} <path d="M45 68 Q50 72 55 68" stroke="#5C5552" stroke-width="2" fill="none"/><rect x="60" y="30" width="15" height="10" rx="2" stroke="#5C5552" fill="white" style="animation: conveyorMove 2s linear infinite"/><line x1="10" y1="85" x2="90" y2="85" stroke="#5C5552" stroke-width="2" stroke-dasharray="5 5"/>`;
+                    break;
+                case 'worry_jar':
+                    content = `<path d="M50 35C30 35 10 45 10 60C10 85 25 95 50 95C75 95 90 85 90 60C90 45 70 35 50 35Z" fill="#FFFFFF" stroke="#5C5552" stroke-width="1.5" stroke-dasharray="2 2"/> ${CHEEKS} ${eyes} ${mouth} <g style="animation: lidOpen 3s infinite"> <path d="M50 35 C30 35 10 45 10 50 L90 50 C90 45 70 35 50 35Z" fill="white" stroke="#5C5552" stroke-width="2"/> </g>`;
+                    break;
+                case 'sos':
+                    content = `${DOUGH_BODY} ${CHEEKS} <path d="M35 55 L40 50 L35 45" stroke="#5C5552" stroke-width="2" fill="none"/><path d="M65 55 L60 50 L65 45" stroke="#5C5552" stroke-width="2" fill="none"/><path d="M45 70 Q50 65 55 70" stroke="#5C5552" stroke-width="2" fill="none"/><rect x="20" y="80" width="60" height="15" fill="#FF6B6B" stroke="#5C5552" rx="2"/><text x="32" y="91" font-family="Arial" font-weight="bold" font-size="10" fill="white">SOS</text><path d="M20 75 L20 80" stroke="#5C5552" stroke-width="2"/><path d="M80 75 L80 80" stroke="#5C5552" stroke-width="2"/>`;
+                    break;
+                default: 
+                    content = `${DOUGH_BODY} ${CHEEKS} ${eyes} ${mouth}`;
+                    break;
             }
-            return `<svg viewBox="0 0 100 100" fill="none" class="feature-svg">${c}</svg>`;
+            return `<svg viewBox="0 0 100 100" fill="none" class="feature-svg">${content}</svg>`;
         }
 
+        // --- 功能與情緒資料 ---
         const featuresDB = [
             { id: 'dbt_cards', name: '自我照顧卡', tag: 'DBT策略', moods: ['anxious', 'low', 'numb'], keywords: '卡片,抽卡,策略' },
             { id: 'quotes', name: '療癒金句', tag: '文字力量', moods: ['low', 'stress'], keywords: '語錄,句子,鼓勵' },
@@ -483,8 +825,10 @@
         ];
 
         // ============================================
-        // 2. Logic Controller
+        // 2. 邏輯控制 (Logic Controller)
         // ============================================
+
+        // 狀態變數
         let favorites = JSON.parse(localStorage.getItem('safeSpaceFavs')) || [];
         let userNickname = localStorage.getItem('safeSpaceName') || "";
         let isMusicOn = JSON.parse(localStorage.getItem('safeSpaceMusicOn')) ?? true; 
@@ -496,6 +840,7 @@
         let isFavFilterActive = false;
         let searchKeyword = "";
 
+        // DOM Elements
         const toolboxEl = document.getElementById('toolbox');
         const moodGrid = document.getElementById('mood-grid-container');
         const searchInput = document.getElementById('search-input');
@@ -504,6 +849,7 @@
         const greetingTitle = document.getElementById('greeting-title');
         const splashScreen = document.getElementById('splash-screen');
         
+        // 設定相關 DOM
         const settingsModal = document.getElementById('settings-modal');
         const nicknameInput = document.getElementById('nickname-input');
         const musicToggle = document.getElementById('setting-music-toggle');
@@ -512,22 +858,27 @@
         const darkToggle = document.getElementById('setting-dark-toggle');
 
         function initApp() {
+            // 套用深色模式
             if (isDarkMode) document.body.classList.add('dark-mode');
+
             renderMoodButtons();
             updateResults();
             initPetSystem();
             initSettings(); 
             updateGreeting(); 
             
+            // 綁定 Splash 點擊 (觸發 AudioContext 與自動播放)
             const splashBtn = document.getElementById('splash-start-btn');
             splashBtn.onclick = () => {
                 splashScreen.style.opacity = '0';
                 setTimeout(() => {
                     splashScreen.style.display = 'none';
-                    document.body.style.overflow = 'auto'; // Unlock scroll
+                    document.body.style.overflow = 'auto'; // 開放捲動
                 }, 800);
+                
+                // 啟動音訊核心
                 resumeAudioContext();
-                if(isMusicOn) playNextNote(); 
+                if(isMusicOn) playNextNote(); // 自動播放
             };
         }
 
@@ -540,13 +891,17 @@
                 else if (hour < 14) greet = "午安";
                 else if (hour < 18) greet = "下午好";
                 else greet = "晚安";
+                
+                // 強制顏文字用 Arial，避免跑版
                 greetingTitle.innerHTML = `${greet}，${userNickname} <span class="kaomoji" style="font-size:0.8em; margin-left:5px;">( ˘ ³˘)</span>`;
             } else {
                 greetingTitle.innerHTML = 'Safe Space <span class="kaomoji" style="font-size:0.8em; margin-left:5px;">( ˘ ³˘)</span>';
             }
         }
 
+        // --- 設定功能整合 ---
         function initSettings() {
+            // 1. 暱稱
             nicknameInput.value = userNickname;
             nicknameInput.addEventListener('input', (e) => {
                 userNickname = e.target.value;
@@ -554,6 +909,7 @@
                 updateGreeting();
             });
 
+            // 2. 深色模式
             updateToggleUI(darkToggle, isDarkMode);
             darkToggle.onclick = () => {
                 isDarkMode = !isDarkMode;
@@ -563,11 +919,13 @@
                 else document.body.classList.remove('dark-mode');
             };
 
+            // 3. 音樂開關
             updateToggleUI(musicToggle, isMusicOn);
             musicToggle.onclick = () => {
                 isMusicOn = !isMusicOn;
                 localStorage.setItem('safeSpaceMusicOn', isMusicOn);
                 updateToggleUI(musicToggle, isMusicOn);
+                
                 if (isMusicOn) {
                     resumeAudioContext();
                     if (!bgmTimeout) playNextNote();
@@ -577,6 +935,7 @@
                 }
             };
 
+            // 4. 音效開關
             updateToggleUI(sfxToggle, isSfxOn);
             sfxToggle.onclick = () => {
                 isSfxOn = !isSfxOn;
@@ -584,6 +943,7 @@
                 updateToggleUI(sfxToggle, isSfxOn);
             };
 
+            // 5. 精靈開關
             updateToggleUI(petToggle, isPetActive);
             petToggle.onclick = () => {
                 isPetActive = !isPetActive;
@@ -602,14 +962,20 @@
             settingsModal.style.display = 'flex';
             void settingsModal.offsetWidth; 
             settingsModal.classList.add('show');
+            // 推入歷史紀錄以支援返回鍵關閉
             history.pushState({ type: 'settings' }, null, "#settings");
         }
         function closeSettings(e) {
-            if(e.target === settingsModal) history.back();
+            if(e.target === settingsModal) {
+                history.back(); // 觸發 popstate 來關閉
+            }
         }
         function toggleSettings() {
-            if(settingsModal.classList.contains('show')) history.back();
-            else openSettings();
+            if(settingsModal.classList.contains('show')) {
+                history.back();
+            } else {
+                openSettings();
+            }
         }
 
         function resetAppData() {
@@ -619,6 +985,8 @@
             }
         }
 
+
+        // --- 核心互動邏輯 ---
         function renderMoodButtons() {
             moodGrid.innerHTML = '';
             moodOptions.forEach(mood => {
@@ -626,13 +994,17 @@
                 btn.className = 'mood-card';
                 btn.dataset.id = mood.id;
                 btn.onclick = () => toggleMood(mood.id);
-                btn.innerHTML = `${getMoodIcon(mood.id)}<div class="mood-label">${mood.label}</div>`;
+                btn.innerHTML = `
+                    ${getMoodIcon(mood.id)}
+                    <div class="mood-label">${mood.label}</div>
+                `;
                 btn.style.setProperty('--mood-color', mood.color);
                 moodGrid.appendChild(btn);
             });
         }
 
         function updateResults() {
+            // 更新按鈕樣式
             document.querySelectorAll('.mood-card').forEach(btn => {
                 const id = btn.dataset.id;
                 const moodData = moodOptions.find(m => m.id === id);
@@ -645,9 +1017,11 @@
                 }
             });
 
+            // 更新收藏按鈕
             if(isFavFilterActive) favFabBtn.classList.add('active');
             else favFabBtn.classList.remove('active');
 
+            // 篩選邏輯
             let filtered = featuresDB.filter(item => {
                 const matchKeyword = searchKeyword === "" || item.name.includes(searchKeyword) || item.keywords.includes(searchKeyword) || item.tag.includes(searchKeyword);
                 const itemMoodsSet = new Set(item.moods);
@@ -703,6 +1077,9 @@
             if (favorites.includes(id)) favorites = favorites.filter(favId => favId !== id);
             else favorites.push(id);
             localStorage.setItem('safeSpaceFavs', JSON.stringify(favorites));
+            
+            if (isSfxOn) { /* 可以在這裡加一個輕微的點擊音效 */ }
+            
             if(isFavFilterActive) updateResults();
             else {
                 const btn = event.currentTarget;
@@ -732,30 +1109,181 @@
             }
         }
         
-        const modal = document.getElementById('active-feature-container');
-        const featureTitle = document.getElementById('feature-title-display');
-        function openFeature(feature) {
-            modal.style.display = 'flex';
-            featureTitle.innerText = feature.name;
-            history.pushState({ type: 'modal' }, null, "#feature");
+       /* =========================================
+   1. 定義具體的內容渲染邏輯 (Renderers)
+   ========================================= */
+const renderers = {
+    // 專門處理 DBT 的畫面
+    renderDbtCards: (container) => {
+        container.innerHTML = `
+            <div class="dbt-card-container">
+                <div id="dbt-card-text" class="dbt-text">
+                    ✨ 當情緒像海浪襲來，<br>我們需要一個衝浪板。
+                </div>
+                <button id="draw-dbt-btn" class="dbt-btn">
+                    🔮 抽取一張智慧小卡
+                </button>
+            </div>
+        `;
+
+        // 定義卡片內容
+        const cards = [
+            "【停 (STOP)】：現在請暫停動作。別動！深呼吸。不要讓情緒控制你的行為。",
+            "【冷靜觀察】：像個局外人一樣看著自己的情緒，不要急著批判它。",
+            "【安撫五感】：泡杯熱茶、聞聞喜歡的精油、摸摸柔軟的毯子。",
+            "【相反行動】：如果你想退縮，試著挺起胸膛；如果你想攻擊，試著放鬆雙手。"
+        ];
+
+        // 綁定按鈕事件 (因為按鈕是剛剛才生出來的，要立刻教它做事)
+        document.getElementById('draw-dbt-btn').addEventListener('click', (e) => {
+            // 按鈕小動畫
+            e.target.style.transform = 'scale(0.95)';
+            setTimeout(() => e.target.style.transform = 'scale(1)', 100);
+
+            // 抽卡邏輯
+            const textEl = document.getElementById('dbt-card-text');
+            textEl.style.opacity = 0;
+            setTimeout(() => {
+                const randomCard = cards[Math.floor(Math.random() * cards.length)];
+                textEl.innerText = randomCard;
+                textEl.style.opacity = 1;
+            }, 200);
+        });
+    },
+renderAnswerBook: (container) => {
+    // 1. 定義模糊但具啟發性的答案庫 (可以自己無限擴充)
+    const ab_answers = [
+        "這不是終點。", "相信你的直覺。", "再試一次。", "放下它。",
+        "你需要休息。", "答案就在你心中。", "不要回頭。", "等待好時機。",
+        "勇敢一點。", "這是一個信號。", "你會知道的。", "保持耐心。",
+        "換個角度看。", "現在不是時候。", "結果會讓你驚喜。", "專注於當下。",
+        "有人在支持你。", "別想太多，去做。", "這值得冒險。", "傾聽內在的聲音。"
+    ];
+
+    // 2. 渲染 HTML 結構
+    container.innerHTML = `
+        <div class="ab-container">
+            <div class="ab-instruction">
+                默念你的問題，然後輕觸書本
+            </div>
+            <div id="ab_book_entity" class="ab-book">
+                <div class="ab-face ab-cover">
+                    THE BOOK<br>OF<br>ANSWERS
+                </div>
+                <div class="ab-face ab-page">
+                    <div id="ab_answer_content" class="ab-answer-text">
+                        ...
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+
+    // 3. 綁定邏輯
+    const ab_bookEl = document.getElementById('ab_book_entity');
+    const ab_textEl = document.getElementById('ab_answer_content');
+    let ab_isFlipped = false;
+
+    ab_bookEl.addEventListener('click', () => {
+        if (!ab_isFlipped) {
+            // -- 動作：打開書本 --
+            
+            // 隨機選取答案
+            const ab_randomIndex = Math.floor(Math.random() * ab_answers.length);
+            const ab_selectedAnswer = ab_answers[ab_randomIndex];
+
+            // 設定文字 (先清空再填入，避免殘影)
+            ab_textEl.innerText = ab_selectedAnswer;
+
+            // 執行 CSS 動畫 class
+            ab_bookEl.classList.add('ab-is-open');
+            ab_isFlipped = true;
+
+        } else {
+            // -- 動作：蓋上書本 (重置) --
+            ab_bookEl.classList.remove('ab-is-open');
+            ab_isFlipped = false;
+            
+            // 稍微延遲後清空文字，讓下次打開有驚喜感
+            setTimeout(() => {
+                ab_textEl.innerText = "...";
+            }, 600);
         }
+    });
+},
+    // 預設畫面 (給其他還沒做好的功能用)
+    renderDefault: (container) => {
+        container.innerHTML = `
+             <p style="font-size: 1.1rem; color: var(--text-sub);">✨ 輕輕地吸氣，慢慢地吐氣 ✨</p>
+             <p style="font-size: 0.9rem; color: #CCC; margin-top:10px;">(此功能建置中)</p>
+        `;
+    }
+};
+
+/* =========================================
+   2. 修改原本的 openFeature 函式 (核心大腦)
+   ========================================= */
+// 記得先抓到這兩個元素
+const modal = document.getElementById('active-feature-container');
+const featureTitle = document.getElementById('feature-title-display');
+const contentArea = document.getElementById('feature-content-area'); // 這是你原本 HTML 裡的那個 div
+
+function openFeature(feature) {
+    // 1. 打開視窗
+    modal.style.display = 'flex';
+    
+    // 2. 設定標題
+    featureTitle.innerText = feature.name;
+    
+// 這是原本你寫那一長串 if-else 的地方，請改成下面這樣：
+
+// 1. 定義一個小工具，把 "answer_book" 轉成 "AnswerBook"
+// (這段 regex 看不懂沒關係，它就是負責把底線拿掉，後面的字母變大寫)
+const featureName = feature.id
+    .toLowerCase()
+    .replace(/_(\w)/g, (all, letter) => letter.toUpperCase()) // answerBook
+    .replace(/^\w/, c => c.toUpperCase()); // AnswerBook
+
+// 2. 拼湊出目標函數的名稱： "render" + "AnswerBook" = "renderAnswerBook"
+const targetRendererName = `render${featureName}`;
+
+// 3. 檢查 renderers 裡面有沒有這個函數？
+if (typeof renderers[targetRendererName] === 'function') {
+    // ✅ 自動找到對應函數 (無論是 renderDbtCards 還是 renderAnswerBook)
+    renderers[targetRendererName](contentArea);
+} else {
+    // ❌ 找不到就顯示建置中
+    renderers.renderDefault(contentArea);
+}
+
+    // 4. 歷史紀錄
+    history.pushState({ type: 'modal' }, null, "#feature");
+}
         
+        // 處理返回鍵邏輯 (Settings & Features)
         window.addEventListener('popstate', function(event) {
+            // 1. 如果設定 Modal 開著，就關掉
             if (settingsModal.classList.contains('show')) {
                 settingsModal.classList.remove('show');
                 setTimeout(() => { settingsModal.style.display = 'none'; }, 300);
                 return;
             }
+
+            // 2. 如果功能 Modal 開著，就關掉
             if (modal.style.display === 'flex') {
                 modal.style.display = 'none';
                 return;
             }
+            
+            // 3. 其他情況重置篩選
             resetAllFilters();
         });
 
+
         // ============================================
-        // 3. Pet System
+        // 3. 麵團精靈系統
         // ============================================
+        
         let petMoveInterval;
         let isDragging = false;
         let audioCtx = null;
@@ -777,6 +1305,7 @@
         function initPetSystem() {
             const savedX = localStorage.getItem('petX');
             const savedY = localStorage.getItem('petY');
+            
             if (savedX && savedY) {
                 petEl.style.left = savedX + 'px';
                 petEl.style.top = savedY + 'px';
@@ -784,6 +1313,7 @@
                 petEl.style.left = (window.innerWidth - 100) + 'px';
                 petEl.style.top = '100px';
             }
+
             setupPetInteraction();
             updatePetVisibility();
             if (isPetActive) startPetBehavior();
@@ -793,7 +1323,7 @@
             if (isPetActive) {
                 petEl.style.display = 'block';
                 startPetBehavior();
-                showSpeech('我回來了！<span class="kaomoji">(≧∇≦)/</span>', 2000);
+                showSpeech('我回來了！', 2000);
             } else {
                 petEl.style.display = 'none';
                 stopPetBehavior();
@@ -802,9 +1332,14 @@
 
         function startPetBehavior() {
             clearInterval(petMoveInterval);
-            petMoveInterval = setInterval(() => { if(!isDragging) movePetRandomly(); }, 12000);
+            petMoveInterval = setInterval(() => {
+                if(!isDragging) movePetRandomly();
+            }, 12000);
         }
-        function stopPetBehavior() { clearInterval(petMoveInterval); }
+
+        function stopPetBehavior() {
+            clearInterval(petMoveInterval);
+        }
 
         function movePetRandomly() {
             petEl.classList.add('auto-moving');
@@ -812,14 +1347,17 @@
             const maxY = window.innerHeight - 90;
             const randomX = Math.max(20, Math.random() * maxX);
             const randomY = Math.max(80, Math.random() * maxY);
+
             petEl.style.left = randomX + 'px';
             petEl.style.top = randomY + 'px';
+
             localStorage.setItem('petX', randomX);
             localStorage.setItem('petY', randomY);
         }
 
         function setupPetInteraction() {
             let startX, startY, initialLeft, initialTop, moveDistance = 0;
+
             const startDrag = (e) => {
                 if(!isPetActive) return;
                 isDragging = true;
@@ -831,6 +1369,7 @@
                 moveDistance = 0;
                 resumeAudioContext(); 
             };
+
             const doDrag = (e) => {
                 if (!isDragging) return;
                 e.preventDefault(); 
@@ -842,6 +1381,7 @@
                 petEl.style.left = (initialLeft + dx) + 'px';
                 petEl.style.top = (initialTop + dy) + 'px';
             };
+
             const endDrag = (e) => {
                 if (!isDragging) return;
                 isDragging = false;
@@ -885,8 +1425,9 @@
         }
 
         // ============================================
-        // 4. Audio System (Volume Increased)
+        // 4. 音效系統 (Audio System)
         // ============================================
+
         let bgmTimeout;
         let lastFreq = 220; 
         const scaleFreqs = [130.81, 146.83, 164.81, 196.00, 220.00, 261.63, 293.66, 329.63, 392.00, 440.00];
@@ -912,11 +1453,8 @@
             filter.frequency.linearRampToValueAtTime(100, audioCtx.currentTime + duration);
             const gainNode = audioCtx.createGain();
             gainNode.gain.setValueAtTime(0, audioCtx.currentTime);
-            
-            // SFX Volume Increased (0.15 -> 0.4)
-            gainNode.gain.linearRampToValueAtTime(0.4, audioCtx.currentTime + 0.5); 
+            gainNode.gain.linearRampToValueAtTime(0.15, audioCtx.currentTime + 0.5); 
             gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration); 
-            
             noise.connect(filter); filter.connect(gainNode); gainNode.connect(audioCtx.destination);
             noise.start(); noise.stop(audioCtx.currentTime + duration);
         }
@@ -924,6 +1462,8 @@
         function playNextNote() {
             if (!isMusicOn) return;
             resumeAudioContext();
+
+            // 選擇音高邏輯
             let possibleIndices = [];
             const currentIdx = scaleFreqs.indexOf(lastFreq);
             [-2, -1, 1, 2].forEach(step => {
@@ -935,6 +1475,7 @@
             const freq = scaleFreqs[nextIdx];
             lastFreq = freq;
 
+            // 產生聲音
             const osc = audioCtx.createOscillator();
             const gain = audioCtx.createGain();
             const filter = audioCtx.createBiquadFilter(); 
@@ -945,19 +1486,19 @@
             const now = audioCtx.currentTime;
             const duration = 10.0; 
             gain.gain.setValueAtTime(0, now);
-            
-            // BGM Volume Increased (0.08 -> 0.2)
-            gain.gain.linearRampToValueAtTime(0.2, now + 1.0); 
+            gain.gain.linearRampToValueAtTime(0.08, now + 1.0); 
             gain.gain.exponentialRampToValueAtTime(0.001, now + duration); 
-            
             osc.connect(filter); filter.connect(gain); gain.connect(audioCtx.destination);
             osc.start(); osc.stop(now + duration);
 
+            // 預約下一個音 (隨機 +1秒邏輯已包含)
             const nextTime = 2000 + Math.random() * 1500;
             bgmTimeout = setTimeout(playNextNote, nextTime);
         }
 
+        // 啟動
         initApp();
+        
     </script>
 </body>
 </html>
