@@ -459,178 +459,241 @@ body.dark-mode .dbt-text {
 
 /* 按鈕在深色模式通常不用變，或者你可以改成稍微亮一點的橘色 */
 /* --- 解答之書專用樣式 (Namespace: .ab-) --- */
-/* --- 解答之書 (Answer Book) 豪華升級版 --- */
+/* --- 解答之書 (Answer Book) : 500頁厚度典藏版 --- */
 
-/* 1. 容器與舞台 */
+/* 1. 舞台設定 */
 .ab-container {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    height: 100%;
-    perspective: 1500px; /* 增加景深，讓翻轉更立體 */
-    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); /* 淡雅背景 */
-}
-
-/* 2. 書本本體 (卡片) */
-.ab-book-card {
-    width: 280px;
-    height: 400px;
-    position: relative;
-    transform-style: preserve-3d;
-    transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* 加入回彈效果 */
-    cursor: pointer;
-    box-shadow: 0 15px 35px rgba(0,0,0,0.2);
-    border-radius: 12px;
-}
-
-/* 翻轉狀態 */
-.ab-book-card.is-flipped {
-    transform: rotateY(180deg);
-}
-
-/* 3. 正面與背面共用設定 */
-.ab-front, .ab-back {
-    position: absolute;
+    /* 移除原本突兀的背景框，改用透明或極簡風格 */
     width: 100%;
-    height: 100%;
-    backface-visibility: hidden; /* 背對時隱藏 */
-    border-radius: 12px;
+    min-height: 500px; /* 確保有足夠空間 */
+    perspective: 2000px; /* 景深加深，讓3D效果更明顯 */
+    overflow: visible; /* 避免翻開時封面被切掉 */
+}
+
+/* 2. 書本本體 (定位核心) */
+.ab-book {
+    position: relative;
+    width: 260px;
+    height: 380px;
+    transform-style: preserve-3d;
+    transition: transform 1.5s cubic-bezier(0.2, 0.8, 0.2, 1); /* 整體視角微調動畫 */
+    cursor: pointer;
+    /* 預設視角：稍微側一點，讓人看出有厚度 */
+    transform: rotateY(-15deg) rotateX(5deg); 
+}
+
+/* 當書本打開時，視角轉正，方便閱讀文字 */
+.ab-book.is-open {
+    transform: rotateY(0deg) rotateX(0deg) translateX(60px); /* 稍微右移，平衡封面打開後的重心 */
+}
+
+/* 3. 實體書結構：封面 (Cover) */
+.ab-cover {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background-color: #1a1a2e; /* 午夜藍 */
+    /* 封面材質：星空紋理 */
+    background-image: 
+        radial-gradient(circle at 50% 50%, rgba(255,255,255,0.05) 1px, transparent 1px),
+        linear-gradient(45deg, #16213e 25%, transparent 25%, transparent 75%, #16213e 75%, #16213e);
+    background-size: 20px 20px, 40px 40px;
+    
+    border-radius: 4px 12px 12px 4px; /* 書脊側直角，開口側圓角 */
+    transform-origin: left; /* 關鍵！從左側像門一樣打開 */
+    transition: transform 1.8s cubic-bezier(0.645, 0.045, 0.355, 1); /* 慢速翻頁 */
+    z-index: 10;
+    
+    /* 封面的裝飾 */
+    border: 2px solid #1a1a2e;
+    box-shadow: 
+        inset 0 0 0 4px #c9a227, /* 金色內框 */
+        inset 4px 0 10px rgba(0,0,0,0.5), /* 書脊陰影 */
+        5px 5px 15px rgba(0,0,0,0.3);
+        
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #c9a227;
+    backface-visibility: hidden; /* 背面隱藏 (因為我們有專門的封面內側) */
+}
+
+/* 4. 封面內側 (Cover Inside) - 翻開後看到的左側 */
+.ab-cover-inside {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background-color: #fdfbf7; /* 紙張色 */
+    border-radius: 4px 12px 12px 4px;
+    transform-origin: left;
+    transform: rotateY(0deg); /* 跟隨封面 */
+    z-index: 9; /* 在封面下面 */
+    
+    /* 讓它貼在封面的背面 */
+    /* 這裡透過 JS 同步旋轉，或者我們用一個 Group 包裹。
+       為了簡化，我們讓 .ab-cover 翻轉 -180度，
+       這裡用偽元素模擬或直接作為 .ab-cover 的背面 */
+}
+
+/* 修正：為了讓封面打開有厚度感，我們用 transform 技巧 */
+/* 當加上 is-open 時，封面旋轉 */
+.ab-book.is-open .ab-cover {
+    transform: rotateY(-160deg); /* 打開 160 度，不要全平，比較像書 */
+}
+
+/* 5. 書的內頁 (Pages/Body) - 這是底座，永遠不動 */
+.ab-body {
+    position: absolute;
+    top: 0; left: 0;
+    width: 98%; height: 98%; /* 稍微比封面小一點點 */
+    background-color: #fdfbf7;
+    border-radius: 2px 10px 10px 2px;
+    z-index: 1; /* 在最底層 */
+    box-shadow: inset 10px 0 30px rgba(0,0,0,0.1); /* 內頁陰影 */
+    
+    /* 🌟 核心：模擬 500 頁的厚度 🌟 */
+    /* 利用多重陰影和邊框製造厚度感 */
+    box-shadow: 
+        1px 1px 0 #e0e0e0,
+        2px 2px 0 #e0e0e0,
+        3px 3px 0 #e0e0e0,
+        4px 4px 0 #e0e0e0,
+        5px 5px 0 #e0e0e0,
+        6px 6px 0 #e0e0e0, /* 每一層 1px */
+        7px 7px 0 #e0e0e0,
+        8px 8px 0 #e0e0e0,
+        9px 9px 0 #e0e0e0,
+        10px 10px 0 #e0e0e0,
+        11px 11px 0 #e0e0e0,
+        12px 12px 0 #e0e0e0,
+        /* 加深陰影，讓厚度更立體 */
+        13px 13px 20px rgba(0,0,0,0.4);
+        
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     padding: 20px;
-    box-sizing: border-box;
-}
-
-/* --- 封面設計 (午夜藍金風格) --- */
-.ab-front {
-    background-color: #1a1a2e; /* 深夜藍 */
-    background-image: 
-        radial-gradient(circle at 50% 50%, rgba(255,255,255,0.05) 1px, transparent 1px),
-        linear-gradient(45deg, #16213e 25%, transparent 25%, transparent 75%, #16213e 75%, #16213e);
-    background-size: 20px 20px, 40px 40px; /* 隱約的星空與紋理 */
-    border: 8px solid #1a1a2e; /* 外框 */
-    box-shadow: inset 0 0 0 2px #c9a227; /* 金色內細框 */
-    color: #c9a227; /* 金色文字 */
-}
-
-/* 封面裝飾框 */
-.ab-front::after {
-    content: '';
-    position: absolute;
-    top: 15px; left: 15px; right: 15px; bottom: 15px;
-    border: 1px solid rgba(201, 162, 39, 0.5);
-    border-radius: 8px;
-}
-
-/* 封面文字與圖標 */
-.ab-cover-icon {
-    font-size: 4rem;
-    margin-bottom: 20px;
-    text-shadow: 0 0 10px rgba(201, 162, 39, 0.8);
-}
-
-.ab-cover-title {
-    font-family: 'Cinzel', serif; /* 歐式古典字體 */
-    font-size: 1.5rem;
-    letter-spacing: 2px;
-    text-transform: uppercase;
     text-align: center;
-    font-weight: 700;
 }
 
-.ab-cover-subtitle {
-    font-family: 'Noto Serif TC', serif;
-    font-size: 0.9rem;
-    opacity: 0.8;
-    margin-top: 10px;
-    font-weight: 300;
-}
-
-/* --- 內頁設計 (羊皮紙風格) --- */
-.ab-back {
-    background-color: #fdfbf7; /* 羊皮紙色 */
-    color: #3e3e3e; /* 墨色文字 */
-    transform: rotateY(180deg); /* 預設先轉過去 */
-    box-shadow: inset 10px 0 20px rgba(0,0,0,0.05); /* 模擬書脊陰影 */
-    border: 1px solid #e0e0e0;
-}
-
-/* 內頁裝飾 */
-.ab-back::before {
+/* 書脊 (Spine) - 閉合時左側的厚度 */
+.ab-book::before {
     content: '';
     position: absolute;
-    top: 10px; bottom: 10px; left: 10px; right: 10px;
-    border: 2px double #dcdcdc; /* 雙線邊框 */
-    border-radius: 8px;
+    top: 0; left: 0;
+    width: 20px; /* 書脊寬度 */
+    height: 100%;
+    background: #16213e; /* 深一點的藍 */
+    transform: rotateY(90deg) translateX(-10px); /* 轉到側面 */
+    transform-origin: left;
+    border-radius: 2px;
 }
 
-/* 答案文字樣式 */
+/* 6. 文字樣式 */
+.ab-content {
+    opacity: 0; /* 沒翻開前隱藏文字，製造驚喜 */
+    transition: opacity 1s ease-in 0.5s; /* 延遲顯示 */
+    transform: translateZ(0); /* 確保文字清晰度 */
+}
+
+.ab-book.is-open .ab-content {
+    opacity: 1;
+}
+
 .ab-answer-text {
     font-family: 'Noto Serif TC', serif;
-    font-size: 1.8rem;
+    font-size: 1.6rem;
     font-weight: 700;
-    text-align: center;
-    line-height: 1.4;
-    z-index: 1; /* 確保在邊框之上 */
-    padding: 0 10px;
+    color: #333;
+    line-height: 1.5;
+    margin-bottom: 10px;
 }
 
-/* 英文翻譯樣式 */
 .ab-en {
     display: block;
     font-family: 'Cinzel', serif;
     font-size: 0.8rem;
-    color: #8b7d6b; /* 復古金棕色 */
-    margin-top: 15px;
+    color: #8b7d6b;
+    margin-top: 10px;
     font-weight: 400;
-    letter-spacing: 1px;
     text-transform: uppercase;
 }
 
-/* 提示文字 */
-.ab-hint {
-    margin-top: 30px;
+/* 封面上的文字設計 */
+.ab-cover-deco {
+    text-align: center;
+    transform: translateZ(20px); /* 讓文字浮在封面上，增加立體感 */
+}
+
+.ab-symbol {
+    font-size: 4rem;
+    margin-bottom: 15px;
+    text-shadow: 0 2px 10px rgba(201, 162, 39, 0.5);
+    display: block;
+}
+
+.ab-title-en {
+    font-family: 'Cinzel', serif;
+    font-size: 1.4rem;
+    letter-spacing: 2px;
+    font-weight: 700;
+    margin-bottom: 5px;
+}
+
+.ab-title-zh {
+    font-family: 'Noto Serif TC', serif;
     font-size: 0.9rem;
-    color: #666;
-    opacity: 0.7;
+    opacity: 0.9;
+    font-weight: 300;
+}
+
+/* 7. 提示文字 (Hint) - 移到書本下方 */
+.ab-hint {
+    margin-top: 40px;
+    font-family: sans-serif;
+    font-size: 0.9rem;
+    color: #888;
     animation: pulse 2s infinite;
+    pointer-events: none; /* 避免擋到點擊 */
 }
 
 @keyframes pulse {
     0% { opacity: 0.4; }
-    50% { opacity: 0.8; }
+    50% { opacity: 1; }
     100% { opacity: 0.4; }
 }
 
-/* Dark Mode 支援 */
-@media (prefers-color-scheme: dark) {
-    .ab-back {
-        background-color: #2b2b2b;
-        color: #e0e0e0;
-        box-shadow: inset 10px 0 20px rgba(0,0,0,0.5);
-        border: 1px solid #444;
-    }
-    .ab-back::before {
-        border-color: #444;
-    }
-    .ab-en {
-        color: #aaa;
-    }
+/* 🌙 8. Dark Mode (綁定 APP 自身的 class) */
+/* 假設你的 APP 在 body 或父層會加上 .dark-mode */
+.dark-mode .ab-body {
+    background-color: #2c2c2c; /* 深灰色紙張 */
+    /* 厚度陰影也要變色 */
+    box-shadow: 
+        1px 1px 0 #444,
+        2px 2px 0 #444,
+        3px 3px 0 #444,
+        4px 4px 0 #444,
+        5px 5px 0 #444,
+        6px 6px 0 #444,
+        10px 10px 20px rgba(0,0,0,0.6);
 }
 
-/* --- Dark Mode 支援 --- */
-@media (prefers-color-scheme: dark) {
-    .ab-instruction { color: #aaa; }
-    .ab-cover { background: linear-gradient(135deg, #1a1a1a, #4a4a4a); }
-    .ab-page {
-        background: #2a2a2a;
-        color: #e0e0e0;
-        border-color: #444;
-        box-shadow: inset 5px 0 10px rgba(0,0,0,0.3);
-    }
+.dark-mode .ab-answer-text {
+    color: #e0e0e0; /* 淺色文字 */
+}
+
+.dark-mode .ab-en {
+    color: #aaa;
+}
+
+.dark-mode .ab-cover-inside {
+    background-color: #2b2b2b; /* 封面內側也要變深 */
 }
     </style>
 </head>
@@ -1486,50 +1549,50 @@ const ab_answers = [
     "這是你的英雄之旅。<span class='ab-en'>This is your Hero's Journey.</span>",
     "你的故事由你改寫。<span class='ab-en'>Rewrite your story.</span>"
 ];
-    // 2. 渲染 HTML 結構 (配合新的午夜藍金 CSS)
+// 2. 渲染 HTML (全新的 3D 書本結構)
+    // 移除了粗糙的背景，改為乾淨的佈局
     contentArea.innerHTML = `
         <div class="ab-container">
-            <div class="ab-book-card" id="ab-card">
-                <div class="ab-front">
-                    <div class="ab-cover-icon">🔮</div>
-                    <div class="ab-cover-title">The Book<br>of Answers</div>
-                    <div class="ab-cover-subtitle">默念問題，輕觸開啟</div>
+            <div class="ab-book" id="ab-book">
+                <div class="ab-body">
+                    <div class="ab-content">
+                        <div class="ab-answer-text" id="ab-text">...</div>
+                    </div>
                 </div>
                 
-                <div class="ab-back">
-                    <div class="ab-answer-text" id="ab-text">
-                        ...
+                <div class="ab-cover">
+                    <div class="ab-cover-deco">
+                        <span class="ab-symbol">✦</span> <div class="ab-title-en">The Book<br>of Answers</div>
+                        <div class="ab-title-zh">心中默念 · 輕觸揭示</div>
                     </div>
                 </div>
             </div>
-            <div class="ab-hint">點擊書本翻頁</div>
+            
+            <div class="ab-hint">輕觸書本翻頁</div>
         </div>
     `;
 
-    // 3. 綁定神經系統 (JavaScript 邏輯)
-    const card = contentArea.querySelector('#ab-card');
+    // 3. 綁定事件
+    const book = contentArea.querySelector('#ab-book');
     const textEl = contentArea.querySelector('#ab-text');
-    
-    // 記憶上次的索引，避免連續重複
     let lastIndex = -1;
 
-    // 4. 點擊事件監聽
-    card.addEventListener('click', () => {
-        // 如果卡片已經翻開 (有 is-flipped class)，就蓋起來 (重置)
-        if (card.classList.contains('is-flipped')) {
-            card.classList.remove('is-flipped');
+    book.addEventListener('click', () => {
+        // 檢查是否已經打開
+        if (book.classList.contains('is-open')) {
+            // --- 狀態：書是開的，要合起來 ---
+            book.classList.remove('is-open');
             
-            // 為了讓體驗更好，蓋起來的時候，稍微等一下再清空文字
+            // 合起來後，稍微等一下再清空文字 (配合動畫 1.8秒)
             setTimeout(() => {
-                textEl.innerHTML = '...'; 
-            }, 300);
+                textEl.innerHTML = '...';
+            }, 500); // 提早一點清空沒關係
             
         } else {
-            // 如果卡片是蓋著的，就要進行「抽牌」並「翻開」
+            // --- 狀態：書是合的，要打開 ---
             
-            // --- 隨機選取邏輯 (防重複) ---
+            // 1. 選牌邏輯 (防重複)
             let randomIndex;
-            // 如果題庫夠多，就嘗試選一個跟上次不一樣的
             if (ab_answers.length > 1) {
                 do {
                     randomIndex = Math.floor(Math.random() * ab_answers.length);
@@ -1537,14 +1600,13 @@ const ab_answers = [
             } else {
                 randomIndex = 0;
             }
-            lastIndex = randomIndex; // 記住這次的
+            lastIndex = randomIndex;
             
-            // --- 更新文字 ---
-            // 使用 innerHTML 因為我們有 <span> 標籤
+            // 2. 填入文字
             textEl.innerHTML = ab_answers[randomIndex];
-
-            // --- 執行翻轉 ---
-            card.classList.add('is-flipped');
+            
+            // 3. 添加 class 觸發 CSS 開門動畫
+            book.classList.add('is-open');
         }
     });
 },
