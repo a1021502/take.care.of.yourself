@@ -459,21 +459,23 @@ body.dark-mode .dbt-text {
 
 /* 按鈕在深色模式通常不用變，或者你可以改成稍微亮一點的橘色 */
 /* --- 解答之書專用樣式 (Namespace: .ab-) --- */
-/* --- 解答之書 : 皇家典藏 · 全封閉實體版 --- */
+/* --- 解答之書 : 皇家典藏 · 神級完全體 --- */
 
-/* 1. 舞台設定 */
+/* 1. 舞台設定 (🔥 修正：整體上移) */
 .ab-container {
     position: relative;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
+    /* 改用 flex-start 配合上邊距來控制垂直位置，或者用 padding-bottom 把中心點頂上去 */
+    justify-content: center; 
     width: 100%;
     min-height: 600px;
-    padding-bottom: 15vh;
+    /* 🔥 關鍵：增加底部留白，把視覺中心往上推 */
+    padding-bottom: 25vh; 
     perspective: 2500px;
     overflow: visible;
-    touch-action: none; /* 手機防破圖 */
+    touch-action: none;
 }
 
 /* 2. 書本容器 */
@@ -483,7 +485,7 @@ body.dark-mode .dbt-text {
     transform-style: preserve-3d;
     /* 視差變數 */
     transform: rotateY(calc(-30deg + var(--rY, 0deg))) rotateX(calc(10deg + var(--rX, 0deg)));
-    transition: transform 0.1s ease-out; /* 滑順度優化 */
+    transition: transform 0.1s ease-out; 
     cursor: pointer;
     z-index: 10;
 }
@@ -507,10 +509,9 @@ body.dark-mode .dbt-text {
     left: -40px; width: 40px;
     background-color: #16213e;
     transform-origin: right; 
-    transform: rotateY(-90deg); /* 轉到側面 */
+    transform: rotateY(-90deg);
     display: flex; align-items: center; justify-content: center;
     z-index: 5;
-    /* 讓書脊看起來跟封底有連接 */
     border: 1px solid rgba(0,0,0,0.2);
     box-shadow: inset 10px 0 20px rgba(0,0,0,0.6);
 }
@@ -520,7 +521,7 @@ body.dark-mode .dbt-text {
     letter-spacing: 4px; opacity: 0.8;
 }
 
-/* 4. 封面群組 (可活動的蓋子) */
+/* 4. 封面群組 */
 .ab-cover-group {
     position: absolute; top: 0; left: 0; width: 100%; height: 100%;
     transform-origin: left; transform-style: preserve-3d;
@@ -533,14 +534,11 @@ body.dark-mode .dbt-text {
 .ab-cover-front {
     position: absolute; top: 0; left: 0; width: 100%; height: 100%;
     background-color: #151b29;
-    
-    /* 粗曠皮革紋 */
     background-image: 
         repeating-linear-gradient(45deg, rgba(255,255,255,0.03) 0px, rgba(255,255,255,0.03) 2px, transparent 2px, transparent 10px),
         repeating-linear-gradient(-45deg, rgba(255,255,255,0.02) 0px, rgba(255,255,255,0.02) 2px, transparent 2px, transparent 15px),
         radial-gradient(circle at 50% 50%, rgba(201, 162, 39, 0.1) 1px, transparent 1px);
     background-size: auto, auto, 24px 24px;
-    
     backface-visibility: hidden; border-radius: 0 8px 8px 0;
     border: 2px solid #0b101a;
     box-shadow: inset 0 0 0 4px #c9a227;
@@ -572,32 +570,25 @@ body.dark-mode .dbt-text {
     box-shadow: inset 0 0 20px rgba(0,0,0,0.1), 0 0 0 1px rgba(0,0,0,0.1);
 }
 
-/* 🔥 5. 新增：實體封底 (Exterior Back) - 解決中空問題 */
+/* 5. 實體封底 (Exterior Back) */
 .ab-cover-exterior-back {
     position: absolute; top: 0; left: 0; width: 100%; height: 100%;
     background-color: #151b29;
-    /* 往後推 40px，剛好接在書脊的另一端 */
     transform: translateZ(-40px) rotateY(180deg); 
-    border-radius: 8px 0 0 8px; /* 圓角方向跟封面相反 */
+    border-radius: 8px 0 0 8px;
     border: 2px solid #0b101a;
-    
-    /* 封底也給它一樣的紋路 */
     background-image: 
         repeating-linear-gradient(45deg, rgba(255,255,255,0.03) 0px, rgba(255,255,255,0.03) 2px, transparent 2px, transparent 10px),
         repeating-linear-gradient(-45deg, rgba(255,255,255,0.02) 0px, rgba(255,255,255,0.02) 2px, transparent 2px, transparent 15px);
-    
-    box-shadow: inset 0 0 50px rgba(0,0,0,0.8); /* 封底暗一點 */
+    box-shadow: inset 0 0 50px rgba(0,0,0,0.8);
     z-index: 0;
 }
 
-/* 6. 內頁主體 (🔥 修正位置：置中) */
+/* 6. 內頁主體 (置中) */
 .ab-pages {
     position: absolute; top: 8px; bottom: 8px; left: 4px; right: 12px;
     background-color: #fdfbf7; z-index: 1; transform-style: preserve-3d;
-    
-    /* 🔥 關鍵：把內頁往裡面推 20px，讓它夾在封面封底中間 */
     transform: translateZ(-20px); 
-    
     box-shadow: 
         inset 20px 0 30px rgba(0,0,0,0.15),
         1px 1px 0 #dcdcdc, 2px 2px 0 #dcdcdc, 3px 3px 0 #dcdcdc, 4px 4px 0 #dcdcdc, 5px 5px 0 #dcdcdc,
@@ -607,7 +598,7 @@ body.dark-mode .dbt-text {
     text-align: center; padding: 20px; overflow: hidden;
 }
 
-/* 實體封口 (配合內頁的新位置) */
+/* 實體封口 */
 .ab-pages-bottom {
     position: absolute; bottom: -18px; left: 0; width: 100%; height: 18px;
     background-color: #e6e6e6; transform-origin: top; transform: rotateX(-90deg);
@@ -636,20 +627,28 @@ body.dark-mode .dbt-text {
     50% { transform: scale(1.03); opacity: 1; filter: drop-shadow(0 0 15px rgba(201, 162, 39, 0.8)); }
 }
 
-/* 8. 文字與動畫 */
-.ab-content-box { opacity: 0; transform: translateZ(0); }
-
-/* 浮現動畫 */
-.ab-text-reveal {
-    animation: inkReveal 1.5s cubic-bezier(0.23, 1, 0.32, 1) forwards, textBreathe 4s ease-in-out infinite 1.5s;
+/* 8. 文字與動畫 (🔥 修復：緩慢墨水浮現 + 呼吸) */
+.ab-content-box { 
+    opacity: 0; 
+    transform: translateZ(0); 
 }
+
+/* 浮現動畫 (Reveal) */
+.ab-text-reveal {
+    /* 0.4s 延遲，等書打開一點再開始浮現 */
+    animation: inkReveal 2.5s cubic-bezier(0.2, 1, 0.3, 1) 0.4s forwards, 
+               textBreathe 4s ease-in-out infinite 2.9s; /* 呼吸接在浮現之後 */
+}
+
 @keyframes inkReveal {
-    0% { opacity: 0; transform: scale(0.95); filter: blur(8px); }
+    0% { opacity: 0; transform: scale(0.92); filter: blur(12px); }
+    30% { opacity: 0.6; filter: blur(4px); }
     100% { opacity: 1; transform: scale(1); filter: blur(0px); }
 }
+
 @keyframes textBreathe {
     0%, 100% { opacity: 1; text-shadow: 0 0 0 rgba(0,0,0,0); }
-    50% { opacity: 0.8; text-shadow: 0 0 10px rgba(0,0,0,0.1); }
+    50% { opacity: 0.85; text-shadow: 0 0 12px rgba(201, 162, 39, 0.3); }
 }
 
 .ab-answer-text { font-family: 'Noto Serif TC', serif; font-size: 1.5rem; font-weight: 700; color: #333; line-height: 1.6; }
@@ -1531,7 +1530,7 @@ const ab_answers = [
     const flipSound = new Audio('https://assets.mixkit.co/active_storage/sfx/2411/2411-preview.mp3');
     flipSound.volume = 0.5;
 
-    // 3. 渲染 HTML (加入實體封底)
+    // 3. 渲染 HTML (包含實體封底)
     contentArea.innerHTML = `
         <div class="ab-container" id="ab-container">
             
@@ -1589,9 +1588,8 @@ const ab_answers = [
         const x = clientX - window.innerWidth / 2;
         const y = clientY - window.innerHeight / 2;
 
-        // 🔥 靈敏度修正：x / 10
-        // 這樣可以清楚看到書脊，但不會一滑就看到書本背面
-        const rotateY = x / 10; 
+        // 🔥 視差 X/3 回歸：因為有封底，現在可以放心大膽轉！
+        const rotateY = x / 3; 
         const rotateX = -y / 15; 
 
         book.style.setProperty('--rY', rotateY + 'deg');
@@ -1631,6 +1629,7 @@ const ab_answers = [
             // --- 關書 ---
             book.classList.remove('is-open');
             
+            // 重置視差
             book.style.setProperty('--rY', '0deg');
             book.style.setProperty('--rX', '0deg');
             
@@ -1640,7 +1639,7 @@ const ab_answers = [
                 flipSound.play().catch(()=>{});
             }
             
-            // 等待書蓋上後清空
+            // 等待書蓋上後清空 (墨水消失)
             setTimeout(() => { 
                 contentBox.classList.remove('ab-text-reveal');
                 textEl.innerHTML = '...'; 
@@ -1658,7 +1657,10 @@ const ab_answers = [
             lastIndex = randomIndex;
             
             textEl.innerHTML = ab_answers[randomIndex];
+            
+            // 🔥 墨水浮現 (配合 CSS 的延遲設定)
             contentBox.classList.add('ab-text-reveal');
+            
             book.classList.add('is-open');
         }
     });
