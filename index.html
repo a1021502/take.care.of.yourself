@@ -459,14 +459,16 @@ body.dark-mode .dbt-text {
 
 /* 按鈕在深色模式通常不用變，或者你可以改成稍微亮一點的橘色 */
 /* --- 解答之書專用樣式 (Namespace: .ab-) --- */
-/* --- 解答之書 (Answer Book) : 絕對遮蔽修正版 --- */
+/* --- 解答之書 (Answer Book) : 皇家典藏 · 最終工藝版 --- */
 
-/* 1. 舞台與懸浮 */
+/* 1. 舞台設定 (上移調整) */
 .ab-container {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
+    /* 改用 justify-content: flex-start 配合 padding */
+    justify-content: flex-start; 
+    padding-top: 5vh; /* 讓整體稍微往上，不再完全死板置中 */
     width: 100%;
     min-height: 600px;
     perspective: 2500px;
@@ -475,26 +477,25 @@ body.dark-mode .dbt-text {
 
 @keyframes floatBook {
     0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-12px); }
+    50% { transform: translateY(-10px); }
 }
 
-/* 2. 書本容器 (Book) */
+/* 2. 書本容器 */
 .ab-book {
     position: relative;
-    /* 這是整個書的大小，也就是「封面」的大小 */
     width: 280px;  
     height: 400px; 
     transform-style: preserve-3d;
     transition: transform 1.2s cubic-bezier(0.2, 0.8, 0.2, 1);
     
-    /* 預設閉合視角：稍微側一點 */
+    /* 預設視角：側身展示書脊 */
     transform: rotateY(-30deg) rotateX(10deg);
     animation: floatBook 6s ease-in-out infinite;
     cursor: pointer;
 }
 
 .ab-book.is-open {
-    /* 打開時轉正並右移 */
+    /* 打開時轉正，稍微右移平衡視覺 */
     transform: rotateY(-5deg) rotateX(0deg) translateX(80px);
 }
 
@@ -502,17 +503,15 @@ body.dark-mode .dbt-text {
 .ab-spine {
     position: absolute;
     top: 0; bottom: 0;
-    left: -32px; /* 書脊寬度 */
+    left: -32px;
     width: 32px;
-    background-color: #16213e; /* 深藍 */
+    background-color: #16213e;
     transform-origin: right;
     transform: rotateY(-90deg);
-    
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 5; /* 低於封面 */
-    
+    z-index: 5;
     border: 1px solid rgba(0,0,0,0.2);
     box-shadow: inset 10px 0 20px rgba(0,0,0,0.6);
     border-radius: 4px 0 0 4px;
@@ -528,7 +527,7 @@ body.dark-mode .dbt-text {
     opacity: 0.8;
 }
 
-/* 4. 封面群組 (Cover Group) - 這是「門」 */
+/* 4. 封面群組 (Cover Group) */
 .ab-cover-group {
     position: absolute;
     top: 0; left: 0;
@@ -536,121 +535,138 @@ body.dark-mode .dbt-text {
     transform-origin: left;
     transform-style: preserve-3d;
     transition: transform 1.8s cubic-bezier(0.645, 0.045, 0.355, 1);
-    
-    /* 🔥 關鍵修正：層級設為最高，確保蓋住內頁 */
-    z-index: 50; 
+    z-index: 50; /* 最高層級 */
 }
 
 .ab-book.is-open .ab-cover-group {
-    transform: rotateY(-155deg);
+    transform: rotateY(-160deg); /* 打開角度 */
 }
 
-/* 4.1 封面正面 */
+/* 4.1 封面正面 (Front) */
+/* 1. 封面材質優化：加入皮革感與細紋 */
 .ab-cover-front {
-    position: absolute;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    background-color: #1a1a2e; /* 午夜藍 */
-    /* 星空紋理 */
+    /* ... (原本的定位與大小不變) ... */
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    backface-visibility: hidden; border-radius: 0 8px 8px 0;
+    
+    background-color: #151b29; /* 更深的夜空藍 */
+    border: 2px solid #0b101a;
+    
+    /* 複雜背景紋理：模擬魔法陣的隱約線條 */
     background-image: 
-        radial-gradient(circle at 50% 50%, rgba(255,255,255,0.05) 1px, transparent 1px),
-        linear-gradient(45deg, #16213e 25%, transparent 25%, transparent 75%, #16213e 75%, #16213e);
-    background-size: 20px 20px, 40px 40px;
+        radial-gradient(circle at 50% 50%, rgba(201, 162, 39, 0.05) 1px, transparent 1px), /* 星點 */
+        repeating-radial-gradient(circle at 50% 50%, transparent 0, transparent 20px, rgba(255,255,255,0.01) 21px, transparent 22px), /* 同心圓 */
+        linear-gradient(45deg, #121824 25%, transparent 25%, transparent 75%, #121824 75%, #121824); /* 皮革紋 */
+    background-size: 20px 20px, 100% 100%, 4px 4px;
     
-    backface-visibility: hidden; /* 確保背面不干擾 */
-    border-radius: 0 8px 8px 0;
-    border: 2px solid #0f1524;
-    box-shadow: inset 0 0 0 5px #c9a227; /* 金框 */
-    
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
+    box-shadow: inset 0 0 0 4px #c9a227; /* 內金框 */
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
     color: #c9a227;
 }
 
-/* 4.2 封面內面 (翻開後左側) */
+/* 4.2 封面內面 (Inside / Endpaper) - 工藝重點 */
 .ab-cover-back {
     position: absolute;
     top: 0; left: 0;
     width: 100%; height: 100%;
-    background-color: #1a1a2e;
+    /* 底色是深藍 (書皮包進來的顏色) */
+    background-color: #1a1a2e; 
     transform: rotateY(180deg);
     backface-visibility: hidden;
     border-radius: 8px 0 0 8px;
-    box-shadow: inset 0 0 0 3px rgba(201, 162, 39, 0.3);
+    
+    /* 這裡只保留最外圈的金色壓紋 */
+    box-shadow: inset 0 0 0 3px #c9a227;
     
     display: flex;
     align-items: center;
     justify-content: center;
 }
-/* 內面的紙張紋理 (裝飾用) */
+
+/* 擬真扉頁紙張 (Paste-down Endpaper) */
 .ab-cover-back::after {
     content: '';
-    width: 92%; height: 94%;
-    background-color: #fdfbf7;
-    opacity: 0.03; 
+    /* 比封面小一圈，露出藍色邊緣 (包邊效果) */
+    width: 88%; 
+    height: 92%;
+    background-color: #fdfbf7; /* 紙張顏色 */
+    
+    /* 四角內凹效果 (利用 border-radius 模擬紙張貼在皮革上的感覺) */
+    border-radius: 2px;
+    
+    /* 紙張紋理 */
+    background-image: linear-gradient(to right, rgba(0,0,0,0.05) 1px, transparent 1px);
+    background-size: 4px 4px;
+    
+    /* 內頁陰影，增加立體感 */
+    box-shadow: 
+        inset 0 0 20px rgba(0,0,0,0.1), /* 紙張舊化感 */
+        0 0 0 1px rgba(0,0,0,0.1); /* 紙張邊緣線 */
 }
 
-/* 5. 內頁 (Pages) - 這就是原本露出來的罪魁禍首 */
+/* 5. 內頁主體 (Pages Block) */
 .ab-pages {
     position: absolute;
-    /* 🔥 關鍵修正：讓內頁比封面小，並往中間縮 */
-    top: 10px; 
-    bottom: 10px;
-    left: 2px;  /* 稍微離開書脊一點點 */
-    right: 15px; /* 右邊留空隙，讓封面蓋得住 */
-    /* 不設定 width/height，改用 top/bottom/right 約束 */
-    
+    top: 10px; bottom: 10px;
+    left: 4px; right: 15px; /* 內縮 */
     background-color: #fdfbf7;
-    z-index: 1; /* 🔥 設為最低層級，保證被封面壓死 */
+    z-index: 1; /* 最底層 */
     
-    /* 500頁厚度模擬 (只顯示在右側和下側) */
+    /* 500頁厚度模擬 */
     box-shadow: 
-        inset 10px 0 20px rgba(0,0,0,0.1), /* 內凹 */
-        /* 右側厚度堆疊 */
+        inset 15px 0 20px rgba(0,0,0,0.1), /* 書縫陰影加深 */
         1px 1px 0 #dcdcdc, 2px 2px 0 #dcdcdc, 3px 3px 0 #dcdcdc,
         4px 4px 0 #dcdcdc, 5px 5px 0 #dcdcdc, 6px 6px 0 #dcdcdc,
         7px 7px 0 #dcdcdc, 8px 8px 0 #dcdcdc, 9px 9px 0 #dcdcdc,
         10px 10px 0 #dcdcdc, 11px 11px 0 #dcdcdc, 12px 12px 0 #dcdcdc,
         13px 13px 0 #dcdcdc, 14px 14px 0 #dcdcdc, 15px 15px 0 #dcdcdc,
-        /* 陰影 */
-        20px 20px 30px rgba(0,0,0,0.5);
+        25px 25px 40px rgba(0,0,0,0.5); /* 落地陰影 */
 
     display: flex;
     align-items: center;
     justify-content: center;
     text-align: center;
     padding: 20px;
-    overflow: hidden; /* 防止文字溢出 */
+    overflow: hidden;
 }
 
-/* 書縫漸層 */
 .ab-pages::before {
     content: '';
     position: absolute;
     left: 0; top: 0; bottom: 0;
-    width: 30px;
+    width: 40px;
     background: linear-gradient(to right, rgba(0,0,0,0.15), transparent);
     pointer-events: none;
 }
 
-/* 6. 圖標與文字 (保持精緻設計) */
+/* 2. SVG 圖標容器 (取消原本的 CSS 繪圖，改用 SVG) */
 .ab-star-icon {
     position: relative;
-    width: 60px; height: 60px;
-    margin-bottom: 30px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    width: 100px; height: 100px; /* 放大圖標 */
+    margin-bottom: 25px;
+    display: flex; align-items: center; justify-content: center;
+    
+    /* 讓 SVG 帶有神聖的光暈 */
+    filter: drop-shadow(0 0 8px rgba(201, 162, 39, 0.4));
+    animation: breatheIcon 4s ease-in-out infinite;
 }
-.ab-star-icon::before, .ab-star-icon::after {
-    content: ''; position: absolute; width: 100%; height: 100%;
-    border: 1px solid #c9a227; transition: all 0.5s;
-}
-.ab-star-icon::before { transform: rotate(45deg); box-shadow: 0 0 10px rgba(201,162,39,0.3); }
-.ab-star-center { width: 6px; height: 6px; background: #c9a227; border-radius: 50%; box-shadow: 0 0 15px #c9a227; }
 
+@keyframes breatheIcon {
+    0%, 100% { transform: scale(1); opacity: 0.9; }
+    50% { transform: scale(1.05); opacity: 1; filter: drop-shadow(0 0 15px rgba(201, 162, 39, 0.7)); }
+}
+
+/* 確保 SVG 線條顏色正確 */
+.ab-star-icon svg {
+    width: 100%; height: 100%;
+    fill: none;
+    stroke: #c9a227;
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+/* 7. 文字顯示 */
 .ab-content-box {
     opacity: 0;
     transition: opacity 1s ease 0.6s;
@@ -665,28 +681,51 @@ body.dark-mode .dbt-text {
     color: #333;
     line-height: 1.6;
 }
+
 .ab-en {
     display: block; font-family: 'Cinzel', serif; font-size: 0.8rem;
     color: #8b7d6b; margin-top: 15px; font-weight: 400; text-transform: uppercase;
 }
-.ab-cover-title-en { font-family: 'Cinzel', serif; font-size: 1.6rem; font-weight: 700; letter-spacing: 2px; margin-bottom: 10px; text-shadow: 0 2px 4px rgba(0,0,0,0.6); text-align: center; }
-.ab-cover-title-zh { font-family: 'Noto Serif TC', serif; font-size: 0.9rem; letter-spacing: 2px; opacity: 0.8; }
-.ab-hint { margin-top: 60px; font-size: 0.9rem; color: #888; opacity: 0.6; letter-spacing: 1px; }
+
+/* 封面文字 */
+/* 3. 標題字體微調 (更細緻) */
+.ab-cover-title-en {
+    font-family: 'Cinzel', serif; font-size: 1.5rem; font-weight: 700;
+    letter-spacing: 3px; margin-bottom: 8px;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.8);
+    background: linear-gradient(to bottom, #ebd185, #c9a227); /* 金屬漸層字 */
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+.ab-cover-title-zh { 
+    font-family: 'Noto Serif TC', serif; font-size: 0.9rem; letter-spacing: 3px; opacity: 0.8; 
+}
+
+/* 8. 提示文字 (上移) */
+.ab-hint { 
+    margin-top: 40px; /* 稍微拉近一點 */
+    font-size: 0.9rem; color: #888; opacity: 0.6; letter-spacing: 1px; 
+}
 
 /* 🌙 Dark Mode */
 .dark-mode .ab-pages {
     background-color: #2b2b2b;
     box-shadow: 
-        inset 10px 0 20px rgba(0,0,0,0.3),
+        inset 15px 0 20px rgba(0,0,0,0.3),
         1px 1px 0 #3d3d3d, 2px 2px 0 #3d3d3d, 3px 3px 0 #3d3d3d,
         4px 4px 0 #3d3d3d, 5px 5px 0 #3d3d3d, 6px 6px 0 #3d3d3d,
         7px 7px 0 #3d3d3d, 8px 8px 0 #3d3d3d, 9px 9px 0 #3d3d3d,
         10px 10px 0 #3d3d3d, 11px 11px 0 #3d3d3d, 12px 12px 0 #3d3d3d,
         13px 13px 0 #3d3d3d, 14px 14px 0 #3d3d3d, 15px 15px 0 #3d3d3d,
-        20px 20px 50px rgba(0,0,0,0.8);
+        25px 25px 50px rgba(0,0,0,0.8);
 }
 .dark-mode .ab-answer-text { color: #e0e0e0; }
 .dark-mode .ab-en { color: #aaa; }
+.dark-mode .ab-cover-back::after { 
+    background-color: #2b2b2b; /* 暗色紙 */
+    background-image: linear-gradient(to right, rgba(255,255,255,0.05) 1px, transparent 1px);
+    box-shadow: inset 0 0 20px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.05);
+}
 /* 🌙 8. Dark Mode (綁定 APP 自身的 class) */
 /* 假設你的 APP 在 body 或父層會加上 .dark-mode */
 .dark-mode .ab-body {
@@ -1567,8 +1606,12 @@ const ab_answers = [
     "這是你的英雄之旅。<span class='ab-en'>This is your Hero's Journey.</span>",
     "你的故事由你改寫。<span class='ab-en'>Rewrite your story.</span>"
 ];
+    // 2. 音效設定 (使用公開的短音效連結，或之後換成你的 Base64)
+    // 這裡用一個清脆的翻書聲
+    const flipSound = new Audio('https://assets.mixkit.co/active_storage/sfx/2004/2004-preview.mp3');
+    flipSound.volume = 0.5; // 音量適中
 
-    // 2. 渲染 HTML
+    // 3. 渲染 HTML (嵌入複雜 SVG)
     contentArea.innerHTML = `
         <div class="ab-container">
             <div class="ab-book" id="ab-book">
@@ -1579,11 +1622,24 @@ const ab_answers = [
                 <div class="ab-cover-group">
                     <div class="ab-cover-front">
                         <div class="ab-star-icon">
-                            <div class="ab-star-center"></div>
+                            <svg viewBox="0 0 100 100">
+                                <circle cx="50" cy="50" r="45" stroke-opacity="0.5" stroke-dasharray="2 4"/>
+                                <circle cx="50" cy="50" r="38" stroke-width="1"/>
+                                <path d="M50 15 L80 70 L20 70 Z" stroke-opacity="0.8"/>
+                                <path d="M50 85 L20 30 L80 30 Z" stroke-opacity="0.8"/>
+                                <circle cx="50" cy="50" r="12" stroke-width="2"/>
+                                <circle cx="50" cy="50" r="4" fill="#c9a227" stroke="none"/>
+                                <line x1="50" y1="5" x2="50" y2="15" stroke-opacity="0.6"/>
+                                <line x1="50" y1="85" x2="50" y2="95" stroke-opacity="0.6"/>
+                                <line x1="5" y1="50" x2="15" y2="50" stroke-opacity="0.6"/>
+                                <line x1="85" y1="50" x2="95" y2="50" stroke-opacity="0.6"/>
+                            </svg>
                         </div>
+                        
                         <div class="ab-cover-title-en">The Book<br>of Answers</div>
                         <div class="ab-cover-title-zh">默念問題 · 輕觸揭示</div>
                     </div>
+                    
                     <div class="ab-cover-back"></div>
                 </div>
 
@@ -1598,16 +1654,36 @@ const ab_answers = [
         </div>
     `;
 
-    // 3. 綁定事件
+    // 4. 綁定與互動邏輯
     const book = contentArea.querySelector('#ab-book');
     const textEl = contentArea.querySelector('#ab-text');
     let lastIndex = -1;
 
     book.addEventListener('click', () => {
+        // A. 觸覺回饋 (Haptic Feedback) - 僅手機有效
+        if (navigator.vibrate) {
+            navigator.vibrate(15); // 輕微震動 15ms，模擬卡扣感
+        }
+
         if (book.classList.contains('is-open')) {
+            // --- 關書 ---
             book.classList.remove('is-open');
             setTimeout(() => { textEl.innerHTML = '...'; }, 600);
+            
+            // 關書聲 (稍微低沉一點，這裡簡單用同一個)
+            flipSound.currentTime = 0;
+            flipSound.playbackRate = 1.2; // 快一點
+            flipSound.play().catch(() => {}); // catch 避免瀏覽器阻擋自動播放
+            
         } else {
+            // --- 開書 ---
+            
+            // 1. 播放翻頁聲
+            flipSound.currentTime = 0;
+            flipSound.playbackRate = 1.0;
+            flipSound.play().catch(() => {});
+
+            // 2. 隨機選題
             let randomIndex;
             if (ab_answers.length > 1) {
                 do {
@@ -1617,7 +1693,10 @@ const ab_answers = [
                 randomIndex = 0;
             }
             lastIndex = randomIndex;
+            
             textEl.innerHTML = ab_answers[randomIndex];
+            
+            // 3. 動畫
             book.classList.add('is-open');
         }
     });
