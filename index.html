@@ -410,54 +410,237 @@
         @keyframes muscleFlex { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
         @keyframes lidOpen { 0%, 100% { transform: rotate(0); } 50% { transform: rotate(-20deg) translateY(-5px); } }
         @keyframes conveyorMove { 0% { transform: translateX(0); opacity: 1; } 100% { transform: translateX(40px); opacity: 0; } }
-/* === DBT 卡片專屬樣式 === */
+/* --- ☁️ 麵團精靈 DBT 終極質感版 CSS --- */
 
-/* 1. 預設模式 (亮色) */
-.dbt-card-container {
-    background: #FFF5EB; /* 原本的暖橘白 */
-    padding: 20px;
-    border-radius: 15px;
+/* 1. 基礎設定與深色模式變數 */
+:root {
+    --dbt-bg: #fff;
+    --dbt-text: #4A4442;
+    --dbt-card-bg: #fff;
+    --dbt-shadow: rgba(0,0,0,0.1);
+    --dbt-rip-bg: #f0f0f0;
+}
+
+/* 深色模式適配 (當 body 有 dark-mode class 時生效) */
+body.dark-mode {
+    --dbt-bg: #1a1a1a;
+    --dbt-text: #e0e0e0;
+    --dbt-card-bg: #2d2d2d;
+    --dbt-shadow: rgba(0,0,0,0.5);
+    --dbt-rip-bg: #333;
+}
+
+.dbt-wrapper {
+    width: 100%; height: 100%;
+    display: flex; flex-direction: column;
+    font-family: inherit;
+    overflow: hidden;
+    position: relative;
+    color: var(--dbt-text);
+    transition: color 0.3s;
+}
+
+.dbt-stage {
+    flex: 1; display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    width: 100%; height: 100%;
+    padding: 10px; box-sizing: border-box;
+    animation: dbtFadeIn 0.5s ease-out;
+    position: relative;
+    z-index: 2; /* 確保內容在背景之上 */
+}
+@keyframes dbtFadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+/* --- 階段 1: 麵團按鈕 --- */
+.dough-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 30px;
+    width: 100%; max-width: 400px; margin-top: 20px;
+}
+.dough-btn {
+    display: flex; flex-direction: column; align-items: center;
+    cursor: pointer; transition: transform 0.2s;
+    -webkit-tap-highlight-color: transparent;
+}
+.dough-btn:active { transform: scale(0.9); }
+.dough-svg {
+    width: 100px; height: 100px; transition: 0.3s;
+    filter: drop-shadow(0 4px 6px var(--dbt-shadow));
+}
+.dough-label {
+    margin-top: 15px; font-size: 1.1rem; font-weight: bold; letter-spacing: 1px; opacity: 0.8;
+    color: var(--dbt-text);
+}
+
+/* --- 階段 2: 撕卡包 (去除灰條，純粹撕裂) --- */
+.rip-container {
+    position: relative; width: 260px; height: 360px; margin-top: 20px;
+}
+.rip-pack-main {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    background-color: var(--dbt-card-bg); /* 深色模式變色 */
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E");
+    border-radius: 12px; z-index: 2;
+    box-shadow: 0 10px 30px var(--dbt-shadow);
+    overflow: hidden;
+    transition: transform 0.3s, background-color 0.3s;
+}
+
+/* 只有移動的撕條 */
+.rip-strip-moving {
+    position: absolute; top: 0; left: 0; width: 40px; height: 100%; /* 初始高度覆蓋 */
+    max-height: 60px; /* 限制高度 */
+    background: linear-gradient(to right, var(--dbt-card-bg), var(--dbt-rip-bg));
+    z-index: 10; cursor: grab;
+    display: flex; align-items: center; justify-content: flex-start;
+    padding-left: 10px;
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
+    border-radius: 0 12px 12px 0; /* 右邊圓角 */
+    clip-path: polygon(0 0, 100% 0, 90% 100%, 0% 100%); /* 鋸齒狀邊緣暗示 */
+    touch-action: none; /* 防止手機滑動頁面 */
+    white-space: nowrap;
+}
+.rip-strip-moving:active { cursor: grabbing; }
+
+/* 撕裂痕跡 */
+.rip-trace {
+    position: absolute; top: 0; left: 0; width: 0%; height: 60px;
+    background: #000; z-index: 1; opacity: 0.1;
+    pointer-events: none;
+}
+
+/* --- 階段 3: 抽卡與閃光 --- */
+/* 專注遮罩：讓背景變暗 */
+.focus-dimmer {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.85); /* 很黑的背景 */
+    z-index: 5; /* 在卡片之下(卡片要更高)，但在其他UI之上 */
+    opacity: 0; pointer-events: none; transition: opacity 0.5s;
+    backdrop-filter: blur(2px);
+}
+.focus-active .focus-dimmer { opacity: 1; pointer-events: auto; }
+
+/* 卡片堆疊區 - 必須比 dimmer 高 */
+.real-card-stack { 
+    width: 280px; height: 440px; position: relative; perspective: 1000px; 
+    z-index: 10; /* 確保卡片在遮罩之上 */
+}
+
+.real-card-item {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    border-radius: 16px;
+    transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+    transform-style: preserve-3d;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+}
+
+.real-card-face {
+    position: absolute; width: 100%; height: 100%;
+    backface-visibility: hidden;
+    border-radius: 16px;
+    background-color: var(--dbt-card-bg);
+    /* 紙張紋理 */
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.05'/%3E%3C/svg%3E");
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: 24px; box-sizing: border-box;
+    overflow: hidden; /* 為了閃光 */
+}
+
+/* 金屬光澤動畫 */
+.shine-effect::after {
+    content: "";
+    position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+    background: linear-gradient(
+        to bottom right, 
+        transparent 30%, 
+        rgba(255, 255, 255, 0.0) 40%, 
+        rgba(255, 215, 0, 0.4) 45%, /* 金色光 */
+        rgba(255, 255, 255, 0.8) 50%, /* 亮白核心 */
+        rgba(255, 215, 0, 0.4) 55%, 
+        rgba(255, 255, 255, 0.0) 60%, 
+        transparent 70%
+    );
+    transform: rotate(30deg) translateY(-100%);
+    animation: shineMove 1s ease-out forwards;
+    pointer-events: none;
+    z-index: 20;
+}
+@keyframes shineMove {
+    0% { transform: rotate(30deg) translateY(-100%); }
+    100% { transform: rotate(30deg) translateY(100%); }
+}
+
+/* 深色模式下的光澤調整 (稍微冷一點的光) */
+body.dark-mode .shine-effect::after {
+    background: linear-gradient(
+        to bottom right, transparent 30%, rgba(255,255,255,0) 40%, 
+        rgba(200, 200, 255, 0.2) 45%, rgba(255, 255, 255, 0.6) 50%, 
+        rgba(200, 200, 255, 0.2) 55%, transparent 70%
+    );
+}
+
+.real-card-back {
+    background-color: var(--card-theme-bg); 
+    border: 8px solid var(--dbt-card-bg); 
+    box-shadow: inset 0 0 10px rgba(0,0,0,0.1);
+}
+
+.real-card-front { transform: rotateY(180deg); }
+.flipped { transform: rotateY(180deg); }
+.discarded { transform: translateX(250%) rotate(20deg); opacity: 0; }
+
+/* 說明文字 */
+.real-card-content h3 { color: inherit; margin: 15px 0 5px; }
+.real-card-content p { color: var(--dbt-text); line-height: 1.6; opacity: 0.9; }
+.real-card-content .subtitle { color: var(--dbt-text); opacity: 0.6; border-bottom: 1px solid var(--dbt-text); }
+
+/* --- 階段 4: 總覽與放大 (Lightbox) --- */
+.summary-grid {
+    display: flex; justify-content: center; gap: 15px;
+    width: 100%; overflow-x: auto; padding: 20px 10px;
+    scroll-snap-type: x mandatory;
+}
+.mini-card {
+    flex: 0 0 130px; height: 200px;
+    background: var(--dbt-card-bg); border-radius: 10px;
+    box-shadow: 0 4px 8px var(--dbt-shadow);
+    padding: 10px;
+    display: flex; flex-direction: column; align-items: center; text-align: center;
+    border-top: 5px solid #ccc;
+    scroll-snap-align: center;
+    font-size: 0.75rem;
+    cursor: zoom-in; /* 提示可放大 */
+    transition: transform 0.2s;
+    color: var(--dbt-text);
+}
+.mini-card:active { transform: scale(0.95); }
+
+/* 放大檢視 (Modal) */
+.card-modal {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.9); z-index: 1000;
+    display: flex; align-items: center; justify-content: center;
+    animation: fadeIn 0.3s;
+    padding: 20px; box-sizing: border-box;
+}
+.card-modal-content {
+    background: var(--dbt-card-bg);
+    width: 100%; max-width: 320px;
+    padding: 30px; border-radius: 16px;
     text-align: center;
-    animation: fadeIn 0.5s;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+    position: relative;
+    color: var(--dbt-text);
+    animation: zoomUp 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
-
-.dbt-text {
-    font-size: 1.2rem;
-    color: #555; /* 深灰字 */
-    min-height: 100px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: bold;
-    line-height: 1.6;
-}
+@keyframes zoomUp { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 
 .dbt-btn {
-    background: #FF9F43;
-    color: white;
-    border: none;
-    padding: 12px 30px;
-    border-radius: 50px;
-    font-size: 1rem;
-    cursor: pointer;
-    margin-top: 20px;
-    box-shadow: 0 4px 10px rgba(255, 159, 67, 0.4);
-    transition: transform 0.1s;
+    border: 1px solid var(--dbt-text); background: transparent;
+    padding: 10px 30px; border-radius: 30px;
+    color: var(--dbt-text); font-family: inherit; font-size: 1rem;
+    cursor: pointer; margin-top: 20px;
 }
-
-/* 2. 深色模式 (Dark Mode) - 自動覆蓋上面的設定 */
-body.dark-mode .dbt-card-container {
-    background: #2d2d2d; /* 深灰底 */
-    box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-    border: 1px solid #444;
-}
-
-body.dark-mode .dbt-text {
-    color: #e0e0e0; /* 淺灰字 */
-}
-
-/* 按鈕在深色模式通常不用變，或者你可以改成稍微亮一點的橘色 */
+.dbt-btn:active { background: rgba(128,128,128,0.2); }
 /* --- 解答之書專用樣式 (Namespace: .ab-) --- */
 /* --- 解答之書 : 皇家典藏 · 神級完全體 --- */
 
@@ -659,8 +842,12 @@ body.dark-mode .dbt-text {
     letter-spacing: 3px; margin-bottom: 8px; 
     text-shadow: 0 2px 5px rgba(0,0,0,0.8);
     background: linear-gradient(to bottom, #f0dfa8, #c9a227);
-    -webkit-background-clip: text; -webkit-text-fill-color: transparent; z-index: 5;
-}
+/* 標準屬性先寫，或者補上標準屬性 */
+background-clip: text;             /* 標準寫法 (雖然目前瀏覽器支援度還需靠 -webkit) */
+-webkit-background-clip: text;     /* 針對 Chrome, Safari, Edge */
+color: transparent;                /* 這是 text-fill-color 的標準回退方案 */
+-webkit-text-fill-color: transparent;
+z-index: 5;}
 .ab-cover-title-zh { font-family: 'Noto Serif TC', serif; font-size: 0.9rem; letter-spacing: 3px; opacity: 0.8; z-index: 5; }
 .ab-hint { margin-top: 50px; font-size: 0.9rem; color: #888; opacity: 0.6; letter-spacing: 1px; }
 
@@ -671,7 +858,28 @@ body.dark-mode .dbt-text {
 .dark-mode .ab-en { color: #aaa; }
 .dark-mode .ab-cover-back::after { background-color: #2b2b2b; box-shadow: inset 0 0 20px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.05); }
 .dark-mode .ab-pages-bottom, .dark-mode .ab-pages-top { background-color: #3d3d3d; background-image: repeating-linear-gradient(to bottom, #3d3d3d 0px, #3d3d3d 1px, #444 1px, #444 2px); }
-    </style>
+  /* === 修復滿版視窗的滑動問題 === */
+
+/* 1. 確保內容區域有高度限制，並且允許溢出捲動 */
+#feature-content-area {
+    /* 關鍵：設定最大高度，扣除掉頂部標題的高度 */
+    max-height: calc(100vh - 120px); 
+    overflow-y: auto !important; /* 強制開啟垂直捲軸 */
+    -webkit-overflow-scrolling: touch; /* 讓 iPhone 滑動更順暢 */
+    padding-bottom: 80px; /* 底部留白，避免最後一個項目被切掉 */
+    width: 100%; /* 確保寬度吃滿 */
+}
+
+/* 2. 隱藏醜醜的捲軸條 (但在滑動時還是有效) */
+#feature-content-area::-webkit-scrollbar {
+    display: none;
+}
+
+/* 3. 防止滑動穿透 (避免滑到底時連帶動到後面的首頁) */
+#active-feature-container {
+    overscroll-behavior: contain;
+}
+  </style>
 </head>
 <body>
 
@@ -1226,42 +1434,349 @@ body.dark-mode .dbt-text {
    1. 定義具體的內容渲染邏輯 (Renderers)
    ========================================= */
 const renderers = {
-    // 專門處理 DBT 的畫面
+// --- 🃏 Feature: DBT Cards (質感升級版：深色/金光/專注) ---
     renderDbtCards: (container) => {
-        container.innerHTML = `
-            <div class="dbt-card-container">
-                <div id="dbt-card-text" class="dbt-text">
-                    ✨ 當情緒像海浪襲來，<br>我們需要一個衝浪板。
-                </div>
-                <button id="draw-dbt-btn" class="dbt-btn">
-                    🔮 抽取一張智慧小卡
-                </button>
-            </div>
-        `;
+        
+        // 麵團精靈 SVG (保持可愛，顏色適配)
+        const createDough = (type, contentSvg) => {
+            const theme = {
+                'mindfulness': { color: '#9B6E9F', blush: '#E1BEE7' },
+                'interpersonal': { color: '#6E8F9F', blush: '#B3E5FC' },
+                'emotion': { color: '#D67D68', blush: '#FFCDD2' },
+                'distress': { color: '#78909C', blush: '#CFD8DC' }
+            }[type] || { color: '#555', blush: '#FFB7B2' };
 
-        // 定義卡片內容
-        const cards = [
-            "【停 (STOP)】：現在請暫停動作。別動！深呼吸。不要讓情緒控制你的行為。",
-            "【冷靜觀察】：像個局外人一樣看著自己的情緒，不要急著批判它。",
-            "【安撫五感】：泡杯熱茶、聞聞喜歡的精油、摸摸柔軟的毯子。",
-            "【相反行動】：如果你想退縮，試著挺起胸膛；如果你想攻擊，試著放鬆雙手。"
+            return `
+            <svg viewBox="0 0 100 100" style="width:100%; height:100%; overflow:visible;">
+                <path d="M50 18 C25 18 10 33 10 63 C10 88 25 98 50 98 C75 98 90 88 90 63 C90 33 75 18 50 18 Z" 
+                      fill="rgba(0,0,0,0.05)" transform="translate(3,3)" />
+                <path d="M50 15 C25 15 10 30 10 60 C10 85 25 95 50 95 C75 95 90 85 90 60 C90 30 75 15 50 15 Z" 
+                      fill="#FDFBF7" stroke="${theme.color}" stroke-width="2.5" />
+                <circle cx="28" cy="62" r="6" fill="${theme.blush}" opacity="0.6" />
+                <circle cx="72" cy="62" r="6" fill="${theme.blush}" opacity="0.6" />
+                <g stroke="${theme.color}" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                    ${contentSvg}
+                </g>
+            </svg>`;
+        };
+
+        const svgs = {
+            mindfulness: createDough('mindfulness', `<path d="M30 55 Q35 58 40 55 M60 55 Q65 58 70 55" /><path d="M48 50 Q50 65 52 50" opacity="0.5"/><path d="M45 68 Q50 72 55 68" /><circle cx="50" cy="85" r="5" />`),
+            interpersonal: createDough('interpersonal', `<circle cx="35" cy="55" r="2" fill="#6E8F9F" stroke="none"/><circle cx="65" cy="55" r="2" fill="#6E8F9F" stroke="none"/><path d="M45 65 Q50 70 55 65" /><path d="M75 25 L92 25 L92 38 L82 38 L78 44 L75 38 Z" fill="#E1F5FE" stroke-width="1.5"/><text x="80" y="35" font-size="8" fill="#6E8F9F" stroke="none" font-family="sans-serif">Hi</text>`),
+            emotion: createDough('emotion', `<circle cx="35" cy="55" r="2.5" fill="#D67D68" stroke="none"/><circle cx="65" cy="55" r="2.5" fill="#D67D68" stroke="none"/><path d="M48 65 Q50 60 52 65"/><path d="M50 78 C42 74 38 78 38 84 C38 90 50 94 50 94 C50 94 62 90 62 84 C62 78 58 74 50 78 Z" fill="#FFEBEE" />`),
+            distress: createDough('distress', `<circle cx="35" cy="55" r="2" fill="#78909C" stroke="none"/><circle cx="65" cy="55" r="2" fill="#78909C" stroke="none"/><path d="M30 48 L42 52 M70 48 L58 52" stroke-width="2"/><path d="M45 68 L55 68" /><path d="M22 75 L38 75 L38 88 Q30 93 22 88 Z" fill="#ECEFF1" />`)
+        };
+
+        // DBT Data (Same as before)
+        const dbt_data = [
+            { id:1, type:'mindfulness', title:'找出導火線', subtitle:'鏈鎖分析', desc:'詳細列出導致問題行為的連串事件：誘發事件 -> 想法 -> 情緒 -> 行為 -> 後果。' },
+            { id:2, type:'mindfulness', title:'找出卡關點', subtitle:'缺失鏈鎖', desc:'分析是什麼阻礙了有效行為？是缺乏技能、恐懼、還是環境因素？' },
+            { id:3, type:'mindfulness', title:'明智之心', subtitle:'Wise Mind', desc:'在極端情緒與冷酷邏輯之間，找到內在的直覺與智慧。' },
+            { id:4, type:'mindfulness', title:'觀察', subtitle:'Observe', desc:'只用感官去體驗當下，像不沾鍋一樣，讓念頭來去而不抓取。' },
+            { id:5, type:'mindfulness', title:'描述', subtitle:'Describe', desc:'貼標籤。把「我很爛」改成「我現在感到羞愧」，只陳述事實。' },
+            { id:6, type:'mindfulness', title:'參與', subtitle:'Participate', desc:'完全投入當下的活動，丟掉自我意識，與當下合一。' },
+            { id:7, type:'mindfulness', title:'不批判', subtitle:'Non-judgmental', desc:'區分事實與評價。不說「這很糟」，改說「這讓我不舒服」。' },
+            { id:8, type:'mindfulness', title:'專注當下', subtitle:'One-mindfully', desc:'一次只做一件事。走路時只走路，吃飯時只吃飯。' },
+            { id:9, type:'mindfulness', title:'有效率', subtitle:'Effectively', desc:'做對目標有幫助的事，放棄爭論「對錯」或「公平」。' },
+            { id:10, type:'interpersonal', title:'DEAR', subtitle:'劇本溝通', desc:'Describe(描述), Express(表達), Assert(要求), Reinforce(增強)。' },
+            { id:11, type:'interpersonal', title:'MAN', subtitle:'談判姿態', desc:'Mindful(專注目標), Appear confident(自信), Negotiate(協商)。' },
+            { id:12, type:'interpersonal', title:'GIVE-G', subtitle:'溫和', desc:'Gentle: 說話溫和，不攻擊、不威脅、不批判。' },
+            { id:13, type:'interpersonal', title:'GIVE-I', subtitle:'興趣', desc:'Interested: 展現興趣，眼神接觸，專心傾聽，不打斷。' },
+            { id:14, type:'interpersonal', title:'GIVE-V', subtitle:'認可', desc:'Validate: 透過話語或表情，認可對方的感受與處境。' },
+            { id:15, type:'interpersonal', title:'GIVE-E', subtitle:'輕鬆', desc:'Easy manner: 態度輕鬆，運用幽默，放鬆嘴角。' },
+            { id:16, type:'interpersonal', title:'FAST-A', subtitle:'不亂道歉', desc:'Apologies: 沒做錯就不說對不起，不需為存在感到抱歉。' },
+            { id:17, type:'interpersonal', title:'FAST-S', subtitle:'價值觀', desc:'Stick to values: 堅守自己的底線與價值觀。' },
+            { id:18, type:'interpersonal', title:'FAST-T', subtitle:'誠實', desc:'Truthful: 不撒謊，不誇大，不為了避戰而欺騙。' },
+            { id:19, type:'interpersonal', title:'辯證法', subtitle:'Middle Path', desc:'尋求中道。這不是二選一，而是兩個對立面可能同時成立。' },
+            { id:20, type:'emotion', title:'檢查事實', subtitle:'Check Facts', desc:'我的情緒反應是否符合客觀事實？如果不符，改變想法。' },
+            { id:21, type:'emotion', title:'相反動作', subtitle:'Opposite Action', desc:'當情緒不符合事實或無效時，做與情緒衝動完全相反的事。' },
+            { id:22, type:'emotion', title:'解決問題', subtitle:'Problem Solving', desc:'針對外在問題列出步驟：定義問題 -> 列出方案 -> 執行。' },
+            { id:23, type:'emotion', title:'累積正向', subtitle:'Positive Exp', desc:'短期：每天做一件讓自己快樂的小事。長期：為人生目標努力。' },
+            { id:24, type:'emotion', title:'建立掌控', subtitle:'Mastery', desc:'每天做一件稍微有挑戰性但能完成的事，建立勝任感。' },
+            { id:25, type:'emotion', title:'預先應對', subtitle:'Cope Ahead', desc:'想像未來可能的壓力情境，並在腦中演練有效的應對方式。' },
+            { id:26, type:'emotion', title:'PLEASE', subtitle:'顧好身體', desc:'治療疾病、平衡飲食、避免藥物濫用、充足睡眠、適度運動。' },
+            { id:27, type:'emotion', title:'情緒衝浪', subtitle:'Surfing', desc:'把情緒想像成海浪，你站在衝浪板上，觀察它的起伏而不被淹沒。' },
+            { id:28, type:'distress', title:'STOP', subtitle:'停看聽', desc:'Stop(停下), Take a step back(後退), Observe(觀察), Proceed(行動)。' },
+            { id:29, type:'distress', title:'利弊分析', subtitle:'Pros & Cons', desc:'列出衝動行為的優點與缺點，以及「忍住不衝動」的優點與缺點。' },
+            { id:30, type:'distress', title:'TIP-T', subtitle:'冰水降溫', desc:'Temperature: 用冷水潑臉或握住冰塊，啟動潛水反射，快速冷靜。' },
+            { id:31, type:'distress', title:'TIP-I', subtitle:'劇烈運動', desc:'Intense exercise: 短時間高強度運動，消耗過剩的情緒能量。' },
+            { id:32, type:'distress', title:'ACCEPTS', subtitle:'轉移注意', desc:'活動、貢獻、比較、相反情緒、推開、想別的事、強烈感官刺激。' },
+            { id:33, type:'distress', title:'自我安撫', subtitle:'Self-Soothe', desc:'運用五感(視、聽、嗅、味、觸)來溫柔地照顧自己。' },
+            { id:34, type:'distress', title:'徹底接受', subtitle:'Radical Accept', desc:'這不是認同，而是停止與現實對抗。深呼吸，接受「事情就是這樣」。' },
+            { id:35, type:'distress', title:'轉向心智', subtitle:'Turning Mind', desc:'像遇到岔路一樣，反覆地選擇轉向「接受」的道路。' },
+            { id:36, type:'distress', title:'意願', subtitle:'Willingness', desc:'像球員接受教練指導一樣，放下任性(Willfulness)，做當下該做的事。' },
+            { id:37, type:'distress', title:'半笑', subtitle:'Half-Smile', desc:'放鬆臉部肌肉，嘴角微微上揚。生理回饋會告訴大腦你是安全的。' },
+            { id:38, type:'distress', title:'戒癮', subtitle:'Abstinence', desc:'辯證性戒癮：承認會跌倒，但致力於徹底戒除。燒掉後路。' }
         ];
 
-        // 綁定按鈕事件 (因為按鈕是剛剛才生出來的，要立刻教它做事)
-        document.getElementById('draw-dbt-btn').addEventListener('click', (e) => {
-            // 按鈕小動畫
-            e.target.style.transform = 'scale(0.95)';
-            setTimeout(() => e.target.style.transform = 'scale(1)', 100);
+        let state = { phase: 'SELECT', type: null, cards: [] };
 
-            // 抽卡邏輯
-            const textEl = document.getElementById('dbt-card-text');
-            textEl.style.opacity = 0;
-            setTimeout(() => {
-                const randomCard = cards[Math.floor(Math.random() * cards.length)];
-                textEl.innerText = randomCard;
-                textEl.style.opacity = 1;
-            }, 200);
-        });
+        const go = (phase, data = {}) => {
+            state = { ...state, phase, ...data };
+            render();
+        };
+
+        const getMeta = (type) => {
+            const map = {
+                'mindfulness': { color: '#9B6E9F', bg: '#F3E5F5', title: '正念覺察', icon: svgs.mindfulness },
+                'interpersonal': { color: '#6E8F9F', bg: '#E1F5FE', title: '人際效能', icon: svgs.interpersonal },
+                'emotion': { color: '#D67D68', bg: '#FFEBEE', title: '情緒調節', icon: svgs.emotion },
+                'distress': { color: '#78909C', bg: '#ECEFF1', title: '痛苦耐受', icon: svgs.distress }
+            };
+            return map[type] || map['mindfulness'];
+        };
+
+        // Render Controller
+        const render = () => {
+            container.innerHTML = '';
+            const wrapper = document.createElement('div');
+            wrapper.className = 'dbt-wrapper';
+
+            if(state.phase === 'SELECT') renderSelect(wrapper);
+            else if(state.phase === 'RIP') renderRip(wrapper);
+            else if(state.phase === 'REVEAL') renderReveal(wrapper);
+            else if(state.phase === 'SUMMARY') renderSummary(wrapper);
+
+            container.appendChild(wrapper);
+        };
+
+        // 1. Select Phase (Dough Buttons)
+        const renderSelect = (root) => {
+            root.innerHTML = `
+                <div class="dbt-stage">
+                    <div style="font-size:1.1rem; margin-bottom:10px; opacity:0.7;">你需要哪方面的指引？</div>
+                    <div class="dough-grid">
+                        ${['mindfulness','interpersonal','emotion','distress'].map(type => {
+                            const meta = getMeta(type);
+                            return `
+                            <div class="dough-btn" onclick="window.dbtPick('${type}')">
+                                <div class="dough-svg">${meta.icon}</div>
+                                <div class="dough-label" style="color:${meta.color}">${meta.title}</div>
+                            </div>`;
+                        }).join('')}
+                    </div>
+                </div>
+            `;
+            window.dbtPick = (type) => go('RIP', { type });
+        };
+
+        // 2. Rip Phase (Tear Stick Only)
+        const renderRip = (root) => {
+            const meta = getMeta(state.type);
+            root.innerHTML = `
+                <div class="dbt-stage">
+                    <div class="rip-container">
+                        <div class="rip-pack-main" id="pack-body" style="border: 2px solid ${meta.color}">
+                            <div style="height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center;">
+                                <div style="width:100px; height:100px;">${meta.icon}</div>
+                                <h3 style="color:${meta.color}; margin-top:20px; font-size:1.4rem;">${meta.title}</h3>
+                                <div style="font-size:0.8rem; opacity:0.5; margin-top:5px;">Premium Pack</div>
+                            </div>
+                            <div class="rip-trace" id="rip-trace"></div>
+                        </div>
+
+                        <div class="rip-strip-moving" id="rip-strip">
+                            <span style="font-size:0.8rem; letter-spacing:1px; color:#aaa; margin-left:5px;">➤ OPEN</span>
+                        </div>
+                    </div>
+                    <div style="margin-top:20px; font-size:0.9rem; opacity:0.6;">按住左上標籤向右撕開</div>
+                </div>
+            `;
+
+            const strip = root.querySelector('#rip-strip');
+            const trace = root.querySelector('#rip-trace');
+            const body = root.querySelector('#pack-body');
+            
+            let startX = 0, isDragging = false;
+            const packWidth = 260; // 容器寬度
+
+            const update = (x) => {
+                if(!isDragging) return;
+                let delta = x - startX;
+                if(delta < 0) delta = 0;
+                
+                const progress = Math.min(delta / (packWidth * 0.8), 1); // 0.8係數確保要撕得夠遠
+
+                // 撕條移動與變形
+                strip.style.transform = `translateX(${delta}px) rotate(${delta * 0.02}deg)`;
+                // 撕條變寬一點，模擬拉伸
+                strip.style.width = `${40 + delta * 0.1}px`;
+                
+                // 痕跡顯示
+                trace.style.width = `${delta + 20}px`;
+                trace.style.opacity = progress * 0.5;
+
+                // 必須撕到底 (接近 100%)
+                if(progress >= 1) {
+                    isDragging = false;
+                    finishRip();
+                }
+            };
+
+            const finishRip = () => {
+                strip.style.transition = '0.4s ease-out';
+                strip.style.transform = `translateX(${packWidth + 60}px) rotate(15deg)`;
+                strip.style.opacity = '0';
+                
+                // 卡包消失邏輯
+                setTimeout(() => {
+                    body.style.transition = '0.5s';
+                    body.style.transform = 'scale(0.95)';
+                    body.style.opacity = '0';
+                    
+                    const pool = dbt_data.filter(c => c.type === state.type);
+                    const picks = [];
+                    const temp = [...pool];
+                    for(let i=0; i<3; i++) {
+                        if(temp.length) {
+                            const idx = Math.floor(Math.random() * temp.length);
+                            picks.push(temp[idx]);
+                            temp.splice(idx,1);
+                        }
+                    }
+                    setTimeout(() => go('REVEAL', { cards: picks }), 400);
+                }, 200);
+            };
+
+            const start = (x) => { isDragging = true; startX = x; };
+            const end = () => { 
+                if(isDragging) {
+                    isDragging = false;
+                    // 回彈
+                    strip.style.transition = '0.3s';
+                    strip.style.transform = 'translateX(0)';
+                    strip.style.width = '40px';
+                    trace.style.width = '0';
+                }
+            };
+
+            strip.onmousedown = e => start(e.clientX);
+            strip.ontouchstart = e => start(e.touches[0].clientX);
+            window.onmousemove = e => update(e.clientX);
+            window.ontouchmove = e => update(e.touches[0].clientX);
+            window.onmouseup = end;
+            window.ontouchend = end;
+        };
+
+        // 3. Reveal Phase (Focus + Shine)
+        const renderReveal = (root) => {
+            const meta = getMeta(state.type);
+            let idx = 0;
+
+            root.innerHTML = `
+                <div class="dbt-stage focus-active" id="reveal-stage">
+                    <div class="focus-dimmer"></div> <div class="real-card-stack" id="stack">
+                        </div>
+                    
+                    <div style="margin-top:20px; font-size:0.9rem; opacity:0.8; z-index:20; color:white; text-shadow:0 1px 3px rgba(0,0,0,0.5);" id="hint">
+                        點擊卡片翻開
+                    </div>
+                </div>
+            `;
+
+            const stack = root.querySelector('#stack');
+            
+            // 建立卡片堆疊
+            state.cards.forEach((c, i) => {
+                const el = document.createElement('div');
+                el.className = 'real-card-item';
+                el.style.zIndex = 10 - i;
+                el.id = `card-${i}`;
+                
+                el.innerHTML = `
+                    <div class="real-card-face real-card-front" id="front-${i}">
+                        <div class="real-card-content">
+                            <div style="width:50px; height:50px; margin-bottom:10px;">${meta.icon}</div>
+                            <h3 style="color:${meta.color}; font-size:1.3rem;">${c.title}</h3>
+                            <div class="subtitle">${c.subtitle}</div>
+                            <p>${c.desc}</p>
+                        </div>
+                    </div>
+                    <div class="real-card-face real-card-back" style="--card-theme-bg: ${meta.bg}">
+                        <div style="width:80px; opacity:0.4;">${meta.icon}</div>
+                    </div>
+                `;
+                stack.appendChild(el);
+            });
+
+            // 點擊邏輯
+            let step = 'FLIP';
+            root.querySelector('#reveal-stage').onclick = () => {
+                if(idx >= 3) return;
+                const card = stack.querySelector(`#card-${idx}`);
+                const front = stack.querySelector(`#front-${idx}`);
+                const hint = root.querySelector('#hint');
+
+                if(step === 'FLIP') {
+                    card.classList.add('flipped');
+                    // 🌟 加入金屬光澤動畫 Class
+                    setTimeout(() => {
+                        front.classList.add('shine-effect');
+                    }, 200); // 稍微延遲等翻轉一半再閃
+
+                    hint.innerText = idx < 2 ? "再次點擊收起" : "再次點擊查看結果";
+                    step = 'NEXT';
+                } else {
+                    card.classList.add('discarded');
+                    idx++;
+                    step = 'FLIP';
+                    if(idx >= 3) {
+                        setTimeout(() => go('SUMMARY'), 500);
+                    } else {
+                        hint.innerText = "點擊下一張";
+                    }
+                }
+            };
+        };
+
+        // 4. Summary Phase (Zoom & Back to Select)
+        const renderSummary = (root) => {
+            const meta = getMeta(state.type);
+            root.innerHTML = `
+                <div class="dbt-stage" style="justify-content: flex-start; padding-top: 20px;">
+                    <h2 style="color:${meta.color}; margin-bottom:5px;">今日指引</h2>
+                    <div style="font-size:0.9rem; opacity:0.6; margin-bottom:20px;">點擊卡片放大查看</div>
+                    
+                    <div class="summary-grid">
+                        ${state.cards.map((c, i) => `
+                            <div class="mini-card" onclick="window.dbtZoom(${i})" style="border-top-color:${meta.color}">
+                                <div style="width:40px; height:40px; margin-bottom:5px;">${meta.icon}</div>
+                                <div style="font-weight:bold; margin-bottom:5px; color:${meta.color}">${c.title}</div>
+                                <div style="font-size:0.7rem; line-height:1.4; text-align:justify; overflow:hidden; height:80px; opacity:0.8;">${c.desc}</div>
+                            </div>
+                        `).join('')}
+                    </div>
+
+                    <button class="dbt-btn" onclick="window.dbtBackToSelect()">回到選擇</button>
+                </div>
+                <div id="zoom-modal-container"></div>
+            `;
+
+            // 回到選擇：直接回到 Phase 1
+            window.dbtBackToSelect = () => {
+                go('SELECT');
+            };
+
+            // 放大功能
+            window.dbtZoom = (index) => {
+                const c = state.cards[index];
+                const modalContainer = root.querySelector('#zoom-modal-container');
+                modalContainer.innerHTML = `
+                    <div class="card-modal" onclick="this.remove()">
+                        <div class="card-modal-content" onclick="event.stopPropagation()">
+                            <div style="width:60px; height:60px; margin:0 auto 15px;">${meta.icon}</div>
+                            <h3 style="color:${meta.color}; font-size:1.5rem; margin-bottom:5px;">${c.title}</h3>
+                            <div style="font-size:1rem; opacity:0.6; margin-bottom:20px; border-bottom:1px solid #ccc; padding-bottom:10px;">${c.subtitle}</div>
+                            <p style="text-align:justify; line-height:1.6; font-size:1.1rem;">${c.desc}</p>
+                            <div style="margin-top:20px; font-size:0.9rem; opacity:0.5;">點擊背景關閉</div>
+                        </div>
+                    </div>
+                `;
+            };
+        };
+
+        // Init
+        render();
     },
 renderAnswerBook: (container) => {
     // 1. 定義模糊但具啟發性的答案庫 (可以自己無限擴充)
