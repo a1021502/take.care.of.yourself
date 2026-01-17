@@ -410,26 +410,25 @@
         @keyframes muscleFlex { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
         @keyframes lidOpen { 0%, 100% { transform: rotate(0); } 50% { transform: rotate(-20deg) translateY(-5px); } }
         @keyframes conveyorMove { 0% { transform: translateX(0); opacity: 1; } 100% { transform: translateX(40px); opacity: 0; } }
-/* --- ☁️ 麵團精靈 DBT 質感升級版 CSS --- */
+/* --- ☁️ 麵團精靈 DBT 完美質感版 CSS --- */
 
 :root {
-    --dbt-bg: #fff;
+    --dbt-bg: transparent; /* 透明，顯示底層背景 */
     --dbt-text: #4A4442;
     --dbt-card-bg: #fff;
-    --dbt-shadow: rgba(0,0,0,0.15); /* 陰影加深一點點，增加立體感 */
-    --dbt-foil-light: rgba(255,255,255,0.4);
-    --dbt-foil-dark: rgba(0,0,0,0.05);
+    --dbt-shadow: rgba(0,0,0,0.15);
+    /* 鋁箔質感變數 */
+    --foil-crimp: repeating-linear-gradient(90deg, rgba(0,0,0,0.1) 0px, rgba(0,0,0,0.1) 1px, transparent 1px, transparent 3px);
 }
 
 body.dark-mode {
-    --dbt-bg: #1a1a1a;
     --dbt-text: #e0e0e0;
     --dbt-card-bg: #2d2d2d;
     --dbt-shadow: rgba(0,0,0,0.6);
-    --dbt-foil-light: rgba(255,255,255,0.1);
-    --dbt-foil-dark: rgba(0,0,0,0.3);
+    --foil-crimp: repeating-linear-gradient(90deg, rgba(255,255,255,0.1) 0px, rgba(255,255,255,0.1) 1px, transparent 1px, transparent 3px);
 }
 
+/* 確保容器填滿且不破圖 */
 .dbt-wrapper {
     width: 100%; height: 100%;
     display: flex; flex-direction: column;
@@ -437,6 +436,9 @@ body.dark-mode {
     overflow: hidden;
     position: relative;
     color: var(--dbt-text);
+    /* 關鍵：防止手機下拉看到底層 */
+    overscroll-behavior: none; 
+    touch-action: pan-x pan-y;
 }
 
 .dbt-stage {
@@ -444,16 +446,16 @@ body.dark-mode {
     align-items: center; justify-content: center;
     width: 100%; height: 100%;
     padding: 10px; box-sizing: border-box;
-    animation: dbtFadeIn 0.5s ease-out;
+    animation: dbtFadeIn 0.4s ease-out;
     position: relative;
     z-index: 2;
 }
-@keyframes dbtFadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes dbtFadeIn { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
 
 /* --- 階段 1: 麵團選擇 --- */
 .dough-grid {
-    display: grid; grid-template-columns: 1fr 1fr; gap: 30px;
-    width: 100%; max-width: 400px; margin-top: 20px;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 25px;
+    width: 100%; max-width: 380px; margin-top: 10px;
 }
 .dough-btn {
     display: flex; flex-direction: column; align-items: center;
@@ -462,180 +464,166 @@ body.dark-mode {
 }
 .dough-btn:active { transform: scale(0.9); }
 .dough-svg {
-    width: 100px; height: 100px; transition: 0.3s;
-    filter: drop-shadow(0 8px 12px var(--dbt-shadow));
+    width: 90px; height: 90px; transition: 0.3s;
+    filter: drop-shadow(0 6px 8px var(--dbt-shadow));
 }
 .dough-label {
-    margin-top: 15px; font-size: 1.1rem; font-weight: bold; letter-spacing: 1px; opacity: 0.8;
+    margin-top: 12px; font-size: 1rem; font-weight: bold; letter-spacing: 1px; opacity: 0.9;
     color: var(--dbt-text);
 }
 
-/* --- 階段 2: 3D 轉盤選包 (修正切邊 & 精緻化) --- */
+/* --- 階段 2: 3D 轉盤選包 (縮小 + 壓紋) --- */
 .carousel-container {
     width: 100%; height: 100%;
-    perspective: 1200px; /* 視角拉遠一點，減少變形 */
+    perspective: 1100px;
     display: flex; align-items: center; justify-content: center;
-    overflow: visible; /* 關鍵：允許 3D 物件超出容器邊界而不被切掉 */
-    padding: 60px 0; /* 上下增加空間，防止旋轉時碰到邊緣 */
+    overflow: visible; /* 允許超出 */
+    padding: 40px 0;
 }
 .pack-carousel {
     position: relative;
-    width: 240px; height: 340px;
+    width: 200px; height: 300px; /* 縮小卡包尺寸 */
     transform-style: preserve-3d;
     transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
     cursor: grab;
 }
 .pack-carousel:active { cursor: grabbing; }
 
-/* 卡包本體 (精緻鋁箔包質感) */
+/* 3D 卡包本體 */
 .pack-3d-item {
     position: absolute; top: 0; left: 0; width: 100%; height: 100%;
     background-color: var(--dbt-card-bg);
-    border-radius: 14px;
-    /* 鋁箔包的基礎光澤 */
-    background: linear-gradient(135deg, var(--dbt-card-bg) 0%, #f9f9f9 50%, #e0e0e0 100%); 
-    border: 1px solid rgba(0,0,0,0.08);
+    border-radius: 4px; /* 鋁箔包角比較尖 */
+    /* 鋁箔光澤 */
+    background: linear-gradient(135deg, var(--dbt-card-bg) 0%, #f4f4f4 50%, #dcdcdc 100%); 
+    border: 1px solid rgba(0,0,0,0.1);
     display: flex; flex-direction: column; align-items: center; justify-content: center;
-    /* 立體陰影 */
-    box-shadow: 
-        inset 0 0 20px var(--dbt-foil-light), /* 內部高光 */
-        0 10px 25px var(--dbt-shadow); /* 外部陰影 */
+    box-shadow: inset 0 0 15px rgba(255,255,255,0.5), 0 10px 20px var(--dbt-shadow);
     backface-visibility: hidden;
 }
-
-/* 鋁箔反光特效 (Overlay) */
-.pack-3d-item::after {
-    content: ''; position: absolute; top:0; left:0; width:100%; height:100%;
-    border-radius: 14px;
-    background: linear-gradient(45deg, transparent 40%, rgba(255,255,255,0.4) 50%, transparent 60%);
-    pointer-events: none;
-    background-size: 200% 200%;
+body.dark-mode .pack-3d-item {
+    background: linear-gradient(135deg, #333 0%, #2a2a2a 50%, #222 100%);
+    box-shadow: inset 0 0 15px rgba(0,0,0,0.5), 0 10px 20px black;
 }
 
-/* 增加明顯的厚度 (側面) - 更像一包牌 */
-.pack-3d-item::before {
-    content: ''; position: absolute; left: -12px; top: 2px;
-    width: 12px; height: 98%;
-    background: #dcdcdc; /* 側面顏色 */
-    /* 側面也有光澤 */
-    background: linear-gradient(to bottom, #ccc, #eee, #ccc);
-    transform: rotateY(-90deg); transform-origin: right;
-    border-radius: 4px 0 0 4px;
-    border-left: 1px solid rgba(0,0,0,0.1);
+/* 上下封口壓紋 (Crimp) - 關鍵細節 */
+.pack-3d-item::before, .pack-3d-item::after {
+    content: ''; position: absolute; left: 0; width: 100%; height: 12px;
+    background-color: rgba(0,0,0,0.05);
+    background-image: var(--foil-crimp);
+    border: 1px solid rgba(0,0,0,0.1);
 }
+.pack-3d-item::before { top: 0; border-bottom: 1px solid rgba(0,0,0,0.05); }
+.pack-3d-item::after { bottom: 0; border-top: 1px solid rgba(0,0,0,0.05); }
 
-/* --- 階段 3: 撕卡包 (鋸齒封條 & 精緻化) --- */
+/* --- 階段 3: 撕卡包 --- */
 .rip-container {
-    position: relative; width: 260px; height: 360px; margin-top: 20px;
+    position: relative; width: 240px; height: 340px; margin-top: 10px;
 }
 .rip-pack-main {
     position: absolute; top: 0; left: 0; width: 100%; height: 100%;
     background-color: var(--dbt-card-bg);
-    /* 鋁箔材質紋理 */
-    background-image: 
-        linear-gradient(120deg, rgba(255,255,255,0) 30%, rgba(255,255,255,0.6) 50%, rgba(255,255,255,0) 70%),
-        url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.08'/%3E%3C/svg%3E");
-    border-radius: 12px; z-index: 2;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.08'/%3E%3C/svg%3E");
+    border-radius: 4px; z-index: 2;
     box-shadow: 0 15px 40px var(--dbt-shadow);
     overflow: hidden;
     transition: transform 0.3s, background-color 0.3s;
     display: flex; flex-direction: column; align-items: center; justify-content: center;
-    border: 1px solid rgba(0,0,0,0.05);
+    border: 1px solid rgba(0,0,0,0.1);
 }
-/* 卡包上下的鋸齒封口紋理 (視覺裝飾) */
+/* 同樣加上上下封口 */
 .rip-pack-main::before, .rip-pack-main::after {
     content: ''; position: absolute; left: 0; width: 100%; height: 12px;
-    background: repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(0,0,0,0.1) 3px, transparent 4px);
-    opacity: 0.3;
+    background-image: var(--foil-crimp);
+    opacity: 0.6; z-index: 5;
 }
-.rip-pack-main::before { top: 0; border-bottom: 1px solid rgba(0,0,0,0.1); }
-.rip-pack-main::after { bottom: 0; border-top: 1px solid rgba(0,0,0,0.1); }
+.rip-pack-main::before { top: 0; }
+.rip-pack-main::after { bottom: 0; }
 
-
-/* --- 重製：鋁箔鋸齒撕條 --- */
+/* 乾淨的撕條 (鋁箔質感) */
 .rip-strip-moving {
     position: absolute; top: 0; left: 0; width: 44px; height: 100%;
-    max-height: 60px;
-    /* 鋁箔封條質感：銀灰漸層 + 壓紋 */
-    background: linear-gradient(to right, #e0e0e0, #f5f5f5, #d0d0d0);
+    max-height: 60px; /* 限制在上方 */
+    background: linear-gradient(to right, #e0e0e0, #f8f8f8, #d0d0d0);
     z-index: 10; cursor: grab;
-    
-    /* 關鍵：鋸齒狀邊緣 (用 clip-path 模擬撕開的斷面) */
-    clip-path: polygon(
-        0% 0%, 100% 0%, 
-        100% 100%, 
-        90% 90%, 80% 100%, 70% 90%, 60% 100%, 50% 90%, 40% 100%, 30% 90%, 20% 100%, 10% 90%, 0% 100%
-    );
-    
-    /* 增加封口壓紋 (直條紋) */
-    background-image: repeating-linear-gradient(90deg, rgba(0,0,0,0.05) 0px, rgba(0,0,0,0.05) 1px, transparent 1px, transparent 3px);
-    
-    box-shadow: 4px 4px 8px rgba(0,0,0,0.2); /* 讓它看起來浮起來 */
-    border-radius: 0 4px 0 0; /* 右上角圓潤一點 */
+    /* 鋸齒邊緣 */
+    clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 92% 100%, 84% 90%, 76% 100%, 68% 90%, 60% 100%, 52% 90%, 44% 100%, 36% 90%, 28% 100%, 20% 90%, 12% 100%, 0% 100%);
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+    /* 壓紋 */
+    background-image: var(--foil-crimp);
 }
-/* 撕條上的小箭頭提示 */
-.rip-strip-moving::after {
-    content: '►';
-    position: absolute; top: 50%; right: 10px;
-    transform: translateY(-50%);
-    font-size: 10px; color: #888;
-    pointer-events: none;
+body.dark-mode .rip-strip-moving {
+    background: linear-gradient(to right, #444, #555, #333);
 }
-
-.rip-strip-moving:active { cursor: grabbing; filter: brightness(0.95); }
+.rip-strip-moving:active { cursor: grabbing; filter: brightness(0.9); }
 
 .rip-trace {
     position: absolute; top: 0; left: 0; width: 0%; height: 60px;
-    background: rgba(0,0,0,0.8); z-index: 1; opacity: 0.2; pointer-events: none;
-    box-shadow: inset -5px 0 10px rgba(0,0,0,0.5); /* 撕開後的深淵感 */
+    background: #000; z-index: 1; opacity: 0.15; pointer-events: none;
+    box-shadow: inset -2px 0 5px rgba(0,0,0,0.3);
 }
 
-/* --- 階段 4: 抽卡與銀白閃光 (精緻化卡片) --- */
+/* --- 階段 4: 抽卡與光澤 --- */
 .real-card-stack { 
-    width: 280px; height: 440px; position: relative; perspective: 1000px; 
-    z-index: 10;
+    width: 260px; height: 400px; position: relative; perspective: 1000px; z-index: 10;
 }
 .real-card-item {
     position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-    border-radius: 18px; /* 更圓潤 */
+    border-radius: 16px;
     transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1);
     transform-style: preserve-3d;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.15); /* 陰影更柔和且深 */
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
 }
+
 .real-card-face {
     position: absolute; width: 100%; height: 100%;
     backface-visibility: hidden;
-    border-radius: 18px;
+    border-radius: 16px;
     background-color: var(--dbt-card-bg);
-    /* 精緻紙張紋理 */
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.2' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+    /* 紙張雜訊 */
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.5' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
     display: flex; flex-direction: column; align-items: center; justify-content: center;
     padding: 24px; box-sizing: border-box;
     overflow: hidden;
-    
-    /* 內縮邊框效果 (像高級卡牌) */
-    box-shadow: inset 0 0 0 8px rgba(0,0,0,0.02); 
-    border: 1px solid rgba(0,0,0,0.05);
+    /* 內縮壓紋邊框 */
+    box-shadow: inset 0 0 0 6px rgba(0,0,0,0.03);
+    border: 1px solid rgba(0,0,0,0.08);
 }
 
-/* 銀白光澤動畫 (變慢 0.7s -> 1.5s) */
+/* 銀白光澤 (調校版) */
 .shine-silver::after {
     content: "";
     position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+    /* 一般模式：高亮銀白 */
     background: linear-gradient(
         to bottom right, 
-        transparent 30%, 
+        transparent 35%, 
         rgba(255, 255, 255, 0) 40%, 
-        rgba(255, 255, 255, 0.9) 48%, 
-        rgba(230, 230, 230, 0.9) 50%, /* 銀色質感 */
-        rgba(255, 255, 255, 0.9) 52%, 
-        transparent 60%
+        rgba(255, 255, 255, 0.8) 45%, 
+        rgba(220, 220, 220, 0.9) 50%, 
+        rgba(255, 255, 255, 0.8) 55%, 
+        transparent 65%
     );
     transform: rotate(30deg) translateY(-100%);
-    animation: shineMove 1.5s ease-out forwards; /* 變慢 */
+    animation: shineMove 1.5s ease-out forwards; /* 速度調慢 */
     pointer-events: none; z-index: 20;
-    mix-blend-mode: soft-light;
+    mix-blend-mode: hard-light; /* 讓光更實 */
 }
+
+/* 暗黑模式光澤：柔和藍銀光，避免恐怖 */
+body.dark-mode .shine-silver::after {
+    background: linear-gradient(
+        to bottom right, 
+        transparent 35%, 
+        rgba(150, 180, 255, 0) 40%, 
+        rgba(180, 200, 255, 0.2) 45%, /* 淡藍微光 */
+        rgba(200, 220, 255, 0.4) 50%, /* 核心光 */
+        rgba(180, 200, 255, 0.2) 55%, 
+        transparent 65%
+    );
+    mix-blend-mode: overlay; /* 融合背景 */
+}
+
 @keyframes shineMove {
     0% { transform: rotate(30deg) translateY(-100%); }
     100% { transform: rotate(30deg) translateY(100%); }
@@ -643,12 +631,12 @@ body.dark-mode {
 
 .real-card-back {
     background-color: var(--card-theme-bg); 
-    border: 12px solid #fff; /* 白邊加寬 */
-    box-shadow: inset 0 0 20px rgba(0,0,0,0.05);
-    /* 卡背花紋 (簡單的圓點陣列) */
-    background-image: radial-gradient(rgba(255,255,255,0.2) 2px, transparent 2px);
-    background-size: 10px 10px;
+    border: 10px solid #fff;
+    box-shadow: inset 0 0 15px rgba(0,0,0,0.1);
+    background-image: radial-gradient(rgba(255,255,255,0.3) 2px, transparent 2px);
+    background-size: 12px 12px;
 }
+body.dark-mode .real-card-back { border-color: #333; }
 
 .real-card-front { transform: rotateY(180deg); }
 .flipped { transform: rotateY(180deg); }
@@ -657,68 +645,70 @@ body.dark-mode {
 .real-card-content {
     width: 100%; height: 100%;
     display: flex; flex-direction: column; align-items: center;
-    z-index: 2; /* 確保內容在光澤之上 */
+    z-index: 2;
 }
 
-/* --- 階段 5: 總覽 (置中修正) --- */
+/* --- 階段 5: 總覽 (置中 + 防切邊) --- */
 .summary-grid {
     display: flex; 
-    justify-content: center; /* 修正：卡片置中 */
+    /* 關鍵：使用偽元素技巧讓置中與捲動並存 */
+    justify-content: flex-start; 
     gap: 20px;
     width: 100%; overflow-x: auto; 
-    padding: 20px 20px 40px 20px;
+    padding: 20px 40px; /* 增加左右 padding */
     scroll-snap-type: x mandatory;
     box-sizing: border-box;
-    -webkit-overflow-scrolling: touch;
 }
-/* 如果卡片很多導致超出，Flex 會自動往左靠，這裡確保少數卡片時置中 */
-.summary-grid::after { content: ''; flex: 0 0 1px; } 
+/* 用於將內容推到中間 */
+.summary-grid::before, .summary-grid::after {
+    content: '';
+    flex: 0 0 10px; /* 左右撐開一點空間 */
+}
 
 .mini-card {
-    flex: 0 0 140px; height: 220px;
+    flex: 0 0 150px; height: 230px; /* 稍微放大 */
     background: var(--dbt-card-bg); border-radius: 12px;
-    box-shadow: 0 6px 15px var(--dbt-shadow);
+    box-shadow: 0 4px 12px var(--dbt-shadow);
     padding: 15px;
     display: flex; flex-direction: column; align-items: center; text-align: center;
-    border-top: 6px solid #ccc;
+    border-top: 5px solid #ccc;
     scroll-snap-align: center;
     cursor: zoom-in;
     color: var(--dbt-text);
     position: relative;
-    transition: transform 0.2s;
     border: 1px solid rgba(0,0,0,0.05);
 }
-.mini-card:active { transform: scale(0.95); }
 
-/* 全螢幕卡片展示 (Lightbox) */
+/* 全螢幕放大 (Lightbox) */
 .card-lightbox {
     position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0,0,0,0.92);
+    background: rgba(0,0,0,0.95); /* 極暗背景 */
     z-index: 3000;
     display: flex; align-items: center; justify-content: center;
     animation: fadeIn 0.3s;
-    backdrop-filter: blur(5px);
+    backdrop-filter: blur(8px);
     padding: 20px; box-sizing: border-box;
 }
 .lightbox-content {
-    width: 100%; max-width: 340px; 
+    width: 100%; max-width: 360px; 
     background: var(--dbt-card-bg);
     border-radius: 20px;
-    box-shadow: 0 0 60px rgba(255,255,255,0.15);
+    /* 發光邊框 */
+    box-shadow: 0 0 40px rgba(255,255,255,0.1); 
     animation: zoomUp 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     position: relative;
     overflow: hidden;
 }
 .lightbox-card-face {
-    width: 100%; height: auto; min-height: 480px;
+    width: 100%; height: auto; min-height: 500px;
     padding: 30px; 
     display: flex; flex-direction: column; align-items: center;
     box-sizing: border-box;
-    overflow-y: auto; max-height: 80vh;
+    overflow-y: auto; max-height: 85vh;
     background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.2' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
-    box-shadow: inset 0 0 0 8px rgba(0,0,0,0.02);
+    border: 1px solid rgba(0,0,0,0.1);
 }
-@keyframes zoomUp { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+@keyframes zoomUp { from { transform: scale(0.85); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 
 .dbt-btn {
     border: 1px solid var(--dbt-text); background: transparent;
@@ -1520,10 +1510,10 @@ z-index: 5;}
    1. 定義具體的內容渲染邏輯 (Renderers)
    ========================================= */
 const renderers = {
-// --- 🃏 Feature: DBT Cards (質感精修版) ---
+// --- 🃏 Feature: DBT Cards (完美質感最終版) ---
     renderDbtCards: (container) => {
         
-        // SVG 產生器 (保持不變)
+        // SVG 產生器
         const createDough = (type, contentSvg) => {
             const theme = {
                 'mindfulness': { color: '#9B6E9F', blush: '#E1BEE7' },
@@ -1594,11 +1584,32 @@ const renderers = {
             { id:38, type:'distress', title:'戒癮', subtitle:'Abstinence', desc:'辯證性戒癮：承認會跌倒，但致力於徹底戒除。燒掉後路。' }
         ];
 
+        // 狀態管理
         let state = { phase: 'SELECT', type: null, cards: [] };
+
+        // History API 修正：確保按手機返回鍵時能回到上一步
+        const pushHistory = (newPhase) => {
+            const newState = { ...state, phase: newPhase };
+            // Push State with unique hash to enable back button navigation
+            window.history.pushState({ dbtPhase: newState }, '', `#dbt-${newPhase.toLowerCase()}`);
+        };
 
         const go = (phase, data = {}) => {
             state = { ...state, phase, ...data };
+            pushHistory(phase); // 記錄歷史
             render();
+        };
+
+        // 監聽返回鍵
+        window.onpopstate = (event) => {
+            if (event.state && event.state.dbtPhase) {
+                state = event.state.dbtPhase;
+                render();
+            } else {
+                // 如果已經退無可退，回到最初選擇
+                state = { phase: 'SELECT', type: null, cards: [] };
+                render();
+            }
         };
 
         const getMeta = (type) => {
@@ -1646,7 +1657,7 @@ const renderers = {
             window.dbtToCarousel = (type) => go('CAROUSEL', { type });
         };
 
-        // 2. 3D CAROUSEL (Revised padding for better visibility)
+        // 2. 3D CAROUSEL (Spacing increased)
         const renderCarousel = (root) => {
             const meta = getMeta(state.type);
             root.innerHTML = `
@@ -1655,9 +1666,9 @@ const renderers = {
                         <div class="pack-carousel" id="c-pack">
                             ${Array(8).fill(0).map((_, i) => `
                                 <div class="pack-3d-item" 
-                                     style="transform: rotateY(${i * 45}deg) translateZ(280px); border-color:${meta.color}">
-                                    <div style="width:100px; height:100px;">${meta.icon}</div>
-                                    <div style="font-weight:bold; margin-top:10px; color:${meta.color}">DBT PACK</div>
+                                     style="transform: rotateY(${i * 45}deg) translateZ(320px); border-color:${meta.color}">
+                                    <div style="width:80px; height:80px;">${meta.icon}</div>
+                                    <div style="font-weight:bold; margin-top:20px; color:${meta.color}">DBT PACK</div>
                                     <div style="font-size:0.8em; opacity:0.6;">Vol. ${i+1}</div>
                                 </div>
                             `).join('')}
@@ -1699,7 +1710,7 @@ const renderers = {
             };
         };
 
-        // 3. RIP (New Foil Strip Look)
+        // 3. RIP (Crimp texture, no text)
         const renderRip = (root) => {
             const meta = getMeta(state.type);
             root.innerHTML = `
@@ -1715,7 +1726,7 @@ const renderers = {
 
                         <div class="rip-strip-moving" id="rip-strip"></div>
                     </div>
-                    <div style="margin-top:20px; font-size:0.9rem; opacity:0.6;">按住左上鋁箔封條撕到底</div>
+                    <div style="margin-top:20px; font-size:0.9rem; opacity:0.6;">按住左上撕條撕到底</div>
                 </div>
             `;
 
@@ -1724,19 +1735,17 @@ const renderers = {
             const body = root.querySelector('#pack-body');
             
             let startX = 0, isDragging = false;
-            const packWidth = 260;
+            const packWidth = 240; // Updated width
 
             const update = (x) => {
                 if(!isDragging) return;
                 let delta = x - startX;
                 if(delta < 0) delta = 0;
                 
-                // 98% 觸發
                 const progress = Math.min(delta / (packWidth * 0.98), 1); 
 
                 strip.style.transform = `translateX(${delta}px) rotate(${delta * 0.05}deg)`;
-                // 撕開時稍微拉長一點
-                strip.style.width = `${44 + delta * 0.05}px`;
+                strip.style.width = `${44 + delta * 0.1}px`;
                 trace.style.width = `${delta + 20}px`;
                 trace.style.opacity = progress * 0.5;
 
@@ -1789,7 +1798,7 @@ const renderers = {
             window.ontouchend = end;
         };
 
-        // 4. REVEAL (Slower Shine)
+        // 4. REVEAL (Slower Silver Shine)
         const renderReveal = (root) => {
             const meta = getMeta(state.type);
             let idx = 0;
@@ -1852,7 +1861,7 @@ const renderers = {
             };
         };
 
-        // 5. SUMMARY (Centered Layout)
+        // 5. SUMMARY (Centered, Padding Fix)
         const renderSummary = (root) => {
             const meta = getMeta(state.type);
             root.innerHTML = `
@@ -1875,7 +1884,11 @@ const renderers = {
                 <div id="zoom-modal-container"></div>
             `;
 
-            window.dbtBackToSelect = () => go('SELECT');
+            window.dbtBackToSelect = () => {
+                state = { phase: 'SELECT', type: null, cards: [] }; // Reset State
+                pushHistory('SELECT');
+                render();
+            };
 
             window.dbtZoom = (index) => {
                 const c = state.cards[index];
@@ -1897,7 +1910,11 @@ const renderers = {
             };
         };
 
-        // Init
+        // Init (Initial Push State to support back button immediately)
+        // 只有第一次進入時執行
+        if(!window.history.state || !window.history.state.dbtPhase) {
+            pushHistory('SELECT');
+        }
         render();
     },
 renderAnswerBook: (container) => {
