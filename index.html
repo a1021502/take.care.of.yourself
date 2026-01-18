@@ -1007,6 +1007,7 @@ body.dark-mode .affirmation-overlay { background: rgba(0,0,0,0.85); }
     letter-spacing: 3px; margin-bottom: 8px; 
     text-shadow: 0 2px 5px rgba(0,0,0,0.8);
     background: linear-gradient(to bottom, #f0dfa8, #c9a227);
+    background-clip: text;
     -webkit-background-clip: text; -webkit-text-fill-color: transparent; z-index: 5;
 }
 .ab-cover-title-zh { font-family: 'Noto Serif TC', serif; font-size: 0.9rem; letter-spacing: 3px; opacity: 0.8; z-index: 5; }
@@ -1041,6 +1042,140 @@ body.dark-mode .affirmation-overlay { background: rgba(0,0,0,0.85); }
 /* 3. 防止滑動穿透 (避免滑到底時連帶動到後面的首頁) */
 #active-feature-container {
     overscroll-behavior: contain;
+}
+/* --- Tarot Feature Styles --- */
+#tarot-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    overflow: hidden;
+    perspective: 1000px; /* 3D 透視感 */
+}
+
+/* 牌桌區域 */
+.tarot-table {
+    position: relative;
+    width: 100%;
+    height: 350px; /* 給牌足夠的空間展開 */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+/* 卡片本體 */
+.tarot-card {
+    position: absolute;
+    width: 100px; /* 寬度可調整 */
+    height: 170px;
+    border-radius: 8px;
+    cursor: pointer;
+    transform-origin: bottom center; /* 扇形的旋轉點在底部 */
+    transition: transform 0.5s cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 0.3s;
+    user-select: none;
+    transform-style: preserve-3d; /* 3D 翻轉關鍵 */
+}
+
+/* 懸停效果：微微浮起 */
+.tarot-card:hover {
+    z-index: 100 !important; /* 確保浮起時在最上層 */
+    box-shadow: 0 0 15px var(--accent-warm);
+}
+
+/* 卡片正反面容器 */
+.card-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    transition: transform 0.6s;
+    transform-style: preserve-3d;
+}
+
+.tarot-card.flipped .card-inner {
+    transform: rotateY(180deg);
+}
+
+/* 正面與背面共用樣式 */
+.card-front, .card-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    border-radius: 8px;
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.3);
+}
+
+/* 卡背 (圖案) */
+.card-back {
+    background-color: #2c3e50;
+    /* 這裡可以用一個幾何圖案或純色 */
+    background-image: repeating-linear-gradient(
+        45deg,
+        #2c3e50,
+        #2c3e50 10px,
+        #34495e 10px,
+        #34495e 20px
+    );
+    border: 2px solid #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* 卡背中央裝飾 (小圓點) */
+.card-back::after {
+    content: '★';
+    color: var(--accent-warm);
+    font-size: 24px;
+}
+
+/* 卡面 (圖片) */
+.card-front {
+    background-color: white;
+    transform: rotateY(180deg);
+    background-size: cover;
+    background-position: center;
+}
+
+/* 控制按鈕區 */
+.tarot-controls {
+    margin-top: 20px;
+    z-index: 10;
+}
+
+/* 抽出的牌展示區 (放大版) */
+#tarot-display-area {
+    margin-top: 15px;
+    min-height: 50px;
+    text-align: center;
+    color: var(--text-main);
+    font-family: 'Zen Maru Gothic', sans-serif;
+    padding: 10px;
+    background: var(--card-bg);
+    border-radius: var(--radius-btn);
+    opacity: 0;
+    transition: opacity 0.5s;
+    max-width: 80%;
+}
+
+#tarot-display-area.visible {
+    opacity: 1;
+}
+
+#tarot-card-name {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: var(--accent-warm);
+}
+
+#tarot-reflection {
+    font-size: 0.9rem;
+    margin-top: 5px;
+    opacity: 0.8;
 }
   </style>
 </head>
@@ -2558,7 +2693,224 @@ const ab_answers = [
         }
     });
 },
-    // 預設畫面 (給其他還沒做好的功能用)
+/* --- Feature: Tarot (Custom File Naming Version) --- */
+renderTarot:(container) => {
+    container.innerHTML = `
+        <div id="tarot-container">
+            <div class="tarot-table" id="card-deck">
+                </div>
+            
+            <div class="tarot-controls">
+                <button class="btn-primary" id="btn-shuffle">🔮 洗牌與展開</button>
+            </div>
+
+            <div id="tarot-display-area">
+                <div id="tarot-card-name"></div>
+                <div id="tarot-reflection"></div>
+            </div>
+        </div>
+    `;
+
+    const deckContainer = container.querySelector('#card-deck');
+    const displayArea = container.querySelector('#tarot-display-area');
+    const nameEl = container.querySelector('#tarot-card-name');
+    const reflectEl = container.querySelector('#tarot-reflection');
+    const btnShuffle = container.querySelector('#btn-shuffle');
+
+    // --- 1. 建構 78 張牌的資料庫 (配合你的檔案命名) ---
+    
+    let tarotDeck = [];
+
+    // A. 處理大阿爾克那 (Major Arcana): ar00 ~ ar21
+    const majorNames = [
+        "The Fool (愚者)", "The Magician (魔術師)", "The High Priestess (女祭司)", 
+        "The Empress (皇后)", "The Emperor (皇帝)", "The Hierophant (教皇)", 
+        "The Lovers (戀人)", "The Chariot (戰車)", "Strength (力量)", 
+        "The Hermit (隱士)", "Wheel of Fortune (命運之輪)", "Justice (正義)", 
+        "The Hanged Man (倒吊人)", "Death (死神)", "Temperance (節制)", 
+        "The Devil (惡魔)", "The Tower (高塔)", "The Star (星星)", 
+        "The Moon (月亮)", "The Sun (太陽)", "Judgement (審判)", 
+        "The World (世界)"
+    ];
+
+    majorNames.forEach((name, index) => {
+        // 數字補零：0 -> '00', 5 -> '05'
+        const idxStr = index.toString().padStart(2, '0');
+        tarotDeck.push({
+            id: `m${idxStr}`, // 內部 ID 維持 m 開頭
+            name: name,
+            // 檔名規則：ar + 兩位數編號
+            img: `./images/tarot/ar${idxStr}.jpg`,
+            type: 'Major'
+        });
+    });
+
+    // B. 處理小阿爾克那 (Minor Arcana)
+    // 對應規則：Wands->wa, Cups->cu, Swords->sw, Pentacles->pe
+    const suits = [
+        { name: 'Wands (權杖)', filePrefix: 'wa' }, 
+        { name: 'Cups (聖杯)', filePrefix: 'cu' }, 
+        { name: 'Swords (寶劍)', filePrefix: 'sw' }, 
+        { name: 'Pentacles (錢幣)', filePrefix: 'pe' }
+    ];
+    
+    suits.forEach(suit => {
+        for (let i = 1; i <= 14; i++) {
+            let rankName = i.toString();
+            let fileSuffix = ''; // 檔名後綴 (01, 10, pa, ki...)
+
+            // 判斷點數與宮廷牌的檔名規則
+            if (i <= 10) {
+                // 數字牌：Ace(1) -> 01, 10 -> 10
+                if (i === 1) rankName = "Ace";
+                fileSuffix = i.toString().padStart(2, '0');
+            } else {
+                // 宮廷牌：Page, Knight, Queen, King
+                if (i === 11) { rankName = "Page (侍者)"; fileSuffix = "pa"; }
+                else if (i === 12) { rankName = "Knight (騎士)"; fileSuffix = "kn"; }
+                else if (i === 13) { rankName = "Queen (皇后)"; fileSuffix = "qu"; }
+                else if (i === 14) { rankName = "King (國王)"; fileSuffix = "ki"; }
+            }
+            
+            tarotDeck.push({
+                id: `${suit.filePrefix}${fileSuffix}`,
+                name: `${rankName} of ${suit.name}`,
+                // 組合檔名：例如 cu + ki = cuki.jpg / cu + 01 = cu01.jpg
+                img: `./images/tarot/${suit.filePrefix}${fileSuffix}.jpg`, 
+                type: 'Minor'
+            });
+        }
+    });
+
+    let isShuffled = false;
+
+    // --- 2. 初始化牌堆 (全部疊在一起) ---
+    const initDeck = () => {
+        deckContainer.innerHTML = '';
+        displayArea.classList.remove('visible');
+        
+        tarotDeck.forEach((cardData, index) => {
+            const card = document.createElement('div');
+            card.className = 'tarot-card';
+            card.dataset.name = cardData.name;
+            // 這裡把圖片路徑存到 dataset，等等點開才載入(或直接設背景)
+            // 為了預加載順暢，我們直接設在 style
+            
+            // 初始位置：全部在中間，稍微隨機偏移
+            const randomAngle = (Math.random() - 0.5) * 5; 
+            const randomX = (Math.random() - 0.5) * 5;
+            const randomY = (Math.random() - 0.5) * 5;
+            
+            card.style.transform = `translate(${randomX}px, ${randomY}px) rotate(${randomAngle}deg)`;
+            
+            // 內部結構 (正反面)
+            card.innerHTML = `
+                <div class="card-inner">
+                    <div class="card-back"></div>
+                    <div class="card-front" style="background-image: url('${cardData.img}')"></div>
+                </div>
+            `;
+            
+            // 點擊事件
+            card.addEventListener('click', () => handleCardClick(card));
+            
+            deckContainer.appendChild(card);
+        });
+    };
+
+    // --- 3. 洗牌與扇形展開邏輯 ---
+    const shuffleAndSpread = () => {
+        const cards = Array.from(deckContainer.children);
+        const totalCards = cards.length;
+        const arcAngle = 120; // 扇形總角度
+        const startAngle = -60; // 起始角度
+        
+        // 重置狀態
+        displayArea.classList.remove('visible');
+        cards.forEach(c => {
+            c.classList.remove('flipped');
+            c.style.zIndex = '';
+        });
+
+        // 隨機排序 DOM
+        cards.sort(() => Math.random() - 0.5);
+        cards.forEach(card => deckContainer.appendChild(card));
+
+        // 展開動畫
+        setTimeout(() => {
+            cards.forEach((card, index) => {
+                const angle = startAngle + (index / totalCards) * arcAngle;
+                card.style.transitionDelay = `${index * 10}ms`;
+                // 扇形展開：旋轉 + 往外推 (Y軸負向)
+                card.style.transform = `
+                    rotate(${angle}deg) 
+                    translateY(-50px)
+                    translateZ(0)
+                `;
+            });
+            isShuffled = true;
+            btnShuffle.textContent = "🔄 重新洗牌";
+        }, 100);
+    };
+
+    // --- 4. 點擊卡片處理 ---
+    const handleCardClick = (card) => {
+        if (!isShuffled) {
+            // 呼叫麵團說話 (如果有的話)
+            if(window.showSpeech) window.showSpeech("先按下方的按鈕洗牌喔！( • ̀ω•́ )");
+            return;
+        }
+
+        if (card.classList.contains('flipped')) return; 
+
+        // 翻開邏輯：移到最上層
+        const allCards = deckContainer.querySelectorAll('.tarot-card');
+        allCards.forEach(c => c.style.zIndex = '0');
+        
+        card.style.zIndex = '100'; 
+        card.classList.add('flipped');
+        
+        // 移到中間並放大
+        card.style.transitionDelay = '0s'; 
+        card.style.transform = `translate(0, 50px) scale(1.5) rotate(0deg)`;
+
+        // 顯示資訊
+        const cardName = card.dataset.name;
+        
+        setTimeout(() => {
+            displayArea.classList.add('visible');
+            nameEl.textContent = `✨ ${cardName}`;
+            reflectEl.innerHTML = `
+                如果是這張牌...<br>
+                畫面中的哪個顏色或符號，現在最吸引你的注意？
+            `;
+            
+            if(window.getMoodIcon) {
+                // 這裡可以根據牌義給不同表情，現在先隨機
+                // window.setPetMood('excited'); 
+            }
+        }, 600); 
+    };
+
+    // 綁定按鈕
+    btnShuffle.addEventListener('click', () => {
+        const cards = deckContainer.querySelectorAll('.tarot-card');
+        cards.forEach(c => {
+            c.style.transitionDelay = '0s';
+            c.style.transform = `translate(0,0) rotate(0)`;
+            c.classList.remove('flipped');
+        });
+        
+        displayArea.classList.remove('visible');
+        isShuffled = false;
+
+        setTimeout(shuffleAndSpread, 600);
+    });
+
+    // 啟動
+    initDeck();
+},   
+// 預設畫面 (給其他還沒做好的功能用)
     renderDefault: (container) => {
         container.innerHTML = `
              <p style="font-size: 1.1rem; color: var(--text-sub);">✨ 輕輕地吸氣，慢慢地吐氣 ✨</p>
