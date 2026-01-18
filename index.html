@@ -786,22 +786,29 @@ body.dark-mode .affirmation-overlay { background: rgba(0,0,0,0.85); }
 /* --- 解答之書 : 皇家典藏 · 實體終極補完版 --- */
 
 /* 1. 舞台設定 (🔥 修正：手機強制滿版 + 去除白邊) */
+/* 🔥 1. 替換這個：強制滿版 + 允許動畫溢出 */
 .ab-container {
     position: relative;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center; /* 恢復置中，利用 padding 推高 */
+    justify-content: center;
     
-    /* 🔥 強制突破父層容器限制，達到螢幕邊緣 */
+    /* --- 強制突破父層限制 --- */
     width: 100vw; 
-    margin-left: calc(50% - 50vw); 
-    margin-right: calc(50% - 50vw);
-    
+    left: 50%; 
+    right: 50%; 
+    margin-left: -50vw; 
+    margin-right: -50vw;
+    /* ---------------------- */
+
     min-height: 600px;
-    padding-bottom: 25vh; /* 保持你的上移需求 */
+    padding-bottom: 25vh;
     perspective: 2500px;
-    overflow: hidden; /* 防止視差過大產生卷軸 */
+    
+    /* 🔥 關鍵修正：改為 visible，絕對不要 hidden，否則書浮起來會被切頭 */
+    overflow: visible; 
+    
     touch-action: none;
 }
 
@@ -934,18 +941,28 @@ body.dark-mode .affirmation-overlay { background: rgba(0,0,0,0.85); }
 }
 
 /* 🔥 新增：實體封口 (右側 - 關鍵！解決看起來像一張紙的問題) */
-/* 🔥 修正：精確定位右側厚度，防止破圖 */
+/* 🔥 2. 替換這個：厚度內縮，完美收納進書皮 */
 .ab-pages-right {
     position: absolute; 
-    top: 0; bottom: 0; 
-    right: -19px; /* 往右移出厚度的一半 */
-    width: 38px; 
-    background-color: #e6e6e6;
-    /* 關鍵：以物體中心旋轉，並確保它在 Z 軸上與內頁對齊 */
-    transform: rotateY(-90deg); 
+    top: 2px; bottom: 2px; /* 上下稍微留點縫隙，不要頂死 */
+    
+    /* 數學計算：
+       想要置中旋轉，right 設為 -15px (寬度30的一半)
+       這樣旋轉軸心就在板子的正中間
+    */
+    right: -15px; 
+    
+    /* 🔥 關鍵：厚度縮減為 30px (書脊是 40px) */
+    /* 這樣前後各留 5px 的空間，書關起來絕對不會凸出來 */
+    width: 30px; 
+    
+    background-color: #f2f2f2; /* 稍微亮一點的顏色 */
+    transform: rotateY(-90deg); /* 轉 90 度 */
     transform-style: preserve-3d;
-    background-image: repeating-linear-gradient(to right, #e0e0e0 0px, #e0e0e0 1px, #f0f0f0 1px, #f0f0f0 2px);
-    box-shadow: inset 0 0 10px rgba(0,0,0,0.1);
+    
+    /* 紋路 */
+    background-image: repeating-linear-gradient(to right, #e0e0e0 0px, #e0e0e0 1px, #f5f5f5 1px, #f5f5f5 2px);
+    box-shadow: inset 0 0 5px rgba(0,0,0,0.05);
 }
 
 .ab-pages::before {
