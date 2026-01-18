@@ -410,7 +410,7 @@
         @keyframes muscleFlex { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
         @keyframes lidOpen { 0%, 100% { transform: rotate(0); } 50% { transform: rotate(-20deg) translateY(-5px); } }
         @keyframes conveyorMove { 0% { transform: translateX(0); opacity: 1; } 100% { transform: translateX(40px); opacity: 0; } }
-/* --- ☁️ 麵團精靈 DBT 數位工藝版 (Platinum Edition v2) CSS --- */
+/* --- ☁️ 麵團精靈 DBT 數位工藝版 (Platinum Edition) CSS --- */
 
 :root {
     --dbt-text: #5D5553;
@@ -421,7 +421,6 @@
     --foil-bg: linear-gradient(135deg, #fdfdfd 0%, #ebebeb 40%, #e0e0e0 100%);
     --foil-holo: linear-gradient(125deg, transparent 35%, rgba(200,230,255,0.08) 48%, rgba(255,255,255,0.3) 50%, rgba(200,230,255,0.08) 52%, transparent 65%);
     --foil-noise: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.08'/%3E%3C/svg%3E");
-    
     --foil-border: rgba(255,255,255,0.9);
     --foil-highlight: rgba(255,255,255,0.95);
     
@@ -429,18 +428,27 @@
 
     --sticker-blend: multiply;
     --sticker-opacity: 0.96;
+    
+    /* 新增：粒子顏色 (淺色模式下要深一點才看得到) */
+    --particle-color: rgb(255, 255, 17); 
 }
 
 body.dark-mode {
     --dbt-text: #e0e0e0;
     --dbt-card-bg: #262626;
     --dbt-shadow: rgba(0,0,0,0.8);
+    
     --foil-bg: linear-gradient(135deg, #4a4a4a 0%, #333 50%, #404040 100%);
     --foil-holo: linear-gradient(125deg, transparent 30%, rgba(255,255,255,0.04) 50%, transparent 70%);
+    
     --foil-border: rgba(255,255,255,0.12);
     --foil-highlight: rgba(255,255,255,0.08);
+    
     --sticker-blend: normal;
     --sticker-opacity: 1;
+    
+    /* 深色模式下是亮的 */
+    --particle-color: rgba(255, 255, 255, 0.3);
 }
 
 /* 基礎設定 */
@@ -473,151 +481,305 @@ body.dark-mode {
     to { opacity: 1; transform: scale(1) translateY(0); } 
 }
 
-/* 選擇與卡包通用 */
-.dough-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; width: 100%; max-width: 320px; margin-top: 10px; }
-.dough-btn { display: flex; flex-direction: column; align-items: center; cursor: pointer; transition: transform 0.2s; -webkit-tap-highlight-color: transparent; padding: 10px; border-radius: 20px; }
+/* --- 階段 1: 麵團選擇 --- */
+.dough-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 20px;
+    width: 100%; max-width: 320px; margin-top: 10px;
+}
+.dough-btn {
+    display: flex; flex-direction: column; align-items: center;
+    cursor: pointer; transition: transform 0.2s;
+    -webkit-tap-highlight-color: transparent;
+    padding: 10px; border-radius: 20px;
+}
 .dough-btn:active { transform: scale(0.95); }
-.dough-svg { width: 85px; height: 85px; transition: 0.3s; filter: drop-shadow(0 8px 12px var(--dbt-shadow)); }
-.dough-label { margin-top: 10px; font-size: 0.95rem; font-weight: bold; letter-spacing: 1px; opacity: 0.9; color: var(--dbt-text); text-shadow: 0 1px 1px rgba(255,255,255,0.8); }
+.dough-svg {
+    width: 85px; height: 85px; transition: 0.3s;
+    filter: drop-shadow(0 8px 12px var(--dbt-shadow));
+}
+.dough-label {
+    margin-top: 10px; font-size: 0.95rem; font-weight: bold; letter-spacing: 1px; opacity: 0.9;
+    color: var(--dbt-text);
+    text-shadow: 0 1px 1px rgba(255,255,255,0.8);
+}
 body.dark-mode .dough-label { text-shadow: 0 -1px 0 rgba(0,0,0,0.5); }
 
-/* Foil Pack Visuals */
+/* --- Foil 4.0: 白金卡包 --- */
 .pack-visual {
-    background: var(--foil-bg); border-radius: 14px; border: 1px solid var(--foil-border);
-    box-shadow: inset 0 0 30px var(--foil-highlight), inset 0 0 2px rgba(0,0,0,0.05), 0 15px 40px var(--dbt-shadow);
-    display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; overflow: hidden;
+    background: var(--foil-bg);
+    border-radius: 14px;
+    border: 1px solid var(--foil-border);
+    box-shadow: 
+        inset 0 0 30px var(--foil-highlight), 
+        inset 0 0 2px rgba(0,0,0,0.05),
+        0 15px 40px var(--dbt-shadow);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    position: relative;
+    overflow: hidden;
 }
-.pack-visual::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-image: var(--foil-noise); opacity: 0.5; pointer-events: none; mix-blend-mode: overlay; z-index: 1; }
-.pack-visual::after { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: var(--foil-holo); opacity: 0.9; pointer-events: none; z-index: 2; transform: rotate(30deg); }
+.pack-visual::before {
+    content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    background-image: var(--foil-noise);
+    opacity: 0.5; pointer-events: none; mix-blend-mode: overlay; z-index: 1;
+}
+.pack-visual::after {
+    content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+    background: var(--foil-holo);
+    opacity: 0.9; pointer-events: none; z-index: 2;
+    transform: rotate(30deg);
+}
 .pack-sticker {
-    background: var(--dbt-card-bg); width: 74%; padding: 20px 10px; border-radius: 6px; 
-    display: flex; flex-direction: column; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1); 
-    mix-blend-mode: var(--sticker-blend); opacity: var(--sticker-opacity); z-index: 3; transform: translateZ(2px); border: 1px solid rgba(0,0,0,0.03);
+    background: var(--dbt-card-bg);
+    width: 74%; padding: 20px 10px; border-radius: 6px; 
+    display: flex; flex-direction: column; align-items: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1); 
+    mix-blend-mode: var(--sticker-blend); 
+    opacity: var(--sticker-opacity);
+    z-index: 3;
+    transform: translateZ(2px); 
+    border: 1px solid rgba(0,0,0,0.03);
 }
 .pack-crimp-top, .pack-crimp-bottom {
-    position: absolute; left: 0; width: 100%; height: 18px; z-index: 5; opacity: 0.8;
-    background: repeating-linear-gradient(90deg, transparent 0px, transparent 2px, rgba(0,0,0,0.05) 2px, rgba(0,0,0,0.05) 3px);
+    position: absolute; left: 0; width: 100%; height: 18px;
+    background: repeating-linear-gradient(90deg, 
+        transparent 0px, transparent 2px, 
+        rgba(0,0,0,0.05) 2px, rgba(0,0,0,0.05) 3px); 
+    z-index: 5; opacity: 0.8;
 }
 .pack-crimp-top { top: 0; border-bottom: 1px solid rgba(255,255,255,0.4); }
 .pack-crimp-bottom { bottom: 0; border-top: 1px solid rgba(255,255,255,0.4); }
 
-/* 3D Carousel */
-.carousel-container { width: 100%; height: 340px; perspective: 900px; display: flex; align-items: center; justify-content: center; overflow: visible; padding: 20px 0; }
-.pack-carousel { position: relative; width: 180px; height: 290px; transform-style: preserve-3d; transition: transform 0.1s linear; cursor: grab; }
+/* --- 階段 2: 3D 轉盤 --- */
+.carousel-container {
+    width: 100%; height: 340px;
+    perspective: 900px; 
+    display: flex; align-items: center; justify-content: center;
+    overflow: visible; padding: 20px 0;
+}
+.pack-carousel {
+    position: relative; width: 180px; height: 290px;
+    transform-style: preserve-3d;
+    transition: transform 0.1s linear; 
+    cursor: grab;
+}
 .pack-carousel:active { cursor: grabbing; }
-.pack-3d-item { position: absolute; top: 0; left: 0; width: 100%; height: 100%; backface-visibility: hidden; }
+
+.pack-3d-item {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    backface-visibility: hidden;
+}
 .pack-3d-item .pack-side {
     position: absolute; left: -5px; top: 5px; width: 5px; height: 97%;
-    background: linear-gradient(to bottom, #ccc, #eee, #ccc); transform: rotateY(-90deg); transform-origin: right;
+    background: linear-gradient(to bottom, #ccc, #eee, #ccc); 
+    transform: rotateY(-90deg); transform-origin: right;
     border-radius: 3px 0 0 3px; opacity: 0.8;
 }
 body.dark-mode .pack-3d-item .pack-side { background: linear-gradient(to bottom, #333, #555, #333); }
 
-/* Rip Phase */
-.rip-container { position: relative; width: 220px; height: 330px; margin-top: 10px; perspective: 600px; }
-.rip-strip-touch { position: absolute; top: 0; left: 0; width: 100%; height: 70px; z-index: 20; cursor: grab; background: transparent; }
+/* --- 階段 3: 撕卡包 --- */
+.rip-container {
+    position: relative; width: 220px; height: 330px; margin-top: 10px;
+    perspective: 600px; 
+}
+.rip-strip-touch {
+    position: absolute; top: 0; left: 0; width: 100%; height: 70px;
+    z-index: 20; cursor: grab; background: transparent;
+}
 .rip-hint-text {
-    position: absolute; top: 20px; width: 100%; text-align: center; font-size: 0.75rem; letter-spacing: 2px; color: var(--dbt-text); opacity: 0.5;
-    pointer-events: none; transition: opacity 0.3s; text-shadow: 0 1px 1px rgba(255,255,255,0.8);
+    position: absolute; top: 20px; width: 100%; text-align: center;
+    font-size: 0.75rem; letter-spacing: 2px; color: var(--dbt-text); opacity: 0.5;
+    pointer-events: none; transition: opacity 0.3s;
+    text-shadow: 0 1px 1px rgba(255,255,255,0.8);
 }
 .rip-strip-moving {
-    position: absolute; top: 0; left: 0; width: 100%; height: 50px; background: var(--foil-bg); z-index: 10; opacity: 0;
-    display: flex; align-items: center; justify-content: center; border-radius: 14px 14px 0 0; box-shadow: 0 5px 15px rgba(0,0,0,0.1); overflow: hidden;
+    position: absolute; top: 0; left: 0; width: 100%; height: 50px;
+    background: var(--foil-bg); 
+    z-index: 10; opacity: 0;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 14px 14px 0 0;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    overflow: hidden;
 }
-.rip-strip-moving::before { content: ''; position: absolute; top:0; left:0; width:100%; height:100%; background-image: var(--foil-noise); opacity: 0.6; mix-blend-mode: overlay; }
+.rip-strip-moving::before {
+    content: ''; position: absolute; top:0; left:0; width:100%; height:100%;
+    background-image: var(--foil-noise); opacity: 0.6; mix-blend-mode: overlay;
+}
 .rip-trace-top {
-    position: absolute; top: 50px; left: 0; width: 0%; height: 12px; background: rgba(0,0,0,0.15); z-index: 5; pointer-events: none; opacity: 0;
+    position: absolute; top: 50px; left: 0; width: 0%; height: 12px;
+    background: rgba(0,0,0,0.15); 
+    z-index: 5; pointer-events: none; opacity: 0;
     clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%, 5% 80%, 10% 100%, 15% 80%, 20% 100%, 25% 80%, 30% 100%, 35% 80%, 40% 100%, 45% 80%, 50% 100%, 55% 80%, 60% 100%, 65% 80%, 70% 100%, 75% 80%, 80% 100%, 85% 80%, 90% 100%, 95% 80%);
 }
 
-/* Card Reveal & Letterpress */
-.real-card-stack { width: 260px; height: 400px; position: relative; perspective: 1000px; z-index: 10; margin-top: -10px; }
-.real-card-item { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 16px; transition: transform 0.7s cubic-bezier(0.34, 1.56, 0.64, 1); transform-style: preserve-3d; box-shadow: 0 10px 30px var(--dbt-shadow); }
-.card-face-style {
-    background-color: var(--dbt-card-bg); border-radius: 16px; display: flex; flex-direction: column; align-items: center; box-sizing: border-box;
-    background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%239C92AC' fill-opacity='0.03'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 3.134 7 7 7z' /%3E%3C/g%3E%3C/svg%3E");
-    border: 1px solid rgba(0,0,0,0.05); position: relative; overflow: hidden; 
+/* --- 階段 4: 抽卡與細節 --- */
+.real-card-stack { 
+    width: 260px; height: 400px; position: relative; perspective: 1000px; 
+    z-index: 10; margin-top: -10px;
 }
-.card-face-style::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-image: var(--card-grain); mix-blend-mode: multiply; pointer-events: none; z-index: 0; }
+.real-card-item {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    border-radius: 16px;
+    transition: transform 0.7s cubic-bezier(0.34, 1.56, 0.64, 1);
+    transform-style: preserve-3d;
+    box-shadow: 0 10px 30px var(--dbt-shadow);
+}
+.card-face-style {
+    background-color: var(--dbt-card-bg);
+    border-radius: 16px;
+    display: flex; flex-direction: column; align-items: center; 
+    box-sizing: border-box;
+    background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%239C92AC' fill-opacity='0.03'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 3.134 7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 3.134 7 7 3.134 7 7 7z' /%3E%3C/g%3E%3C/svg%3E");
+    border: 1px solid rgba(0,0,0,0.05);
+    position: relative;
+    overflow: hidden; 
+}
+.card-face-style::before {
+    content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    background-image: var(--card-grain);
+    mix-blend-mode: multiply; pointer-events: none; z-index: 0;
+}
 .card-border-inner {
-    position: absolute; top: 14px; left: 14px; right: 14px; bottom: 14px; border: 1px solid rgba(107, 97, 94, 0.1); border-radius: 10px; pointer-events: none; z-index: 1;
+    position: absolute; top: 14px; left: 14px; right: 14px; bottom: 14px;
+    border: 1px solid rgba(107, 97, 94, 0.1);
+    border-radius: 10px; pointer-events: none; z-index: 1;
     box-shadow: inset 0 0 0 1px rgba(255,255,255,0.6);
 }
-.real-card-face { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; padding: 30px 25px; justify-content: center; z-index: 2; }
-.letterpress-text { text-shadow: 0 1px 0 rgba(255,255,255,0.9), 0 -1px 0 rgba(0,0,0,0.05); }
-body.dark-mode .letterpress-text { text-shadow: 0 -1px 0 rgba(0,0,0,0.6), 0 1px 0 rgba(255,255,255,0.05); }
-
-.shine-inner { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; overflow: hidden; z-index: 20; border-radius: 16px; }
-.shine-inner::after {
-    content: ""; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: linear-gradient(to bottom right, transparent 40%, rgba(255,255,255,0.8) 50%, transparent 60%);
-    transform: rotate(30deg) translateY(-100%); opacity: 0; transition: opacity 0.1s;
+.real-card-face {
+    position: absolute; width: 100%; height: 100%;
+    backface-visibility: hidden;
+    padding: 30px 25px;
+    justify-content: center;
+    z-index: 2; 
 }
-.shine-active::after { opacity: 1; animation: shineMove 0.8s ease-out forwards; mix-blend-mode: overlay; }
+.letterpress-text {
+    text-shadow: 0 1px 0 rgba(255,255,255,0.9), 0 -1px 0 rgba(0,0,0,0.05);
+}
+body.dark-mode .letterpress-text {
+    text-shadow: 0 -1px 0 rgba(0,0,0,0.6), 0 1px 0 rgba(255,255,255,0.05);
+}
+.shine-inner {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    pointer-events: none; overflow: hidden; z-index: 20; border-radius: 16px;
+}
+.shine-inner::after {
+    content: ""; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+    background: linear-gradient(to bottom right, transparent 40%, rgba(255,255,255,0.8) 50%, transparent 60%);
+    transform: rotate(30deg) translateY(-100%);
+    opacity: 0; transition: opacity 0.1s;
+}
+.shine-active::after {
+    opacity: 1;
+    animation: shineMove 0.8s ease-out forwards;
+    mix-blend-mode: overlay;
+}
 @keyframes shineMove { from { transform: rotate(30deg) translateY(-100%); } to { transform: rotate(30deg) translateY(100%); } }
 
 .real-card-back {
-    width: 100%; height: 100%; background-color: var(--card-theme-bg); border: 12px solid var(--dbt-card-bg); box-shadow: inset 0 0 15px rgba(0,0,0,0.05);
-    border-radius: 16px; box-sizing: border-box; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden;
+    width: 100%; height: 100%; 
+    background-color: var(--card-theme-bg); 
+    border: 12px solid var(--dbt-card-bg);
+    box-shadow: inset 0 0 15px rgba(0,0,0,0.05);
+    border-radius: 16px; 
+    box-sizing: border-box; 
+    display: flex; align-items: center; justify-content: center;
+    position: relative; overflow: hidden;
 }
-.real-card-back::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-image: var(--card-grain); mix-blend-mode: multiply; opacity: 0.5; }
+.real-card-back::before {
+    content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    background-image: var(--card-grain);
+    mix-blend-mode: multiply; opacity: 0.5;
+}
 .real-card-front { transform: rotateY(180deg); }
 .flipped { transform: rotateY(180deg); }
 .discarded { transform: translateX(180%) rotate(25deg); opacity: 0; }
 
-/* --- Affirmation Overlay (全螢幕療癒過場) --- */
+/* --- Affirmation Overlay (全螢幕肯定 - 修正延遲) --- */
 .affirmation-overlay {
     position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    /* 呼吸背景動畫 */
-    background: linear-gradient(135deg, rgba(255,255,255,0.85), rgba(240,245,255,0.9), rgba(255,240,245,0.9));
-    background-size: 200% 200%;
-    animation: warmBreathe 10s ease infinite;
+    background: rgba(255,255,255,0.8); /* 稍微不透明一點，增加覆蓋感 */
     backdrop-filter: blur(20px);
     z-index: 9999;
     display: flex; flex-direction: column; align-items: center; justify-content: center;
     padding: 40px; box-sizing: border-box;
     opacity: 0; pointer-events: none; 
-    transition: opacity 0.8s ease;
+    transition: opacity 0.8s ease; /* 加快一點點 */
 }
-body.dark-mode .affirmation-overlay { background: linear-gradient(135deg, rgba(20,20,20,0.9), rgba(30,35,45,0.95), rgba(40,30,35,0.95)); }
+body.dark-mode .affirmation-overlay { background: rgba(0,0,0,0.85); }
 
-@keyframes warmBreathe { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
-
-.affirmation-content { max-width: 400px; width: 100%; text-align: center; transform: translateY(20px); transition: transform 1s ease; position: relative; z-index: 10; }
-.affirmation-text { font-size: 1.2rem; line-height: 1.8; color: var(--dbt-text); font-weight: 500; text-align: justify; letter-spacing: 1px; }
-.affirmation-close { margin-top: 50px; font-size: 0.85rem; opacity: 0; transition: opacity 1s ease 2s; cursor: pointer; letter-spacing: 2px; }
+.affirmation-content {
+    max-width: 400px; width: 100%;
+    text-align: center;
+    transform: translateY(20px);
+    transition: transform 1s ease;
+}
+.affirmation-text {
+    font-size: 1.15rem; line-height: 1.8; color: var(--dbt-text);
+    font-weight: 500; text-align: justify;
+    letter-spacing: 1px;
+}
+.affirmation-close {
+    margin-top: 40px; font-size: 0.85rem; opacity: 0; 
+    transition: opacity 1s ease 2s;
+    cursor: pointer; letter-spacing: 2px;
+}
 .affirmation-active { opacity: 1; pointer-events: auto; }
 .affirmation-active .affirmation-content { transform: translateY(0); }
 .affirmation-active .affirmation-close { opacity: 0.6; }
 
-/* 懸浮微塵特效 (Floating Dust) - 強制高 z-index 和明確動畫 */
+/* 懸浮微塵特效 (Floating Dust) - 增強版 */
 .floating-particle {
     position: absolute;
-    background: radial-gradient(circle, rgba(255,255,255,1) 0%, rgba(255,255,255,0) 70%);
+    background: radial-gradient(circle, var(--particle-color) 20%, transparent 100%); /* 使用變數 */
     border-radius: 50%;
     pointer-events: none;
-    z-index: 1; /* 在背景之上，內容之下 */
-}
-/* 彩色微塵 (更夢幻) */
-.floating-particle.color-dust {
-    background: radial-gradient(circle, rgba(255,200,200,0.6) 0%, rgba(255,255,255,0) 70%);
-}
-@keyframes particleFloat { 
-    0% { transform: translateY(0) translateX(0); opacity: 0; } 
-    50% { opacity: 0.8; } 
-    100% { transform: translateY(-100px) translateX(20px); opacity: 0; } 
+    opacity: 0; /* 初始隱藏 */
 }
 
-/* Summary & Lightbox */
-.summary-grid { display: flex; justify-content: flex-start; gap: 15px; width: 100%; overflow-x: auto; padding: 20px 20px 40px 20px; box-sizing: border-box; scroll-snap-type: x mandatory; }
+/* --- 階段 5: 總覽 --- */
+.summary-grid {
+    display: flex; justify-content: flex-start; gap: 15px;
+    width: 100%; overflow-x: auto; 
+    padding: 20px 20px 40px 20px; box-sizing: border-box;
+    scroll-snap-type: x mandatory;
+}
 .summary-grid::after { content: ''; display: block; width: 20px; flex-shrink: 0; }
-.mini-card { flex: 0 0 140px; height: 210px; padding: 15px; box-shadow: 0 4px 10px var(--dbt-shadow); scroll-snap-align: center; cursor: zoom-in; justify-content: flex-start; text-align: center; position: relative; border-radius: 12px; }
-.card-lightbox { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 3000; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(8px); padding: 20px; box-sizing: border-box; }
-.lightbox-content { width: 100%; max-width: 320px; animation: zoomUp 0.4s cubic-bezier(0.19, 1, 0.22, 1); }
-.lightbox-card-face { width: 100%; min-height: 480px; padding: 30px; box-shadow: 0 20px 60px rgba(0,0,0,0.4); max-height: 80vh; overflow-y: auto; justify-content: flex-start; }
+
+.mini-card {
+    flex: 0 0 140px; height: 210px;
+    padding: 15px; 
+    box-shadow: 0 4px 10px var(--dbt-shadow);
+    scroll-snap-align: center; cursor: zoom-in;
+    justify-content: flex-start; text-align: center;
+    position: relative;
+    border-radius: 12px;
+}
+
+/* Lightbox */
+.card-lightbox {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.85); z-index: 3000;
+    display: flex; align-items: center; justify-content: center;
+    backdrop-filter: blur(8px); padding: 20px; box-sizing: border-box;
+}
+.lightbox-content {
+    width: 100%; max-width: 320px; 
+    animation: zoomUp 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+}
+.lightbox-card-face {
+    width: 100%; min-height: 480px;
+    padding: 30px; 
+    box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+    max-height: 80vh; overflow-y: auto;
+    justify-content: flex-start;
+}
 @keyframes zoomUp { from { transform: scale(0.95) translateY(20px); opacity: 0; } to { transform: scale(1) translateY(0); opacity: 1; } }
 
 .dbt-btn {
-    border: 1px solid var(--dbt-text); background: transparent; padding: 10px 30px; border-radius: 30px; color: var(--dbt-text); font-size: 0.9rem; cursor: pointer; margin: 20px 0; transition: all 0.2s; box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    border: 1px solid var(--dbt-text); background: transparent;
+    padding: 10px 30px; border-radius: 30px;
+    color: var(--dbt-text); font-size: 0.9rem; cursor: pointer; margin: 20px 0;
+    transition: all 0.2s;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
 }
 .dbt-btn:active { background: var(--dbt-text); color: var(--dbt-card-bg); transform: scale(0.98); }
 /* --- 解答之書專用樣式 (Namespace: .ab-) --- */
@@ -1456,14 +1618,13 @@ const renderers = {
             { id:37, type:'distress', title:'半笑', subtitle:'Half-Smile', desc:'放鬆臉部肌肉，嘴角微微上揚。生理回饋會告訴大腦你是安全的。' },
             { id:38, type:'distress', title:'戒癮', subtitle:'Abstinence', desc:'辯證性戒癮：承認會跌倒，但致力於徹底戒除。燒掉後路。' }
         ];
-        // --- 🎵 Audio Engine V5 (Fix Auto-play & Resume) ---
+        // --- 🎵 Audio Engine V5 (Global Sync & Fixes) ---
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        let audioResumed = false;
-
-        const ensureAudio = () => {
-            if (!audioResumed) {
-                audioCtx.resume().then(() => { audioResumed = true; });
-            }
+        
+        // 檢查全域音效設定 (預設為 true，若有儲存則讀取字串比對)
+        const checkSfxEnabled = () => {
+            const saved = localStorage.getItem('safeSpaceSfxOn');
+            return saved === null ? true : (saved === 'true');
         };
 
         const bufferSize = audioCtx.sampleRate * 2; 
@@ -1474,16 +1635,19 @@ const renderers = {
         }
 
         const playSound = (type) => {
+            // 如果全域音效關閉，直接返回，不播放也不震動
+            if (!checkSfxEnabled()) return;
+
             if (audioCtx.state === 'suspended') audioCtx.resume();
             const now = audioCtx.currentTime;
             
             if (type === 'ratchet') { 
                 const osc = audioCtx.createOscillator();
                 const gain = audioCtx.createGain();
-                osc.type = 'triangle'; 
+                osc.type = 'triangle';
                 osc.frequency.setValueAtTime(300, now);
                 osc.frequency.exponentialRampToValueAtTime(50, now + 0.03);
-                gain.gain.setValueAtTime(0.08, now); // 稍微調大音量
+                gain.gain.setValueAtTime(0.08, now); // 稍微調大一點點，確保聽得到
                 gain.gain.exponentialRampToValueAtTime(0.01, now + 0.03);
                 osc.connect(gain); gain.connect(audioCtx.destination);
                 osc.start(now); osc.stop(now + 0.04);
@@ -1516,31 +1680,38 @@ const renderers = {
             }
         };
 
-        // (Helper Functions & Data - 省略部分不變)
         const createDough = (type, contentSvg) => {
-             const theme = {
+            const theme = {
                 'mindfulness': { color: '#9B6E9F', blush: '#E1BEE7' },
                 'interpersonal': { color: '#6E8F9F', blush: '#B3E5FC' },
                 'emotion': { color: '#D67D68', blush: '#FFCDD2' },
                 'distress': { color: '#78909C', blush: '#CFD8DC' }
             }[type] || { color: '#555', blush: '#FFB7B2' };
+
             return `
             <svg viewBox="0 0 100 100" style="width:100%; height:100%; overflow:visible;">
                 <defs>
                     <filter id="softGlow-${type}" x="-20%" y="-20%" width="140%" height="140%">
                         <feGaussianBlur in="SourceAlpha" stdDeviation="2" result="blur"/>
                         <feOffset in="blur" dx="0" dy="2" result="offsetBlur"/>
-                        <feMerge><feMergeNode in="offsetBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+                        <feMerge>
+                            <feMergeNode in="offsetBlur"/>
+                            <feMergeNode in="SourceGraphic"/>
+                        </feMerge>
                     </filter>
                 </defs>
                 <g filter="url(#softGlow-${type})">
-                    <path d="M50 12 C20 12 5 30 5 62 C5 88 22 98 50 98 C78 98 95 88 95 62 C95 30 80 12 50 12 Z" fill="#FDFBF7" stroke="${theme.color}" stroke-width="2.5" stroke-linejoin="round" />
+                    <path d="M50 12 C20 12 5 30 5 62 C5 88 22 98 50 98 C78 98 95 88 95 62 C95 30 80 12 50 12 Z" 
+                          fill="#FDFBF7" stroke="${theme.color}" stroke-width="2.5" stroke-linejoin="round" />
                     <circle cx="25" cy="62" r="7" fill="${theme.blush}" opacity="0.6" filter="blur(1px)"/>
                     <circle cx="75" cy="62" r="7" fill="${theme.blush}" opacity="0.6" filter="blur(1px)"/>
-                    <g stroke="${theme.color}" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">${contentSvg}</g>
+                    <g stroke="${theme.color}" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        ${contentSvg}
+                    </g>
                 </g>
             </svg>`;
         };
+
         const svgs = {
             mindfulness: createDough('mindfulness', `<path d="M30 55 Q35 58 40 55 M60 55 Q65 58 70 55" /><path d="M48 48 Q50 65 52 48" opacity="0.4"/><path d="M45 68 Q50 72 55 68" />`),
             interpersonal: createDough('interpersonal', `<circle cx="32" cy="55" r="2.5" fill="#6E8F9F" stroke="none"/><circle cx="68" cy="55" r="2.5" fill="#6E8F9F" stroke="none"/><path d="M45 66 Q50 71 55 66" /><path d="M75 22 L92 22 L92 38 L82 38 L78 44 L75 38 Z" fill="#E1F5FE" stroke-width="1.5"/><text x="80" y="34" font-size="9" fill="#6E8F9F" stroke="none" font-weight="bold" font-family="sans-serif">Hi</text>`),
@@ -1548,7 +1719,8 @@ const renderers = {
             distress: createDough('distress', `<circle cx="32" cy="55" r="2.5" fill="#78909C" stroke="none"/><circle cx="68" cy="55" r="2.5" fill="#78909C" stroke="none"/><path d="M28 48 L40 52 M72 48 L60 52" stroke-width="2"/><path d="M45 68 L55 68" /><path d="M22 75 L38 75 L38 88 Q30 93 22 88 Z" fill="#ECEFF1" />`)
         };
 
-        let state = { phase: 'SELECT', type: null, cards: [], fadingOverlay: null }; // Add fadingOverlay to state
+        // (Data)
+        let state = { phase: 'SELECT', type: null, cards: [] };
 
         const render = () => {
             container.innerHTML = '';
@@ -1562,22 +1734,6 @@ const renderers = {
             else if(state.phase === 'SUMMARY') renderSummary(wrapper);
 
             container.appendChild(wrapper);
-
-            // 如果有殘影 Overlay，掛載到 wrapper 上，讓它在最上層淡出
-            if (state.fadingOverlay) {
-                wrapper.appendChild(state.fadingOverlay);
-                // 強制觸發淡出
-                requestAnimationFrame(() => {
-                    state.fadingOverlay.style.opacity = 0;
-                });
-                setTimeout(() => {
-                    if(state.fadingOverlay && state.fadingOverlay.parentNode) {
-                        state.fadingOverlay.parentNode.removeChild(state.fadingOverlay);
-                    }
-                    state.fadingOverlay = null;
-                }, 800);
-            }
-
             updateBackLogic();
         };
 
@@ -1597,6 +1753,7 @@ const renderers = {
             state = { ...state, phase, ...data };
             render();
         };
+
         const getMeta = (type) => {
             const map = {
                 'mindfulness': { color: '#9B6E9F', bg: '#F3E5F5', title: '正念覺察', icon: svgs.mindfulness },
@@ -1624,10 +1781,10 @@ const renderers = {
                     </div>
                 </div>
             `;
-            window.dbtToCarousel = (type) => { ensureAudio(); go('CAROUSEL', { type }); };
+            window.dbtToCarousel = (type) => go('CAROUSEL', { type });
         };
 
-        // 2. CAROUSEL
+        // 2. CAROUSEL (Fix: 強化音效觸發)
         const renderCarousel = (root) => {
             const meta = getMeta(state.type);
             const tz = 250; 
@@ -1637,7 +1794,8 @@ const renderers = {
                         <div class="pack-carousel" id="c-pack">
                             ${Array(8).fill(0).map((_, i) => `
                                 <div class="pack-3d-item pack-visual" style="transform: rotateY(${i * 45}deg) translateZ(${tz}px);">
-                                    <div class="pack-side"></div><div class="pack-crimp-top"></div>
+                                    <div class="pack-side"></div>
+                                    <div class="pack-crimp-top"></div>
                                     <div class="pack-sticker">
                                         <div style="width:55px; height:55px; filter:drop-shadow(0 4px 6px rgba(0,0,0,0.1));">${meta.icon}</div>
                                         <div style="font-weight:bold; margin-top:5px; color:${meta.color}; font-size:0.9rem;" class="letterpress-text">${meta.title}</div>
@@ -1650,19 +1808,23 @@ const renderers = {
                     <div style="opacity:0.6; margin-top:5px; font-size:0.8rem;">左右滑動 • 點擊選擇</div>
                 </div>
             `;
+            
             const stage = root.querySelector('#c-stage');
             const pack = root.querySelector('#c-pack');
             let startX = 0, currentRot = 0, isDragging = false;
             let lastIdx = 0; 
+            
             const update = () => pack.style.transform = `rotateY(${currentRot}deg)`;
             
-            // 重要：在這邊確保 Audio 被喚醒
-            const startDrag = (x) => {
-                ensureAudio();
-                isDragging=true; startX=x;
+            const startInteraction = (e) => {
+                isDragging = true;
+                startX = e.type.includes('touch') ? e.touches[0].clientX : e.clientX;
+                // 確保 AudioContext 被喚醒
+                if(audioCtx.state === 'suspended') audioCtx.resume();
             };
-            stage.onmousedown = e => startDrag(e.clientX);
-            stage.ontouchstart = e => startDrag(e.touches[0].clientX);
+
+            stage.onmousedown = startInteraction;
+            stage.ontouchstart = startInteraction;
             
             const move = x => {
                 if(!isDragging) return;
@@ -1670,6 +1832,8 @@ const renderers = {
                 currentRot += diff * 0.5;
                 startX = x;
                 update();
+                
+                // 修正音效觸發邏輯：確保索引變化明確
                 const currentIdx = Math.round(currentRot / 45);
                 if (currentIdx !== lastIdx) {
                     playSound('ratchet');
@@ -1685,10 +1849,12 @@ const renderers = {
                 currentRot = snap;
                 update();
             };
-            stage.onmouseup = end; stage.ontouchend = end;
+            stage.onmouseup = end;
+            stage.ontouchend = end;
+            
             stage.onclick = (e) => {
                 if(Math.abs(startX - e.clientX) < 5) {
-                    if(navigator.vibrate) navigator.vibrate(40);
+                    if(checkSfxEnabled() && navigator.vibrate) navigator.vibrate(40);
                     go('RIP');
                 }
             };
@@ -1702,9 +1868,11 @@ const renderers = {
                     <div class="rip-container" id="rip-container-3d">
                         <div class="rip-strip-touch" id="rip-strip-touch"></div>
                         <div class="rip-hint-text" id="rip-hint">➤ 向右撕開包裝 ➤</div>
+                        
                         <div class="rip-strip-moving" id="rip-strip-vis">
                             <div class="pack-crimp-top" style="width:100%; top:0;"></div>
                         </div>
+
                         <div class="rip-pack-main pack-visual" id="pack-body" style="width:100%; height:100%; position:absolute; transition: transform 0.1s ease-out;">
                             <div class="pack-crimp-top"></div>
                             <div style="margin-top:0px; transform:scale(1.1); display:flex; flex-direction:column; align-items:center;" class="pack-sticker">
@@ -1717,13 +1885,16 @@ const renderers = {
                     </div>
                 </div>
             `;
+
             const container3d = root.querySelector('#rip-container-3d');
             const packBody = root.querySelector('#pack-body');
             const touchArea = root.querySelector('#rip-strip-touch');
             const visStrip = root.querySelector('#rip-strip-vis');
             const trace = root.querySelector('#rip-trace');
             const hint = root.querySelector('#rip-hint');
-            let startX = 0, isDragging = false; const packWidth = 220; 
+            
+            let startX = 0, isDragging = false;
+            const packWidth = 220; 
 
             const updateParallax = (cx, cy) => {
                 const rect = container3d.getBoundingClientRect();
@@ -1731,51 +1902,73 @@ const renderers = {
                 const y = cy - rect.top - rect.height / 2;
                 packBody.style.transform = `rotateY(${x * 0.05}deg) rotateX(${-y * 0.05}deg)`;
             };
+
             const update = (x, y) => {
-                if(!isDragging) { updateParallax(x, y); return; }
+                if(!isDragging) {
+                     updateParallax(x, y);
+                     return;
+                }
+                
                 let delta = x - startX;
                 if(delta < 0) delta = 0;
                 const progress = Math.min(delta / (packWidth * 0.9), 1);
-                if(progress > 0.1) { visStrip.style.opacity = 1; hint.style.opacity = 0; }
+                
+                if(progress > 0.1) {
+                    visStrip.style.opacity = 1; hint.style.opacity = 0;
+                }
                 visStrip.style.transform = `translateX(${delta}px) rotate(${delta * 0.05}deg)`;
                 trace.style.width = `${delta + 10}px`;
                 trace.style.opacity = progress * 0.8;
                 if (progress > 0 && progress < 0.9 && delta % 20 < 2) {
                     playSound('rip');
-                    if(navigator.vibrate) navigator.vibrate([15]);
+                    if(checkSfxEnabled() && navigator.vibrate) navigator.vibrate([15]);
                 }
                 if(progress >= 1) { isDragging = false; finishRip(); }
             };
+
             const finishRip = () => {
-                if(navigator.vibrate) navigator.vibrate([50]);
+                if(checkSfxEnabled() && navigator.vibrate) navigator.vibrate([50]);
                 visStrip.style.transition = '0.4s ease-out';
                 visStrip.style.transform = `translateX(${packWidth + 60}px) rotate(20deg)`;
                 visStrip.style.opacity = '0';
+                
                 setTimeout(() => {
                     packBody.style.transition = '0.5s cubic-bezier(0.6, -0.28, 0.735, 0.045)';
                     packBody.style.transform = 'scale(1.1) rotate(5deg)';
                     packBody.style.opacity = '0';
                     const pool = dbt_data.filter(c => c.type === state.type);
-                    const picks = []; const temp = [...pool];
+                    const picks = [];
+                    const temp = [...pool];
                     for(let i=0; i<3; i++) {
-                        if(temp.length) { const idx = Math.floor(Math.random() * temp.length); picks.push(temp[idx]); temp.splice(idx,1); }
+                        if(temp.length) {
+                            const idx = Math.floor(Math.random() * temp.length);
+                            picks.push(temp[idx]); temp.splice(idx,1);
+                        }
                     }
                     setTimeout(() => go('REVEAL', { cards: picks }), 400);
                 }, 200);
             };
-            const start = (x) => { ensureAudio(); isDragging = true; startX = x; };
+
+            const start = (x) => { isDragging = true; startX = x; };
             const end = () => { 
                 if(isDragging) {
                     isDragging = false;
-                    visStrip.style.transition = '0.3s'; visStrip.style.transform = 'translateX(0)'; visStrip.style.opacity = 0; trace.style.width = '0'; hint.style.opacity = 0.5;
+                    visStrip.style.transition = '0.3s';
+                    visStrip.style.transform = 'translateX(0)';
+                    visStrip.style.opacity = 0;
+                    trace.style.width = '0';
+                    hint.style.opacity = 0.5;
                 }
             };
-            touchArea.onmousedown = e => start(e.clientX); touchArea.ontouchstart = e => start(e.touches[0].clientX);
-            window.onmousemove = e => update(e.clientX, e.clientY); window.ontouchmove = e => update(e.touches[0].clientX, e.touches[0].clientY);
+
+            touchArea.onmousedown = e => start(e.clientX);
+            touchArea.ontouchstart = e => start(e.touches[0].clientX);
+            window.onmousemove = e => update(e.clientX, e.clientY);
+            window.ontouchmove = e => update(e.touches[0].clientX, e.touches[0].clientY);
             window.onmouseup = end; window.ontouchend = end;
         };
 
-        // 4. REVEAL
+        // 4. REVEAL (Fix: 粒子增量 + 無縫過場)
         const renderReveal = (root) => {
             const meta = getMeta(state.type);
             let idx = 0;
@@ -1789,10 +1982,12 @@ const renderers = {
             state.cards.forEach((c, i) => {
                 const el = document.createElement('div');
                 el.className = 'real-card-item';
-                el.style.zIndex = 10 - i; el.id = `card-${i}`;
+                el.style.zIndex = 10 - i;
+                el.id = `card-${i}`;
                 el.innerHTML = `
                     <div class="real-card-face real-card-front card-face-style" id="front-${i}">
-                        <div class="card-border-inner"></div><div class="shine-inner"></div>
+                        <div class="card-border-inner"></div>
+                        <div class="shine-inner"></div>
                         <div style="display:flex; flex-direction:column; align-items:center; position:relative; z-index:2;">
                             <div style="width:65px; height:65px; margin-bottom:15px; filter:drop-shadow(0 4px 6px rgba(0,0,0,0.1));">${meta.icon}</div>
                             <h3 style="color:${meta.color}; font-size:1.4rem; margin-bottom:5px; text-align:center;" class="letterpress-text">${c.title}</h3>
@@ -1807,46 +2002,70 @@ const renderers = {
                 stack.appendChild(el);
             });
 
+            // Affirmation Logic
             const showAffirmation = () => {
                 const name = (typeof userNickname !== 'undefined' && userNickname && userNickname.trim() !== "") ? userNickname : "";
+                
                 const overlay = document.createElement('div');
                 overlay.className = 'affirmation-overlay';
                 overlay.innerHTML = `
                     <div class="affirmation-content">
-                        <div class="affirmation-text">
-                            ${name}，謝謝你願意為自己打開卡包，無論此刻你做與不做任何事情，光是你想讓自己變好的心就已經很棒了。<br><br>
-                            有時候停在原地也很棒，不用變好也很棒，如果什麼都不想做，就讓自己好好躺平吧！
+                        <div class="affirmation-text" style="text-align: center;">
+                        <span style="color: #7A9F6E; font-weight: bold;">${name}</span> 謝謝你願意為自己打開卡包，<br>
+                            無論此刻你做與不做任何事情，<br>
+                            光是你想讓自己變好的心就已經很棒了💖<br><br>
+                            有時候停在原地也很棒，不用變好也很棒，<br>
+                            如果什麼都不想做，就讓自己好好躺平吧！<br>
+                            
+                            <div style="text-align: center; font-family: Arial, sans-serif; margin-top: 10px;">
+                                (❁´◡\`❁)
+                            </div>
+                            <div class="affirmation-close">點擊任意處繼續</div>
                         </div>
-                        <div class="affirmation-close">點擊任意處繼續</div>
-                    </div>
+                        </div>
                 `;
-                // 產生懸浮微塵 (Floating Dust - 修復動畫與顏色)
-                for(let k=0; k<25; k++) {
+                
+                // 產生懸浮微塵 (數量更多，大小隨機)
+                for(let k=0; k<30; k++) {
                     const p = document.createElement('div');
-                    p.className = Math.random() > 0.5 ? 'floating-particle' : 'floating-particle color-dust';
-                    const size = Math.random() * 4 + 2;
+                    p.className = 'floating-particle';
+                    // 尺寸加大 (4px ~ 9px)
+                    const size = Math.random() * 5 + 4;
                     p.style.width = size+'px'; p.style.height = size+'px';
                     p.style.left = Math.random()*100+'%'; p.style.top = Math.random()*100+'%';
-                    p.style.animation = `particleFloat ${Math.random()*5+5}s infinite linear`; // 明確動畫
+                    // 動畫時間隨機
+                    p.style.animation = `dbtFadeIn ${Math.random()*3+2}s infinite alternate`;
+                    // 隨機延遲出現，避免同時閃爍
+                    p.style.animationDelay = `${Math.random()*2}s`;
                     overlay.appendChild(p);
                 }
+
                 root.appendChild(overlay);
+                
+                // 動畫進場
                 setTimeout(() => {
                     overlay.classList.add('affirmation-active');
-                    if(navigator.vibrate) navigator.vibrate([10, 50, 10]);
+                    if(checkSfxEnabled() && navigator.vibrate) navigator.vibrate([10, 50, 10]);
                 }, 100);
 
-                // 無縫過場邏輯
+                // --- 修正：無縫過場邏輯 ---
                 overlay.onclick = () => {
-                    // 將這個 overlay 複製/移動到 state 中，傳給下一個狀態
-                    state.fadingOverlay = overlay; 
-                    go('SUMMARY'); 
+                    // 1. 先把透明度變為 0，並讓滑鼠事件穿透 (pointer-events: none)
+                    overlay.style.opacity = 0;
+                    overlay.style.pointerEvents = 'none';
+                    
+                    // 2. "立刻" 渲染總覽頁面 (go SUMMARY)，這樣它會出現在正在淡出的 overlay 下方
+                    go('SUMMARY');
+
+                    // 3. 等待淡出動畫結束後，再移除 overlay DOM
+                    setTimeout(() => {
+                        overlay.remove();
+                    }, 800); 
                 };
             };
 
             let step = 'FLIP';
             root.querySelector('#reveal-stage').onclick = () => {
-                ensureAudio();
                 if(idx >= 3) return;
                 const card = stack.querySelector(`#card-${idx}`);
                 const front = stack.querySelector(`#front-${idx}`);
@@ -1856,7 +2075,7 @@ const renderers = {
                 if(step === 'FLIP') {
                     card.classList.add('flipped');
                     playSound('swish'); 
-                    if(navigator.vibrate) navigator.vibrate(30); 
+                    if(checkSfxEnabled() && navigator.vibrate) navigator.vibrate(30); 
                     setTimeout(() => shine.classList.add('shine-active'), 150); 
                     hint.innerText = idx < 2 ? "再次點擊收起" : "再次點擊查看結果";
                     step = 'NEXT';
@@ -1894,7 +2113,8 @@ const renderers = {
                 </div>
                 <div id="zoom-modal-container"></div>
             `;
-            window.dbtBackToSelect = () => { ensureAudio(); go('SELECT'); };
+            
+            window.dbtBackToSelect = () => go('SELECT');
             window.dbtZoom = (index) => {
                 const c = state.cards[index];
                 const modalContainer = root.querySelector('#zoom-modal-container');
