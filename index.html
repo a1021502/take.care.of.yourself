@@ -430,7 +430,7 @@
     --sticker-opacity: 0.96;
     
     /* 新增：粒子顏色 (淺色模式下要深一點才看得到) */
-    --particle-color: rgb(213, 213, 58); 
+    --particle-color: rgb(255, 255, 90); 
 }
 
 body.dark-mode {
@@ -783,22 +783,25 @@ body.dark-mode .affirmation-overlay { background: rgba(0,0,0,0.85); }
 }
 .dbt-btn:active { background: var(--dbt-text); color: var(--dbt-card-bg); transform: scale(0.98); }
 /* --- 解答之書專用樣式 (Namespace: .ab-) --- */
-/* --- 解答之書 : 皇家典藏 · 神級完全體 --- */
+/* --- 解答之書 : 皇家典藏 · 實體終極補完版 --- */
 
-/* 1. 舞台設定 (🔥 修正：整體上移) */
+/* 1. 舞台設定 (🔥 修正：手機強制滿版 + 去除白邊) */
 .ab-container {
     position: relative;
     display: flex;
     flex-direction: column;
     align-items: center;
-    /* 改用 flex-start 配合上邊距來控制垂直位置，或者用 padding-bottom 把中心點頂上去 */
-    justify-content: center; 
-    width: 100%;
+    justify-content: center; /* 恢復置中，利用 padding 推高 */
+    
+    /* 🔥 強制突破父層容器限制，達到螢幕邊緣 */
+    width: 100vw; 
+    margin-left: calc(50% - 50vw); 
+    margin-right: calc(50% - 50vw);
+    
     min-height: 600px;
-    /* 🔥 關鍵：增加底部留白，把視覺中心往上推 */
-    padding-bottom: 25vh; 
+    padding-bottom: 25vh; /* 保持你的上移需求 */
     perspective: 2500px;
-    overflow: visible;
+    overflow: hidden; /* 防止視差過大產生卷軸 */
     touch-action: none;
 }
 
@@ -807,7 +810,6 @@ body.dark-mode .affirmation-overlay { background: rgba(0,0,0,0.85); }
     position: relative;
     width: 280px; height: 400px; 
     transform-style: preserve-3d;
-    /* 視差變數 */
     transform: rotateY(calc(-30deg + var(--rY, 0deg))) rotateX(calc(10deg + var(--rX, 0deg)));
     transition: transform 0.1s ease-out; 
     cursor: pointer;
@@ -854,7 +856,7 @@ body.dark-mode .affirmation-overlay { background: rgba(0,0,0,0.85); }
 }
 .ab-book.is-open .ab-cover-group { transform: rotateY(-165deg); }
 
-/* 4.1 封面正面 (粗曠紋路) */
+/* 4.1 封面正面 */
 .ab-cover-front {
     position: absolute; top: 0; left: 0; width: 100%; height: 100%;
     background-color: #151b29;
@@ -908,21 +910,17 @@ body.dark-mode .affirmation-overlay { background: rgba(0,0,0,0.85); }
     z-index: 0;
 }
 
-/* 6. 內頁主體 (置中) */
+/* 6. 內頁主體 */
 .ab-pages {
     position: absolute; top: 8px; bottom: 8px; left: 4px; right: 12px;
     background-color: #fdfbf7; z-index: 1; transform-style: preserve-3d;
     transform: translateZ(-20px); 
-    box-shadow: 
-        inset 20px 0 30px rgba(0,0,0,0.15),
-        1px 1px 0 #dcdcdc, 2px 2px 0 #dcdcdc, 3px 3px 0 #dcdcdc, 4px 4px 0 #dcdcdc, 5px 5px 0 #dcdcdc,
-        6px 6px 0 #dcdcdc, 7px 7px 0 #dcdcdc, 8px 8px 0 #dcdcdc, 9px 9px 0 #dcdcdc, 10px 10px 0 #dcdcdc,
-        15px 15px 0 #dcdcdc, 30px 30px 50px rgba(0,0,0,0.6);
+    box-shadow: inset 20px 0 30px rgba(0,0,0,0.15); /* 稍微簡化陰影，因為我們有實體邊緣了 */
     display: flex; align-items: center; justify-content: center;
-    text-align: center; padding: 20px; overflow: hidden;
+    text-align: center; padding: 20px; overflow: visible; /* 改為 visible 以顯示側邊 */
 }
 
-/* 實體封口 */
+/* 實體封口 (上下) */
 .ab-pages-bottom {
     position: absolute; bottom: -18px; left: 0; width: 100%; height: 18px;
     background-color: #e6e6e6; transform-origin: top; transform: rotateX(-90deg);
@@ -934,6 +932,22 @@ body.dark-mode .affirmation-overlay { background: rgba(0,0,0,0.85); }
     background-color: #e6e6e6; transform-origin: bottom; transform: rotateX(90deg);
     background-image: repeating-linear-gradient(to bottom, #e0e0e0 0px, #e0e0e0 1px, #f0f0f0 1px, #f0f0f0 2px);
 }
+
+/* 🔥 新增：實體封口 (右側 - 關鍵！解決看起來像一張紙的問題) */
+/* 🔥 修正：精確定位右側厚度，防止破圖 */
+.ab-pages-right {
+    position: absolute; 
+    top: 0; bottom: 0; 
+    right: -19px; /* 往右移出厚度的一半 */
+    width: 38px; 
+    background-color: #e6e6e6;
+    /* 關鍵：以物體中心旋轉，並確保它在 Z 軸上與內頁對齊 */
+    transform: rotateY(-90deg); 
+    transform-style: preserve-3d;
+    background-image: repeating-linear-gradient(to right, #e0e0e0 0px, #e0e0e0 1px, #f0f0f0 1px, #f0f0f0 2px);
+    box-shadow: inset 0 0 10px rgba(0,0,0,0.1);
+}
+
 .ab-pages::before {
     content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 40px;
     background: linear-gradient(to right, rgba(0,0,0,0.2), transparent); pointer-events: none;
@@ -951,25 +965,18 @@ body.dark-mode .affirmation-overlay { background: rgba(0,0,0,0.85); }
     50% { transform: scale(1.03); opacity: 1; filter: drop-shadow(0 0 15px rgba(201, 162, 39, 0.8)); }
 }
 
-/* 8. 文字與動畫 (🔥 修復：緩慢墨水浮現 + 呼吸) */
-.ab-content-box { 
-    opacity: 0; 
-    transform: translateZ(0); 
-}
+/* 8. 文字與動畫 */
+.ab-content-box { opacity: 0; transform: translateZ(0); }
 
-/* 浮現動畫 (Reveal) */
 .ab-text-reveal {
-    /* 0.4s 延遲，等書打開一點再開始浮現 */
     animation: inkReveal 2.5s cubic-bezier(0.2, 1, 0.3, 1) 0.4s forwards, 
-               textBreathe 4s ease-in-out infinite 2.9s; /* 呼吸接在浮現之後 */
+               textBreathe 4s ease-in-out infinite 2.9s;
 }
-
 @keyframes inkReveal {
     0% { opacity: 0; transform: scale(0.92); filter: blur(12px); }
     30% { opacity: 0.6; filter: blur(4px); }
     100% { opacity: 1; transform: scale(1); filter: blur(0px); }
 }
-
 @keyframes textBreathe {
     0%, 100% { opacity: 1; text-shadow: 0 0 0 rgba(0,0,0,0); }
     50% { opacity: 0.85; text-shadow: 0 0 12px rgba(201, 162, 39, 0.3); }
@@ -983,12 +990,8 @@ body.dark-mode .affirmation-overlay { background: rgba(0,0,0,0.85); }
     letter-spacing: 3px; margin-bottom: 8px; 
     text-shadow: 0 2px 5px rgba(0,0,0,0.8);
     background: linear-gradient(to bottom, #f0dfa8, #c9a227);
-/* 標準屬性先寫，或者補上標準屬性 */
-background-clip: text;             /* 標準寫法 (雖然目前瀏覽器支援度還需靠 -webkit) */
--webkit-background-clip: text;     /* 針對 Chrome, Safari, Edge */
-color: transparent;                /* 這是 text-fill-color 的標準回退方案 */
--webkit-text-fill-color: transparent;
-z-index: 5;}
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; z-index: 5;
+}
 .ab-cover-title-zh { font-family: 'Noto Serif TC', serif; font-size: 0.9rem; letter-spacing: 3px; opacity: 0.8; z-index: 5; }
 .ab-hint { margin-top: 50px; font-size: 0.9rem; color: #888; opacity: 0.6; letter-spacing: 1px; }
 
@@ -998,7 +1001,9 @@ z-index: 5;}
 .dark-mode .ab-answer-text { color: #e0e0e0; }
 .dark-mode .ab-en { color: #aaa; }
 .dark-mode .ab-cover-back::after { background-color: #2b2b2b; box-shadow: inset 0 0 20px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.05); }
-.dark-mode .ab-pages-bottom, .dark-mode .ab-pages-top { background-color: #3d3d3d; background-image: repeating-linear-gradient(to bottom, #3d3d3d 0px, #3d3d3d 1px, #444 1px, #444 2px); }
+.dark-mode .ab-pages-bottom, .dark-mode .ab-pages-top, .dark-mode .ab-pages-right { background-color: #3d3d3d; background-image: repeating-linear-gradient(to bottom, #3d3d3d 0px, #3d3d3d 1px, #444 1px, #444 2px); }
+/* 修正右側在深色模式的紋路方向 (垂直) */
+.dark-mode .ab-pages-right { background-image: repeating-linear-gradient(to right, #3d3d3d 0px, #3d3d3d 1px, #444 1px, #444 2px); }
   /* === 修復滿版視窗的滑動問題 === */
 
 /* 1. 確保內容區域有高度限制，並且允許溢出捲動 */
@@ -2013,8 +2018,10 @@ const renderers = {
                         <div class="affirmation-text" style="text-align: center;">
                         <span style="color: #7A9F6E; font-weight: bold;">${name}</span> 謝謝你願意為自己打開卡包，<br>
                             無論此刻你做與不做任何事情，<br>
-                            光是你想讓自己變好的心，就很棒了💖<br><br>
-                            有時停在原地也很棒，不用變好也很棒，<br>
+                            光是你想讓自己變好的心，<br>
+                            就讓人十分佩服💖<br><br>
+                            有時候停在原地也很棒，<br>
+                            不用急著變好也很棒，<br>
                             如果什麼都不想做，就讓自己躺平吧！<br>
                             
                             <div style="text-align: center; font-family: Arial, sans-serif; margin-top: 10px;">
@@ -2399,12 +2406,11 @@ const ab_answers = [
     "這是你的英雄之旅。<span class='ab-en'>This is your Hero's Journey.</span>",
     "你的故事由你改寫。<span class='ab-en'>Rewrite your story.</span>"
 ];
-
     // 2. 音效
     const flipSound = new Audio('https://assets.mixkit.co/active_storage/sfx/2411/2411-preview.mp3');
     flipSound.volume = 0.5;
 
-    // 3. 渲染 HTML (包含實體封底)
+    // 3. 渲染 HTML (加入右側實體頁面層)
     contentArea.innerHTML = `
         <div class="ab-container" id="ab-container">
             
@@ -2438,6 +2444,8 @@ const ab_answers = [
                 <div class="ab-pages">
                     <div class="ab-pages-top"></div>
                     <div class="ab-pages-bottom"></div>
+                    <div class="ab-pages-right"></div>
+                    
                     <div class="ab-content-box" id="ab-content-box">
                         <div class="ab-answer-text" id="ab-text">...</div>
                     </div>
@@ -2462,7 +2470,6 @@ const ab_answers = [
         const x = clientX - window.innerWidth / 2;
         const y = clientY - window.innerHeight / 2;
 
-        // 🔥 視差 X/3 回歸：因為有封底，現在可以放心大膽轉！
         const rotateY = x / 3; 
         const rotateX = -y / 15; 
 
@@ -2503,7 +2510,6 @@ const ab_answers = [
             // --- 關書 ---
             book.classList.remove('is-open');
             
-            // 重置視差
             book.style.setProperty('--rY', '0deg');
             book.style.setProperty('--rX', '0deg');
             
@@ -2513,7 +2519,6 @@ const ab_answers = [
                 flipSound.play().catch(()=>{});
             }
             
-            // 等待書蓋上後清空 (墨水消失)
             setTimeout(() => { 
                 contentBox.classList.remove('ab-text-reveal');
                 textEl.innerHTML = '...'; 
@@ -2531,10 +2536,7 @@ const ab_answers = [
             lastIndex = randomIndex;
             
             textEl.innerHTML = ab_answers[randomIndex];
-            
-            // 🔥 墨水浮現 (配合 CSS 的延遲設定)
             contentBox.classList.add('ab-text-reveal');
-            
             book.classList.add('is-open');
         }
     });
