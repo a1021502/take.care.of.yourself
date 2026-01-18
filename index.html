@@ -354,16 +354,7 @@
         }
         .btn-action:active { filter: brightness(0.95); }
         .danger-btn { color: #FF6B6B; border-color: #FF6B6B; margin-top: 10px; background: transparent; }
-/* --- 🌍 GLOBAL FIX (全域白邊修復) --- */
-/* 請將此段放在 CSS 最上方，這會強制移除外層容器的內距 */
-body, #feature-container, .feature-wrapper, main {
-    padding: 0 !important;
-    margin: 0 !important;
-    width: 100% !important;
-    max-width: 100% !important;
-    overflow-x: hidden !important;
-    box-sizing: border-box;
-}
+
 
         /* --- ☁️ 麵團精靈本體 --- */
         #spirit-pet {
@@ -419,22 +410,34 @@ body, #feature-container, .feature-wrapper, main {
         @keyframes muscleFlex { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
         @keyframes lidOpen { 0%, 100% { transform: rotate(0); } 50% { transform: rotate(-20deg) translateY(-5px); } }
         @keyframes conveyorMove { 0% { transform: translateX(0); opacity: 1; } 100% { transform: translateX(40px); opacity: 0; } }
+/* --- 🔧 GLOBAL FIX: 全局功能區滿版修復 --- */
+/* 這段會強制所有透過 openFeature 開啟的功能都去除白邊 */
+.feature-overlay .feature-content,
+.feature-content,
+#feature-container {
+    padding: 0 !important;
+    margin: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow-x: hidden !important;
+    box-sizing: border-box !important;
+}
 
-
-/* --- ☁️ 麵團精靈 DBT (極致質感版) --- */
+/* --- ☁️ 麵團精靈 DBT 終極質感版 CSS --- */
 
 :root {
-    --dbt-text: #6B615E; 
+    --dbt-text: #5e524e; /* 深咖啡灰，更像印刷墨色 */
     --dbt-card-bg: #fff;
-    --dbt-shadow: rgba(107, 97, 94, 0.15);
+    --dbt-shadow: rgba(60, 50, 40, 0.15);
     
-    /* [白晝模式] 珍珠鋁箔 */
-    --pack-bg: linear-gradient(135deg, #ffffff 0%, #f7f5f2 50%, #e6e1db 100%);
-    --pack-border: rgba(255,255,255,0.6);
-    --pack-side: #dcdcdc;
-    --pack-crimp: rgba(0,0,0,0.06);
-    --aurora: linear-gradient(135deg, rgba(255,230,230,0.4) 0%, rgba(255,255,255,0) 40%, rgba(230,240,255,0.4) 100%);
-    --shine-color: rgba(255,255,255,0.8);
+    /* 卡包材質：珍珠白鋁箔 */
+    --foil-base: #fdfcf8;
+    --foil-highlight: #ffffff;
+    --foil-shadow: #dcd8d0;
+    --sticker-bg: rgba(255, 255, 255, 0.92); /* 半透明貼紙 */
+    
+    /* 壓痕線條顏色 */
+    --crimp-line: rgba(0,0,0,0.08);
 }
 
 body.dark-mode {
@@ -442,16 +445,17 @@ body.dark-mode {
     --dbt-card-bg: #222;
     --dbt-shadow: rgba(0,0,0,0.7);
     
-    /* [暗黑模式] 槍灰金屬 (不再發光) */
-    --pack-bg: linear-gradient(135deg, #4a4a4a 0%, #333333 60%, #1a1a1a 100%);
-    --pack-border: rgba(255,255,255,0.15);
-    --pack-side: #111;
-    --pack-crimp: rgba(255,255,255,0.15); /* 亮色壓痕 */
-    --aurora: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, transparent 50%, rgba(0,0,0,0.3) 100%);
-    --shine-color: rgba(255,255,255,0.15);
+    /* 暗黑模式：消光黑金屬 */
+    --foil-base: #2a2a2a; 
+    --foil-highlight: #3f3f3f;
+    --foil-shadow: #1a1a1a;
+    --sticker-bg: rgba(40, 40, 40, 0.9);
+    
+    /* 暗黑壓痕要亮一點才看得到 */
+    --crimp-line: rgba(255,255,255,0.15);
 }
 
-/* 1. 基礎容器 */
+/* 1. 容器基礎 */
 .dbt-wrapper {
     width: 100%; height: 100%;
     display: flex; flex-direction: column;
@@ -460,7 +464,7 @@ body.dark-mode {
     overscroll-behavior: none;
     box-sizing: border-box;
     overflow-x: hidden;
-    background: transparent;
+    background: transparent; /* 確保不遮擋背景 */
 }
 
 .dbt-stage {
@@ -470,8 +474,7 @@ body.dark-mode {
     animation: dbtFadeIn 0.5s ease-out;
     position: relative;
     z-index: 2;
-    perspective: 1000px; /* 全局透視 */
-    overflow: visible !important;
+    perspective: 1000px; /* 3D 空間 */
     padding: 20px 0;
 }
 @keyframes dbtFadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
@@ -479,7 +482,8 @@ body.dark-mode {
 /* --- 階段 1: 麵團選擇 --- */
 .dough-grid {
     display: grid; grid-template-columns: 1fr 1fr; gap: 20px;
-    width: 100%; max-width: 320px; margin-top: 10px;
+    width: 100%; max-width: 340px; margin-top: 10px;
+    padding: 0 20px; box-sizing: border-box;
 }
 .dough-btn {
     display: flex; flex-direction: column; align-items: center;
@@ -487,120 +491,114 @@ body.dark-mode {
     -webkit-tap-highlight-color: transparent;
     padding: 10px; border-radius: 20px;
 }
-.dough-btn:active { transform: scale(0.95); }
+.dough-btn:active { transform: scale(0.96); }
 .dough-svg {
-    width: 85px; height: 85px; transition: 0.3s;
-    filter: drop-shadow(0 8px 12px var(--dbt-shadow));
+    width: 90px; height: 90px; transition: 0.3s;
+    filter: drop-shadow(0 6px 8px var(--dbt-shadow));
 }
 .dough-label {
-    margin-top: 10px; font-size: 0.95rem; font-weight: bold; letter-spacing: 1px; opacity: 0.85;
+    margin-top: 10px; font-size: 0.95rem; font-weight: bold; letter-spacing: 0.5px; opacity: 0.9;
     color: var(--dbt-text);
 }
 
-/* --- 共用樣式：卡包設計 (確保 Carousel 與 Rip 完全一致) --- */
-.pack-design {
-    background: var(--pack-bg);
-    border: 1px solid var(--pack-border);
-    box-shadow: inset 0 0 15px rgba(0,0,0,0.1), 0 10px 25px var(--dbt-shadow);
-    border-radius: 10px;
-    position: relative;
-    overflow: hidden;
-}
-/* 極光/反光層 */
-.pack-design::after {
-    content: ''; position: absolute; top:0; left:0; width:100%; height:100%;
-    background: var(--aurora); pointer-events: none; mix-blend-mode: overlay;
-}
-/* 壓痕 (Crimps) */
-.pack-crimp-top, .pack-crimp-bottom {
-    position: absolute; left: 0; width: 100%; height: 12px;
-    /* 修正暗黑模式下的壓痕紋理 */
-    background: repeating-linear-gradient(90deg, transparent, transparent 2px, var(--pack-crimp) 2px, var(--pack-crimp) 4px);
-    z-index: 5;
-}
-.pack-crimp-top { top: 0; border-bottom: 1px solid var(--pack-border); border-radius: 10px 10px 2px 2px; }
-.pack-crimp-bottom { bottom: 0; border-top: 1px solid var(--pack-border); border-radius: 2px 2px 10px 10px; }
-
-/* 貼紙 */
-.pack-sticker {
-    background: var(--dbt-card-bg);
-    width: 70%; padding: 15px 5px; border-radius: 6px;
-    display: flex; flex-direction: column; align-items: center;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    transform: translateZ(2px); /* 3D 浮起 */
-    border: 1px solid rgba(0,0,0,0.05);
-}
-
-/* --- 階段 2: 3D 轉盤 --- */
+/* --- 階段 2 & 3: 卡包與撕開 (共用樣式以求一致) --- */
 .carousel-container {
-    width: 100%; height: 360px;
-    perspective: 1100px;
+    width: 100%; height: 380px;
+    perspective: 900px; 
     display: flex; align-items: center; justify-content: center;
     overflow: visible; padding: 20px 0;
 }
 .pack-carousel {
-    position: relative; width: 160px; height: 260px; /* 寬度稍微再窄一點 */
+    position: relative; width: 180px; height: 290px;
     transform-style: preserve-3d;
-    transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1); /* 平滑阻尼 */
-    cursor: grab;
+    transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); /* 機械感稍微強一點 */
 }
-.pack-carousel:active { cursor: grabbing; }
 
+/* 通用卡包樣式 (3D Item & Rip Main) */
+.pack-visual {
+    background: linear-gradient(135deg, var(--foil-highlight) 0%, var(--foil-base) 50%, var(--foil-shadow) 100%);
+    border-radius: 8px;
+    box-shadow: 
+        inset 2px 2px 5px rgba(255,255,255,0.2), /* 反光 */
+        inset -2px -2px 10px rgba(0,0,0,0.05),
+        0 10px 25px var(--dbt-shadow);
+    border: 1px solid rgba(255,255,255,0.1);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    position: relative;
+    overflow: hidden;
+}
+
+/* 3D 轉盤項目特別設定 */
 .pack-3d-item {
     position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
     backface-visibility: hidden;
-    /* 引用共用樣式 */
-    /* .pack-design 樣式透過 JS 或 HTML class 加入 */
+    /* 側面厚度模擬 */
+    border-right: 2px solid rgba(0,0,0,0.1);
+    border-bottom: 2px solid rgba(0,0,0,0.1);
 }
 
-/* 側面厚度 */
-.pack-3d-item::before {
-    content: ''; position: absolute; left: -5px; top: 3px; width: 5px; height: 98%;
-    background: var(--pack-side);
-    transform: rotateY(-90deg); transform-origin: right;
-    border-radius: 2px 0 0 2px; opacity: 0.8;
-}
-
-/* --- 階段 3: 撕卡包 --- */
+/* 撕卡包階段特別設定 */
 .rip-container {
-    position: relative; width: 220px; height: 320px; margin-top: 10px;
+    position: relative; width: 220px; height: 350px; margin-top: 10px;
 }
-/* 卡包本體：繼承 .pack-design */
 .rip-pack-main {
     position: absolute; top: 0; left: 0; width: 100%; height: 100%;
     z-index: 2;
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
     transition: transform 0.3s, opacity 0.3s;
 }
 
-/* 隱形觸控區 */
+/* 上下壓痕 (Crimps) - 更細緻 */
+.pack-crimp-top, .pack-crimp-bottom {
+    position: absolute; left: 0; width: 100%; height: 18px;
+    /* 重複線性漸層模擬壓痕 */
+    background: repeating-linear-gradient(
+        90deg, 
+        transparent, 
+        transparent 2px, 
+        var(--crimp-line) 2px, 
+        var(--crimp-line) 3px
+    );
+    z-index: 5; opacity: 0.8;
+}
+.pack-crimp-top { top: 0; border-bottom: 1px solid var(--crimp-line); }
+.pack-crimp-bottom { bottom: 0; border-top: 1px solid var(--crimp-line); }
+
+/* 貼紙 (精緻化：類似模內標籤) */
+.pack-sticker {
+    background: var(--sticker-bg);
+    width: 72%; padding: 20px 10px; border-radius: 4px;
+    display: flex; flex-direction: column; align-items: center;
+    /* 混合模式讓貼紙看起來像印上去的，而不是浮貼 */
+    backdrop-filter: blur(2px);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    border: 1px solid rgba(255,255,255,0.2);
+    transform: translateZ(1px); /* 微小突起 */
+}
+
+/* 撕條區域 (隱形觸控 + 動畫) */
 .rip-strip-touch {
-    position: absolute; top: 0; left: 0; width: 100%; height: 80px;
+    position: absolute; top: 0; left: 0; width: 100%; height: 70px;
     z-index: 20; cursor: grab; background: transparent;
 }
-
-/* 動態撕條 (只在撕開時出現，材質與卡包相同) */
 .rip-strip-moving {
-    position: absolute; top: 0; left: 0; width: 100%; height: 40px;
-    background: var(--pack-bg); /* 與本體同材質 */
-    border-bottom: 1px dashed rgba(0,0,0,0.1);
+    position: absolute; top: 0; left: 0; width: 100%; height: 50px;
+    background: linear-gradient(to bottom, #fff, #eee);
     z-index: 10; opacity: 0; 
-    border-radius: 10px 10px 0 0;
+    border-radius: 8px 8px 0 0;
     box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    display: flex; align-items: center; justify-content: center;
+    pointer-events: none;
 }
-
-/* 撕裂痕跡 */
 .rip-trace-top {
-    position: absolute; top: 40px; left: 0; width: 0%; height: 15px;
-    background: rgba(0,0,0,0.2);
+    position: absolute; top: 50px; left: 0; width: 0%; height: 12px;
+    background: rgba(0,0,0,0.2); 
     z-index: 5; pointer-events: none; opacity: 0;
-    clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%, 10% 80%, 20% 100%, 30% 80%, 40% 100%, 50% 80%, 60% 100%, 70% 80%, 80% 100%, 90% 80%);
+    clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%, 5% 70%, 10% 100%, 15% 70%, 20% 100%, 25% 70%, 30% 100%, 35% 70%, 40% 100%, 45% 70%, 50% 100%, 55% 70%, 60% 100%, 65% 70%, 70% 100%, 75% 70%, 80% 100%, 85% 70%, 90% 100%, 95% 70%);
 }
 
-/* --- 階段 4: 抽卡與卡面 (Reveal & Summary 統一) --- */
+/* --- 階段 4: 卡片展示 (一致性設計) --- */
 .real-card-stack { 
-    width: 260px; height: 400px; position: relative; perspective: 1000px; 
+    width: 280px; height: 420px; position: relative; perspective: 1000px; 
     z-index: 10; margin-top: -10px;
 }
 .real-card-item {
@@ -608,49 +606,24 @@ body.dark-mode {
     border-radius: 16px;
     transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1);
     transform-style: preserve-3d;
-    box-shadow: 0 8px 25px var(--dbt-shadow);
+    box-shadow: 0 10px 30px var(--dbt-shadow);
 }
-/* 卡片正反面容器 */
+
+/* 核心卡面樣式 (翻牌、總覽、燈箱共用) */
+.card-face-style {
+    background-color: var(--dbt-card-bg);
+    border-radius: 16px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: 30px 25px; box-sizing: border-box;
+    position: relative; overflow: hidden;
+    /* 紙張紋理 */
+    background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.5' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    border: 1px solid rgba(0,0,0,0.05);
+}
+
 .real-card-face {
     position: absolute; width: 100%; height: 100%;
     backface-visibility: hidden;
-    border-radius: 16px;
-    background-color: var(--dbt-card-bg);
-    overflow: hidden; /* 鎖住閃光 */
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-    padding: 30px 25px; box-sizing: border-box;
-    /* 紙張質感 + 壓印邊框 */
-    background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
-    border: 1px solid rgba(128,128,128,0.1);
-}
-
-/* ★ 金屬閃光 (Sweep Shine) */
-.shine-layer {
-    position: absolute; top: -100%; left: -100%; width: 300%; height: 300%;
-    background: linear-gradient(
-        115deg, 
-        transparent 40%, 
-        var(--shine-color) 48%, 
-        #ffffff 50%, 
-        var(--shine-color) 52%, 
-        transparent 60%
-    );
-    transform: rotate(25deg);
-    pointer-events: none;
-    z-index: 20;
-    mix-blend-mode: overlay; /* 讓光澤疊加更自然 */
-    opacity: 0; /* 預設關閉 */
-}
-.shine-active { animation: shineSweep 0.8s ease-out forwards; opacity: 1; }
-@keyframes shineSweep { 
-    0% { transform: translateY(-50%) translateX(-50%) rotate(25deg); }
-    100% { transform: translateY(50%) translateX(50%) rotate(25deg); }
-}
-
-/* 卡面內容 (確保絕對置中) */
-.card-content-layout {
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-    width: 100%; height: 100%; text-align: center;
 }
 
 .real-card-back {
@@ -658,40 +631,65 @@ body.dark-mode {
     border: 12px solid var(--dbt-card-bg);
     box-shadow: inset 0 0 15px rgba(0,0,0,0.05);
 }
+
+/* 金屬光澤動畫 (Shine) */
+.shine-effect {
+    position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+    background: linear-gradient(
+        to bottom right, 
+        transparent 40%, 
+        rgba(255, 255, 255, 0.9) 48%, /* 亮光強烈一點 */
+        rgba(255, 255, 255, 0.9) 52%, 
+        transparent 60%
+    );
+    transform: rotate(30deg) translateY(-100%);
+    pointer-events: none; mix-blend-mode: soft-light;
+    z-index: 10;
+}
+.shine-active .shine-effect {
+    animation: shineMove 1.2s ease-out forwards;
+}
+@keyframes shineMove { from { transform: rotate(30deg) translateY(-100%); } to { transform: rotate(30deg) translateY(100%); } }
+
 .real-card-front { transform: rotateY(180deg); }
 .flipped { transform: rotateY(180deg); }
-.discarded { transform: translateX(200%) rotate(15deg); opacity: 0; }
+.discarded { transform: translateX(200%) rotate(20deg); opacity: 0; }
 
 /* --- 階段 5: 總覽與 Lightbox --- */
 .summary-grid {
     display: flex; justify-content: flex-start; gap: 15px;
     width: 100%; overflow-x: auto; 
-    padding: 20px 20px 40px 20px; box-sizing: border-box;
+    padding: 20px; box-sizing: border-box;
     scroll-snap-type: x mandatory;
 }
 .summary-grid::after { content: ''; display: block; width: 20px; flex-shrink: 0; }
+
 .mini-card {
-    flex: 0 0 130px; height: 200px;
-    background: var(--dbt-card-bg); border-radius: 12px;
-    box-shadow: 0 4px 10px var(--dbt-shadow);
-    padding: 10px;
-    display: flex; flex-direction: column; align-items: center; text-align: center;
-    border-top: 4px solid #ccc; scroll-snap-align: center;
-    cursor: zoom-in; position: relative;
-    /* Mini card 也要長得像卡片 */
-    background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+    flex: 0 0 140px; height: 210px;
+    /* 繼承基本卡片樣式，但縮小字體 */
+    font-size: 0.8rem;
+    box-shadow: 0 4px 12px var(--dbt-shadow);
+    scroll-snap-align: center; cursor: zoom-in;
+    border-top: 4px solid #ccc; /* 裝飾線 */
+    justify-content: flex-start; padding-top: 20px;
 }
 
-/* Lightbox - 放大後長得跟翻牌時一樣 */
+/* Lightbox 全螢幕 */
 .card-lightbox {
     position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0,0,0,0.92); z-index: 3000;
+    background: rgba(0,0,0,0.85); z-index: 3000;
     display: flex; align-items: center; justify-content: center;
     backdrop-filter: blur(5px); padding: 20px; box-sizing: border-box;
+    animation: fadeIn 0.3s;
 }
 .lightbox-content {
-    width: 100%; max-width: 340px; 
+    width: 100%; max-width: 320px; 
     animation: zoomUp 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+.lightbox-card-face {
+    width: 100%; min-height: 480px; max-height: 80vh;
+    box-shadow: 0 0 50px rgba(255,255,255,0.1);
+    overflow-y: auto;
 }
 @keyframes zoomUp { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 
@@ -699,6 +697,7 @@ body.dark-mode {
     border: 1px solid var(--dbt-text); background: transparent;
     padding: 10px 30px; border-radius: 30px;
     color: var(--dbt-text); font-size: 0.9rem; cursor: pointer; margin: 20px 0;
+    opacity: 0.8;
 }
 /* --- 解答之書專用樣式 (Namespace: .ab-) --- */
 /* --- 解答之書 : 皇家典藏 · 神級完全體 --- */
@@ -1536,51 +1535,62 @@ const renderers = {
             { id:37, type:'distress', title:'半笑', subtitle:'Half-Smile', desc:'放鬆臉部肌肉，嘴角微微上揚。生理回饋會告訴大腦你是安全的。' },
             { id:38, type:'distress', title:'戒癮', subtitle:'Abstinence', desc:'辯證性戒癮：承認會跌倒，但致力於徹底戒除。燒掉後路。' }
         ];
-        // --- 🎵 Audio Engine (精準控制版) ---
+        // --- 🎵 Sound Engine (機械感 & 翻牌) ---
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         
         const playSound = (type) => {
             if (audioCtx.state === 'suspended') audioCtx.resume();
-            const now = audioCtx.currentTime;
+            const t = audioCtx.currentTime;
             
-            // 產生器輔助函數
-            const osc = (freq, type, duration) => {
-                const o = audioCtx.createOscillator();
-                const g = audioCtx.createGain();
-                o.type = type; o.frequency.setValueAtTime(freq, now);
-                o.connect(g); g.connect(audioCtx.destination);
-                return { o, g };
-            };
-
             if (type === 'mechanical') { 
-                // ⚙️ 棘輪聲：短促、低沉的機械卡榫聲
-                const { o, g } = osc(100, 'sawtooth');
-                o.frequency.exponentialRampToValueAtTime(50, now + 0.05);
-                g.gain.setValueAtTime(0.15, now);
-                g.gain.exponentialRampToValueAtTime(0.01, now + 0.05);
-                o.start(now); o.stop(now + 0.05);
-            } 
-            else if (type === 'rip') { 
-                // 📄 撕開聲：噪音
-                const bufferSize = audioCtx.sampleRate * 0.1;
-                const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
-                const data = buffer.getChannelData(0);
-                for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
+                // 棘輪聲 (Ratchet/Click) - 用於轉盤滑動
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                // 鋸齒波產生機械感
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(120, t); // 低頻
+                osc.frequency.exponentialRampToValueAtTime(40, t + 0.08); // 快速下降
+                
+                gain.gain.setValueAtTime(0.08, t); // 音量小一點
+                gain.gain.exponentialRampToValueAtTime(0.001, t + 0.08);
+                
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start(t); osc.stop(t + 0.08);
+                
+            } else if (type === 'flip') { 
+                // 翻牌聲 (Swipe/Airy)
                 const noise = audioCtx.createBufferSource();
+                const buffer = audioCtx.createBuffer(1, audioCtx.sampleRate * 0.1, audioCtx.sampleRate);
+                const data = buffer.getChannelData(0);
+                for (let i = 0; i < buffer.length; i++) data[i] = Math.random() * 2 - 1;
+                
                 noise.buffer = buffer;
-                const noiseGain = audioCtx.createGain();
-                noiseGain.gain.setValueAtTime(0.1, now);
-                noiseGain.gain.linearRampToValueAtTime(0, now + 0.1);
-                noise.connect(noiseGain); noiseGain.connect(audioCtx.destination);
-                noise.start(now);
-            }
-            else if (type === 'flip') {
-                // 🃏 翻牌聲：清脆的風切聲 + 紙張拍擊
-                const { o, g } = osc(300, 'sine');
-                o.frequency.exponentialRampToValueAtTime(800, now + 0.1);
-                g.gain.setValueAtTime(0.1, now);
-                g.gain.exponentialRampToValueAtTime(0.01, now + 0.15);
-                o.start(now); o.stop(now + 0.15);
+                const gain = audioCtx.createGain();
+                // 濾波器讓雜訊聽起來像紙張摩擦
+                const filter = audioCtx.createBiquadFilter();
+                filter.type = 'lowpass';
+                filter.frequency.value = 800;
+                
+                gain.gain.setValueAtTime(0.1, t);
+                gain.gain.linearRampToValueAtTime(0, t + 0.1);
+                
+                noise.connect(filter);
+                filter.connect(gain);
+                gain.connect(audioCtx.destination);
+                noise.start(t);
+                
+            } else if (type === 'tear') {
+                // 簡單撕開聲
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'square'; // 方波較粗糙
+                osc.frequency.setValueAtTime(80, t);
+                gain.gain.setValueAtTime(0.05, t);
+                gain.gain.linearRampToValueAtTime(0, t + 0.2);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start(t); osc.stop(t + 0.2);
             }
         };
 
@@ -1624,7 +1634,6 @@ const renderers = {
             distress: createDough('distress', `<circle cx="32" cy="55" r="2.5" fill="#78909C" stroke="none"/><circle cx="68" cy="55" r="2.5" fill="#78909C" stroke="none"/><path d="M28 48 L40 52 M72 48 L60 52" stroke-width="2"/><path d="M45 68 L55 68" /><path d="M22 75 L38 75 L38 88 Q30 93 22 88 Z" fill="#ECEFF1" />`)
         };
 
-        // (dbt_data 省略)
         let state = { phase: 'SELECT', type: null, cards: [] };
 
         const render = () => {
@@ -1645,7 +1654,7 @@ const renderers = {
         const updateBackLogic = () => {
             window.currentFeatureBack = () => {
                 if (state.phase === 'SELECT') return false;
-                if (state.phase === 'SUMMARY') state.phase = 'SELECT'; // 總覽直接回選單
+                if (state.phase === 'SUMMARY') state.phase = 'SELECT';
                 else if (state.phase === 'REVEAL') state.phase = 'RIP';
                 else if (state.phase === 'RIP') state.phase = 'CAROUSEL';
                 else if (state.phase === 'CAROUSEL') state.phase = 'SELECT';
@@ -1686,20 +1695,20 @@ const renderers = {
                     </div>
                 </div>
             `;
-            window.dbtToCarousel = (type) => go('CAROUSEL', { type });
+            window.dbtToCarousel = (type) => { go('CAROUSEL', { type }); };
         };
 
-        // 2. CAROUSEL (寬間距 + 機械音效)
+        // 2. CAROUSEL (修正：間距加寬 / 點擊音效移除)
         const renderCarousel = (root) => {
             const meta = getMeta(state.type);
-            // ★ 修改：半徑改為 250px，讓間距變寬
+            // TranslateZ 加大到 250px (增加間距)
             const tz = 250; 
             root.innerHTML = `
                 <div class="dbt-stage">
                     <div class="carousel-container" id="c-stage">
                         <div class="pack-carousel" id="c-pack">
                             ${Array(8).fill(0).map((_, i) => `
-                                <div class="pack-3d-item pack-design" style="transform: rotateY(${i * 45}deg) translateZ(${tz}px);">
+                                <div class="pack-3d-item pack-visual" style="transform: rotateY(${i * 45}deg) translateZ(${tz}px);">
                                     <div class="pack-crimp-top"></div>
                                     <div class="pack-sticker">
                                         <div style="width:55px; height:55px; filter:drop-shadow(0 4px 6px rgba(0,0,0,0.1));">${meta.icon}</div>
@@ -1717,8 +1726,8 @@ const renderers = {
             const stage = root.querySelector('#c-stage');
             const pack = root.querySelector('#c-pack');
             let startX = 0, currentRot = 0, isDragging = false;
-            let lastSoundIndex = 0; // 紀錄上次發聲的位置
-            
+            let lastSoundRot = 0; // 用於判斷何時播放聲音
+
             const update = () => pack.style.transform = `rotateY(${currentRot}deg)`;
             stage.onmousedown = e => { isDragging=true; startX=e.clientX; };
             stage.ontouchstart = e => { isDragging=true; startX=e.touches[0].clientX; };
@@ -1730,12 +1739,11 @@ const renderers = {
                 startX = x;
                 update();
                 
-                // ★ 機械音效邏輯：每轉過 45 度 (一個卡包) 觸發一次
-                const currentIndex = Math.round(currentRot / 45);
-                if (currentIndex !== lastSoundIndex) {
+                // 機械音效邏輯：每轉過 40 度觸發一次
+                if (Math.abs(currentRot - lastSoundRot) > 40) {
                     playSound('mechanical');
-                    if(navigator.vibrate) navigator.vibrate(10);
-                    lastSoundIndex = currentIndex;
+                    lastSoundRot = currentRot;
+                    if(navigator.vibrate) navigator.vibrate(5);
                 }
             };
             stage.onmousemove = e => move(e.clientX);
@@ -1752,32 +1760,35 @@ const renderers = {
             
             stage.onclick = (e) => {
                 if(Math.abs(startX - e.clientX) < 5) {
-                    if(navigator.vibrate) navigator.vibrate(40);
+                    if(navigator.vibrate) navigator.vibrate(20);
+                    // 點擊不播音效，只跳轉
                     go('RIP');
                 }
             };
         };
 
-        // 3. RIP (統一外觀 + 隱形撕條)
+        // 3. RIP (視覺修正：與 Carousel 一致)
         const renderRip = (root) => {
             const meta = getMeta(state.type);
             root.innerHTML = `
                 <div class="dbt-stage">
                     <div class="rip-container">
                         <div class="rip-strip-touch" id="rip-strip-touch"></div>
-                        <div style="position:absolute; top:15px; width:100%; text-align:center; opacity:0.5; font-size:0.8rem; pointer-events:none;" id="rip-hint">➤ 向右撕開 ➤</div>
-                        
                         <div class="rip-strip-moving" id="rip-strip-vis"></div>
 
-                        <div class="rip-pack-main pack-design" id="pack-body">
-                            <div style="transform:scale(1.2); display:flex; flex-direction:column; align-items:center;">
-                                <div style="width:80px; height:80px; filter:drop-shadow(0 5px 10px rgba(0,0,0,0.1));">${meta.icon}</div>
-                                <h3 style="color:${meta.color}; margin-top:10px; font-size:1.3rem;">${meta.title}</h3>
+                        <div class="rip-pack-main pack-visual" id="pack-body">
+                            <div class="pack-crimp-top"></div>
+                            
+                            <div class="pack-sticker" style="transform: scale(1.1);">
+                                <div style="width:70px; height:70px; filter:drop-shadow(0 4px 6px rgba(0,0,0,0.1));">${meta.icon}</div>
+                                <h3 style="color:${meta.color}; margin-top:8px; font-size:1.1rem; margin-bottom:0;">${meta.title}</h3>
                             </div>
+                            
                             <div class="pack-crimp-bottom"></div>
                             <div class="rip-trace-top" id="rip-trace"></div>
                         </div>
                     </div>
+                     <div style="margin-top:20px; font-size:0.9rem; opacity:0.5;" id="rip-hint">➤ 向右撕開包裝 ➤</div>
                 </div>
             `;
 
@@ -1803,10 +1814,11 @@ const renderers = {
                 }
 
                 visStrip.style.transform = `translateX(${delta}px) rotate(${delta * 0.05}deg)`;
-                trace.style.width = `${delta + 10}px`;
-                trace.style.opacity = progress * 0.8;
-
-                if (progress > 0 && progress < 0.9 && delta % 10 < 2) playSound('rip');
+                trace.style.width = `${delta + 15}px`;
+                trace.style.opacity = progress * 0.9;
+                
+                // 撕開音效
+                if(delta % 10 < 2 && delta > 0) playSound('tear');
 
                 if(progress >= 1) {
                     isDragging = false;
@@ -1815,7 +1827,7 @@ const renderers = {
             };
 
             const finishRip = () => {
-                if(navigator.vibrate) navigator.vibrate([50, 30, 50]);
+                if(navigator.vibrate) navigator.vibrate([40, 20]);
                 
                 visStrip.style.transition = '0.4s ease-out';
                 visStrip.style.transform = `translateX(${packWidth + 60}px) rotate(20deg)`;
@@ -1848,7 +1860,7 @@ const renderers = {
                     visStrip.style.transform = 'translateX(0)';
                     visStrip.style.opacity = 0;
                     trace.style.width = '0';
-                    hint.style.opacity = 0.5;
+                    hint.style.opacity = 0.5; 
                 }
             };
 
@@ -1860,14 +1872,14 @@ const renderers = {
             window.ontouchend = end;
         };
 
-        // 4. REVEAL (翻牌 + 閃光 + 置中)
+        // 4. REVEAL (光澤修復 + 音效調整)
         const renderReveal = (root) => {
             const meta = getMeta(state.type);
             let idx = 0;
             root.innerHTML = `
                 <div class="dbt-stage" id="reveal-stage">
                     <div class="real-card-stack" id="stack"></div>
-                    <div style="margin-top:25px; font-size:0.9rem; opacity:0.7;" id="hint">點擊卡片翻開</div>
+                    <div style="margin-top:30px; font-size:0.9rem; opacity:0.7;" id="hint">點擊卡片翻開</div>
                 </div>
             `;
             const stack = root.querySelector('#stack');
@@ -1877,12 +1889,11 @@ const renderers = {
                 el.style.zIndex = 10 - i;
                 el.id = `card-${i}`;
                 el.innerHTML = `
-                    <div class="real-card-face real-card-front" id="front-${i}">
-                        <div class="shine-layer"></div> <div class="card-content-layout"> <div style="width:65px; height:65px; margin-bottom:15px; filter:drop-shadow(0 4px 6px rgba(0,0,0,0.1)); flex-shrink:0;">${meta.icon}</div>
-                            <h3 style="color:${meta.color}; font-size:1.4rem; margin-bottom:5px; text-align:center;">${c.title}</h3>
-                            <div style="font-size:0.9rem; opacity:0.6; margin-bottom:15px; border-bottom:1px solid #ddd; padding-bottom:5px; width:80%; text-align:center;">${c.subtitle}</div>
-                            <p style="text-align:justify; line-height:1.6; color:var(--dbt-text); font-size:0.95rem; width:100%;">${c.desc}</p>
-                        </div>
+                    <div class="real-card-face real-card-front card-face-style" id="front-${i}">
+                        <div class="shine-effect"></div> <div style="width:65px; height:65px; margin-bottom:15px; filter:drop-shadow(0 4px 6px rgba(0,0,0,0.1));">${meta.icon}</div>
+                        <h3 style="color:${meta.color}; font-size:1.4rem; margin-bottom:5px; text-align:center;">${c.title}</h3>
+                        <div style="font-size:0.9rem; opacity:0.6; margin-bottom:15px; border-bottom:1px solid #ddd; padding-bottom:5px; width:80%; text-align:center;">${c.subtitle}</div>
+                        <p style="text-align:justify; line-height:1.6; color:var(--dbt-text); font-size:0.95rem; width:100%;">${c.desc}</p>
                     </div>
                     <div class="real-card-face real-card-back" style="--card-theme-bg: ${meta.bg}">
                         <div style="width:80px; opacity:0.5; filter:grayscale(0.3);">${meta.icon}</div>
@@ -1896,21 +1907,22 @@ const renderers = {
                 if(idx >= 3) return;
                 const card = stack.querySelector(`#card-${idx}`);
                 const front = stack.querySelector(`#front-${idx}`);
-                const shine = front.querySelector('.shine-layer');
                 const hint = root.querySelector('#hint');
 
                 if(step === 'FLIP') {
-                    playSound('flip'); // ★ 翻牌聲
                     card.classList.add('flipped');
+                    playSound('flip'); // 翻牌音效
+                    
+                    // 觸發閃光動畫
+                    front.classList.add('shine-active');
+
                     if(navigator.vibrate) navigator.vibrate(20);
-                    // ★ 觸發金屬光澤
-                    setTimeout(() => shine.classList.add('shine-active'), 150); 
                     
                     hint.innerText = idx < 2 ? "再次點擊收起" : "再次點擊查看結果";
                     step = 'NEXT';
                 } else {
                     card.classList.add('discarded');
-                    // 這裡不放音效，只有翻開時有
+                    // 移除點擊音效，只保留視覺
                     idx++;
                     step = 'FLIP';
                     if(idx >= 3) {
@@ -1922,19 +1934,19 @@ const renderers = {
             };
         };
 
-        // 5. SUMMARY (Lightbox 結構統一)
+        // 5. SUMMARY (樣式完全同步)
         const renderSummary = (root) => {
             const meta = getMeta(state.type);
             root.innerHTML = `
-                <div class="dbt-stage" style="justify-content: flex-start; padding-top: 20px;">
+                <div class="dbt-stage" style="justify-content: flex-start; padding-top: 10px;">
                     <h2 style="color:${meta.color}; margin-bottom:5px;">今日指引</h2>
                     <div style="font-size:0.85rem; opacity:0.6; margin-bottom:15px;">點擊卡片放大查看</div>
                     <div class="summary-grid">
                         ${state.cards.map((c, i) => `
-                            <div class="mini-card" onclick="window.dbtZoom(${i})" style="border-top-color:${meta.color}">
+                            <div class="mini-card card-face-style" onclick="window.dbtZoom(${i})" style="border-top-color:${meta.color}">
                                 <div style="width:40px; height:40px; margin-bottom:8px;">${meta.icon}</div>
                                 <div style="font-weight:bold; margin-bottom:5px; color:${meta.color}; font-size:0.9rem;">${c.title}</div>
-                                <div style="font-size:0.7rem; line-height:1.4; text-align:justify; overflow:hidden; height:70px; opacity:0.8;">${c.desc}</div>
+                                <div style="font-size:0.7rem; line-height:1.4; text-align:justify; overflow:hidden; height:70px; opacity:0.8; width:100%;">${c.desc}</div>
                             </div>
                         `).join('')}
                     </div>
@@ -1943,24 +1955,21 @@ const renderers = {
                 <div id="zoom-modal-container"></div>
             `;
             
-            window.dbtBackToSelect = () => go('SELECT');
+            window.dbtBackToSelect = () => { go('SELECT'); };
             
             window.dbtZoom = (index) => {
-                playSound('flip'); // 放大時也有翻牌聲
                 const c = state.cards[index];
                 const modalContainer = root.querySelector('#zoom-modal-container');
-                // ★ 這裡的 HTML 結構與 Reveal 階段完全一致，確保長相一樣
+                // Lightbox 使用相同的 .card-face-style 確保外觀一致
                 modalContainer.innerHTML = `
                     <div class="card-lightbox" onclick="this.remove()">
                         <div class="lightbox-content" onclick="event.stopPropagation()">
-                             <div class="real-card-face" style="position:relative; height:auto; min-height:480px; box-shadow:0 0 50px rgba(255,255,255,0.2);">
-                                <div class="card-content-layout">
-                                    <div style="width:80px; height:80px; margin-bottom:20px; flex-shrink:0;">${meta.icon}</div>
-                                    <h3 style="color:${meta.color}; font-size:1.5rem; margin-bottom:10px; text-align:center;">${c.title}</h3>
-                                    <div style="font-size:1rem; opacity:0.6; margin-bottom:20px; border-bottom:1px solid #ccc; padding-bottom:5px; width:80%; text-align:center;">${c.subtitle}</div>
-                                    <p style="text-align:justify; line-height:1.6; font-size:1rem; color:var(--dbt-text); width:100%;">${c.desc}</p>
-                                    <div style="margin-top:30px; font-size:0.8rem; opacity:0.5;">點擊背景關閉</div>
-                                </div>
+                             <div class="lightbox-card-face card-face-style">
+                                <div style="width:80px; height:80px; margin-bottom:20px; flex-shrink:0;">${meta.icon}</div>
+                                <h3 style="color:${meta.color}; font-size:1.5rem; margin-bottom:10px; text-align:center;">${c.title}</h3>
+                                <div style="font-size:1rem; opacity:0.6; margin-bottom:20px; border-bottom:1px solid #ccc; padding-bottom:5px; width:80%; text-align:center;">${c.subtitle}</div>
+                                <p style="text-align:justify; line-height:1.6; font-size:1rem; color:var(--dbt-text); width:100%;">${c.desc}</p>
+                                <div style="margin-top:30px; font-size:0.8rem; opacity:0.5;">點擊背景關閉</div>
                              </div>
                         </div>
                     </div>
