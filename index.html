@@ -1043,139 +1043,308 @@ body.dark-mode .affirmation-overlay { background: rgba(0,0,0,0.85); }
 #active-feature-container {
     overscroll-behavior: contain;
 }
-/* --- Tarot Feature Styles --- */
-#tarot-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 100%;
-    overflow: hidden;
-    perspective: 1000px; /* 3D 透視感 */
+/* --- Tarot 2.0 Modern UI --- */
+
+/* 隱藏輔助類別 (保留) */
+.hidden { display: none !important; }
+
+/* 頂部導航 */
+.tarot-header { 
+    text-align: center; 
+    margin-bottom: 20px; 
+    padding-top: 10px;
+}
+.tarot-menu { 
+    display: flex; 
+    justify-content: center; 
+    gap: 15px; 
+    margin-top: 15px; 
 }
 
-/* 牌桌區域 */
-.tarot-table {
-    position: relative;
-    width: 100%;
-    height: 350px; /* 給牌足夠的空間展開 */
-    display: flex;
-    justify-content: center;
-    align-items: center;
+/* 精緻化按鈕 */
+.menu-btn {
+    padding: 8px 20px;
+    border: 1px solid rgba(255,255,255,0.3);
+    background: rgba(255,255,255,0.1);
+    color: #555;
+    cursor: pointer;
+    border-radius: 30px;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(5px);
+    font-weight: 500;
+}
+.menu-btn.active, .menu-btn:hover {
+    background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+    color: white;
+    border-color: transparent;
+    box-shadow: 0 4px 15px rgba(37, 117, 252, 0.3);
+    transform: translateY(-2px);
+}
+
+/* 步驟選擇容器 (Wizard Flow) */
+.wizard-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    text-align: center;
+}
+
+.wizard-step h3 {
+    margin-bottom: 25px;
+    color: #333;
+    font-size: 1.4rem;
+}
+
+/* 選擇卡片 (取代下拉選單) */
+.selection-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 15px;
     margin-bottom: 20px;
 }
 
-/* 卡片本體 */
-.tarot-card {
-    position: absolute;
-    width: 100px; /* 寬度可調整 */
-    height: 170px;
-    border-radius: 8px;
+.selection-card {
+    background: white;
+    padding: 20px 10px;
+    border-radius: 15px;
     cursor: pointer;
-    transform-origin: bottom center; /* 扇形的旋轉點在底部 */
-    transition: transform 0.5s cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 0.3s;
-    user-select: none;
-    transform-style: preserve-3d; /* 3D 翻轉關鍵 */
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    border: 2px solid transparent;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
 }
 
-/* 懸停效果：微微浮起 */
-.tarot-card:hover {
-    z-index: 100 !important; /* 確保浮起時在最上層 */
-    box-shadow: 0 0 15px var(--accent-warm);
+.selection-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
 }
 
-/* 卡片正反面容器 */
+.selection-card.selected {
+    border-color: #6a11cb;
+    background: rgba(106, 17, 203, 0.05);
+}
+
+.selection-icon { font-size: 2rem; }
+.selection-title { font-weight: bold; font-size: 1rem; color: #333; }
+.selection-desc { font-size: 0.8rem; color: #777; line-height: 1.4; }
+
+/* 主要操作按鈕 */
+.btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    padding: 12px 30px;
+    border-radius: 50px;
+    font-size: 1.1rem;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(118, 75, 162, 0.4);
+    transition: transform 0.2s, box-shadow 0.2s;
+    margin-top: 20px;
+}
+.btn-primary:active { transform: scale(0.95); }
+
+.btn-secondary {
+    background: transparent;
+    border: 1px solid #aaa;
+    color: #555;
+    padding: 8px 20px;
+    border-radius: 20px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+/* 牌桌區域 */
+#tarot-main-stage {
+    min-height: 60vh;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.tarot-table {
+    width: 100%;
+    height: 350px; /* 增加高度讓扇形更明顯 */
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    perspective: 1000px;
+    margin-top: 20px;
+}
+
+/* 卡片樣式 */
+.tarot-card {
+    width: 70px; /* 手機版寬度 */
+    height: 120px;
+    position: absolute;
+    transform-style: preserve-3d;
+    transition: transform 0.6s cubic-bezier(0.4, 0.0, 0.2, 1);
+    cursor: pointer;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+}
+
 .card-inner {
     position: relative;
     width: 100%;
     height: 100%;
-    text-align: center;
-    transition: transform 0.6s;
     transform-style: preserve-3d;
 }
 
-.tarot-card.flipped .card-inner {
-    transform: rotateY(180deg);
-}
-
-/* 正面與背面共用樣式 */
-.card-front, .card-back {
+.card-back {
     position: absolute;
     width: 100%;
     height: 100%;
-    -webkit-backface-visibility: hidden;
     backface-visibility: hidden;
+    background: linear-gradient(135deg, #2c3e50 0%, #000000 100%);
+    border: 2px solid #d4af37; /* 金邊 */
     border-radius: 8px;
-    box-shadow: 2px 2px 5px rgba(0,0,0,0.3);
+    background-image: repeating-linear-gradient(45deg, transparent, transparent 5px, rgba(212,175,55,0.1) 5px, rgba(212,175,55,0.1) 10px);
 }
 
-/* 卡背 (圖案) */
-.card-back {
-    background-color: #2c3e50;
-    /* 這裡可以用一個幾何圖案或純色 */
-    background-image: repeating-linear-gradient(
-        45deg,
-        #2c3e50,
-        #2c3e50 10px,
-        #34495e 10px,
-        #34495e 20px
-    );
-    border: 2px solid #fff;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-/* 卡背中央裝飾 (小圓點) */
-.card-back::after {
-    content: '★';
-    color: var(--accent-warm);
-    font-size: 24px;
-}
-
-/* 卡面 (圖片) */
 .card-front {
-    background-color: white;
-    transform: rotateY(180deg);
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
     background-size: cover;
     background-position: center;
+    border-radius: 8px;
+    border: 1px solid #ddd;
 }
 
-/* 控制按鈕區 */
-.tarot-controls {
-    margin-top: 20px;
-    z-index: 10;
+/* 揭曉後的牌陣佈局 */
+.spread-result-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+    width: 100%;
+    margin-top: 30px;
+    animation: fadeIn 1s;
 }
 
-/* 抽出的牌展示區 (放大版) */
-#tarot-display-area {
-    margin-top: 15px;
-    min-height: 50px;
-    text-align: center;
-    color: var(--text-main);
-    font-family: 'Zen Maru Gothic', sans-serif;
-    padding: 10px;
-    background: var(--card-bg);
-    border-radius: var(--radius-btn);
-    opacity: 0;
-    transition: opacity 0.5s;
-    max-width: 80%;
+.spread-position {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 90px;
 }
 
-#tarot-display-area.visible {
-    opacity: 1;
-}
-
-#tarot-card-name {
-    font-size: 1.2rem;
-    font-weight: bold;
-    color: var(--accent-warm);
-}
-
-#tarot-reflection {
+.position-label {
+    margin-bottom: 10px;
     font-size: 0.9rem;
-    margin-top: 5px;
-    opacity: 0.8;
+    font-weight: bold;
+    color: #444;
+    background: rgba(255,255,255,0.8);
+    padding: 4px 10px;
+    border-radius: 12px;
+}
+
+/* 日記區 */
+#journal-section {
+    width: 90%;
+    max-width: 500px;
+    margin: 30px auto;
+    padding: 20px;
+    background: rgba(255,255,255,0.8);
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+}
+#journal-input {
+    width: 100%;
+    height: 100px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 10px;
+    margin: 10px 0;
+    font-family: inherit;
+}
+
+/* 圖鑑與 Modal (維持不變或微調) */
+#tarot-library {
+    padding-bottom: 80px;
+    height: 100%;
+    overflow-y: auto;
+}
+.library-filters {
+    display: flex; 
+    justify-content: center; 
+    gap: 8px; 
+    margin: 15px 0; 
+    flex-wrap: wrap; 
+}
+.filter-btn {
+    padding: 6px 14px;
+    border: 1px solid #ccc;
+    border-radius: 20px;
+    background: transparent;
+    font-size: 0.9rem;
+    cursor: pointer;
+}
+.filter-btn.active {
+    background: #6a11cb;
+    color: white;
+    border-color: #6a11cb;
+}
+.library-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+    gap: 10px;
+    padding: 10px;
+}
+.library-card img { width: 100%; border-radius: 5px; }
+
+/* Modal */
+.modal-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.85);
+    z-index: 2000;
+    display: flex; justify-content: center; align-items: center;
+    backdrop-filter: blur(5px);
+}
+.modal-content {
+    background: #fff;
+    width: 90%; max-width: 600px; max-height: 85vh;
+    border-radius: 20px;
+    padding: 25px;
+    overflow-y: auto;
+    position: relative;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+}
+.close-modal {
+    position: absolute; top: 15px; right: 20px; font-size: 28px; cursor: pointer; color: #999;
+}
+.modal-body { display: flex; flex-direction: column; gap: 20px; }
+.modal-img-wrapper { text-align: center; }
+.modal-img-wrapper img { max-width: 150px; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
+.guidance-box {
+    background: #f0f7ff;
+    padding: 15px;
+    border-radius: 10px;
+    border-left: 4px solid #2575fc;
+    margin: 10px 0;
+}
+.tags span { display: inline-block; background: #eee; padding: 2px 8px; border-radius: 10px; font-size: 0.8rem; margin: 0 5px 5px 0; color: #555; }
+.info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; background: #f9f9f9; padding: 10px; border-radius: 8px; font-size: 0.9rem; }
+
+/* Dark Mode 適配 */
+@media (prefers-color-scheme: dark) {
+    .menu-btn { color: #ddd; }
+    .selection-card { background: #2c3e50; color: #ecf0f1; }
+    .selection-title { color: #fff; }
+    .selection-desc { color: #bbb; }
+    .position-label { background: #34495e; color: #ddd; }
+    .modal-content { background: #2c3e50; color: #ecf0f1; }
+    .guidance-box { background: #34495e; border-color: #f1c40f; color: #f1c40f; }
+    .info-grid { background: #34495e; }
+    #journal-section { background: rgba(50,50,50,0.8); }
+    #journal-input { background: #444; color: white; border-color: #555; }
+    .wizard-step h3 { color: #ddd; }
 }
   </style>
 </head>
@@ -2695,221 +2864,1975 @@ const ab_answers = [
 },
 /* --- Feature: Tarot (Custom File Naming Version) --- */
 renderTarot:(container) => {
+/* --- Feature: Tarot (Ultimate Version) --- */
+    // 1. 假資料 (為了讓你現在能跑起來，之後請用上面 Prompt 生成的資料取代這裡)
+    // 注意：這裡只放了一張範例，請把你之後生成的一大串 tarotDetails 貼在全域變數或這裡
+    const tarotDetailsPlaceholder = {
+  "m00": {
+    "name": "The Fool (愚者)",
+    "keywords": ["新的開始", "天真", "冒險", "信念之躍", "活在當下"],
+    "imageDesc": "一位穿著華麗衣裳的年輕人，頭仰著天，腳步輕快地走向懸崖邊緣。他左手持著象徵純潔的白玫瑰，右手掛著行囊（潛能），腳邊有一隻小白狗（本能/警告）。背景是明亮的太陽與險峻的雪山。",
+    "upright": "踏上新旅程，不畏未知的勇氣，純真的心靈，無限的可能性。",
+    "reversed": "魯莽的行為，過度冒險，愚蠢的決定，時機未到，逃避現實。",
+    "element": "風元素 (Air)",
+    "astrology": "天王星 (Uranus)",
+    "numerology": "0 (無限/虛無)",
+    "chakra": "頂輪 (Crown Chakra)",
+    "guidance": "不要害怕未知的恐懼，相信宇宙會接住你。試著用「初學者之心」看世界。",
+    "meanings": {
+      "daily": "今天適合嘗試從未做過的事，保持開放心態，不要過度計畫。",
+      "love": "一段輕鬆、沒有束縛的新關係，或是現有關係中的新鮮感。享受當下的快樂。",
+      "work": "新的專案或職涯方向出現。雖然經驗不足，但創意與熱情是你最大的資產。",
+      "wealth": "財務上的新機會，但也可能因為缺乏規劃而有風險。適合小額投資新領域。",
+      "mind": "釋放內在小孩，放下「應該如何」的社會框架，允許自己犯錯與探索。"
+    }
+  },
+  "m01": {
+    "name": "The Magician (魔術師)",
+    "keywords": ["顯化", "創造力", "專注", "意志力", "資源整合"],
+    "imageDesc": "一位身穿紅袍（熱情）與白衣（純潔）的男子，右手高舉權杖指向天，左手食指指地（As above, so below）。桌上擺放著聖杯、寶劍、權杖與錢幣，象徵掌握了四大元素。頭頂有無限符號。",
+    "upright": "擁有實現目標所需的一切資源，行動力強，溝通順暢，將想法轉化為現實。",
+    "reversed": "資源被濫用，意志力薄弱，欺騙或操縱，才華被埋沒，計畫受阻。",
+    "element": "風元素 (Air) / 水星",
+    "astrology": "水星 (Mercury)",
+    "numerology": "1 (開端/自我)",
+    "chakra": "喉輪 (Throat Chakra)",
+    "guidance": "你已經準備好了。專注你的意念，善用手邊的工具，現在是採取行動的最佳時刻。",
+    "meanings": {
+      "daily": "今天頭腦清晰，溝通能力極佳，是解決問題或啟動計畫的好日子。",
+      "love": "在關係中展現你的魅力與主動權。單身者可能遇到聊得來的對象；伴侶間溝通順暢。",
+      "work": "工作表現亮眼，能夠靈活運用技能解決難題。適合提案、演講或談判。",
+      "wealth": "透過你的技能或創意賺錢。財務規劃需要具體的行動，而不只是空想。",
+      "mind": "覺察你的語言與思想具有創造實相的力量。小心「自我應驗預言」。"
+    }
+  },
+  "m02": {
+    "name": "The High Priestess (女祭司)",
+    "keywords": ["直覺", "神秘", "潛意識", "內在智慧", "靜止"],
+    "imageDesc": "一位神情莊嚴的女性坐在黑白兩柱（B與J）之間，象徵二元性的平衡。她身後掛著石榴帷幕，腳邊有新月。手中握著捲軸（TORA），象徵深奧的智慧。",
+    "upright": "信任直覺，探索內在世界，等待時機，柏拉圖式的愛，夢境的啟示。",
+    "reversed": "忽視直覺，情緒不穩，膚淺，封閉自我，隱藏的秘密曝光。",
+    "element": "水元素 (Water)",
+    "astrology": "月亮 (Moon)",
+    "numerology": "2 (二元/平衡)",
+    "chakra": "眉心輪 (Third Eye Chakra)",
+    "guidance": "向內尋找答案，而非向外。現在不是行動的時候，而是觀察與感受的時刻。",
+    "meanings": {
+      "daily": "今天適合獨處、冥想或閱讀。留意你的夢境與直覺閃現的靈感。",
+      "love": "一段精神層面深刻的連結，或者是暗戀。對伴侶多一點包容與非語言的理解。",
+      "work": "依靠直覺做決策。職場上可能有未公開的資訊，保持低調觀察。",
+      "wealth": "相信你對投資的直覺判斷。但也暗示財務狀況不明朗，需謹慎查證。",
+      "mind": "這是探索潛意識陰影的好時機。接納你內在的女性能量與陰柔面。"
+    }
+  },
+  "m03": {
+    "name": "The Empress (皇后)",
+    "keywords": ["豐盛", "母性", "感官享受", "創造", "自然"],
+    "imageDesc": "一位豐腴的女性坐在舒適的紅絲絨椅上，四周是茂密的森林與小溪。她戴著十二星冠，身穿飾有石榴的長袍。前方有金星符號的盾牌，象徵愛與美。",
+    "upright": "物質與心靈的富足，創造力的展現，懷孕或生產，享受生活，關懷他人。",
+    "reversed": "依賴性強，創造力枯竭，過度揮霍，忽視身體健康，令人窒息的愛。",
+    "element": "土元素 (Earth)",
+    "astrology": "金星 (Venus)",
+    "numerology": "3 (創造/表達)",
+    "chakra": "心輪 (Heart Chakra) / 臍輪 (Sacral Chakra)",
+    "guidance": "連結大地，照顧你的身體。讓美與愛流動在你的生活中。",
+    "meanings": {
+      "daily": "善待自己的一天。吃頓美食、接觸大自然或做些讓身體舒服的事。",
+      "love": "充滿熱情與包容的愛。適合備孕或享受家庭生活。關係中充滿感官的愉悅。",
+      "work": "專案開花結果，創意源源不絕。適合從事藝術、美學或照顧人的工作。",
+      "wealth": "財務豐收，物質生活優渥。但要小心為了享樂而過度花費。",
+      "mind": "療癒你的「內在母親」。學習滋養自己，而不僅僅是給予他人。"
+    }
+  },
+  "m04": {
+    "name": "The Emperor (皇帝)",
+    "keywords": ["權威", "結構", "秩序", "父性", "控制"],
+    "imageDesc": "一位威嚴的長者坐在飾有羊頭（牡羊座）的石椅上，背景是貧瘠的山脈。他身穿盔甲與紅袍，手持安卡十字權杖（生命）與金球（統治）。表情嚴肅。",
+    "upright": "建立規則，穩定的基礎，領導力，理性邏輯，保護者。",
+    "reversed": "暴政，濫用權力，固執僵化，缺乏紀律，軟弱無能的領導。",
+    "element": "火元素 (Fire)",
+    "astrology": "牡羊座 (Aries)",
+    "numerology": "4 (穩定/基礎)",
+    "chakra": "太陽神經叢 (Solar Plexus Chakra)",
+    "guidance": "建立界線與紀律。用邏輯與結構來解決混亂。",
+    "meanings": {
+      "daily": "今天需要有條理地處理事務。展現你的領導力與決斷力。",
+      "love": "關係穩定但缺乏浪漫，強調責任與承諾。可能遇到強勢或年長的對象。",
+      "work": "適合制定SOP、管理團隊或爭取升遷。展現你的專業與可靠。",
+      "wealth": "財務穩健，適合保守的理財策略。控制預算，避免衝動消費。",
+      "mind": "檢視你與權威（或父親）的關係。學習自我賦權，成為自己生命的主宰。"
+    }
+  },
+  "m05": {
+    "name": "The Hierophant (教皇)",
+    "keywords": ["傳統", "信仰", "教育", "體制", "精神指引"],
+    "imageDesc": "教皇戴著三重冠，穿著紅袍，坐在兩根石柱間。右手結祝福手印，左手持三重十字架。腳下有兩把交叉的鑰匙，前方跪著兩位信徒。",
+    "upright": "尋求靈性指引，遵循傳統與規範，加入團體，學習與傳授，良師益友。",
+    "reversed": "打破傳統，質疑權威，盲從，虛偽的道德，尋求非主流的途徑。",
+    "element": "土元素 (Earth)",
+    "astrology": "金牛座 (Taurus)",
+    "numerology": "5 (改變/衝突)",
+    "chakra": "喉輪 (Throat Chakra)",
+    "guidance": "學習前人的智慧，或是尋求專業人士的建議。現在不適合標新立異。",
+    "meanings": {
+      "daily": "遵守規則與SOP的一天。適合參加課程、講座或宗教活動。",
+      "love": "傳統的關係模式，考慮結婚或見家長。或是柏拉圖式的精神戀愛。",
+      "work": "在大機構或體制內工作順利。重視團隊合作與既定流程。適合進修。",
+      "wealth": "保守的投資策略。聽取理財顧問的建議。避免高風險投機。",
+      "mind": "探索你的核心價值觀與信仰系統。你是否盲目遵循社會期待？"
+    }
+  },
+  "m06": {
+    "name": "The Lovers (戀人)",
+    "keywords": ["選擇", "愛情", "結合", "價值觀", "和諧"],
+    "imageDesc": "一對裸體的男女（亞當與夏娃）站在伊甸園中，上方有天使拉斐爾張開雙翼祝福。身後分別有生命樹與知善惡樹（纏繞著蛇）。",
+    "upright": "重要的抉擇，真愛，人際關係的和諧，合作無間，價值觀的對齊。",
+    "reversed": "錯誤的選擇，關係失和，誘惑，承諾恐懼，價值觀衝突。",
+    "element": "風元素 (Air)",
+    "astrology": "雙子座 (Gemini)",
+    "numerology": "6 (和諧/溝通)",
+    "chakra": "心輪 (Heart Chakra)",
+    "guidance": "傾聽你的心，但也要運用智慧。做出的選擇必須符合你真實的價值觀。",
+    "meanings": {
+      "daily": "面臨二選一的局面。今天的人際互動頻繁且愉快。",
+      "love": "熱戀期，靈魂伴侶的連結。面臨關係進階的重大承諾或決定。",
+      "work": "良好的合作夥伴關係。需要做出一項關於職涯方向的重要決定。",
+      "wealth": "合夥投資有利。但在消費上要分清楚「想要」還是「需要」。",
+      "mind": "整合內在的陽性與陰性面向。誠實面對自己的慾望與道德兩難。"
+    }
+  },
+  "m07": {
+    "name": "The Chariot (戰車)",
+    "keywords": ["勝利", "意志力", "行動", "控制", "方向"],
+    "imageDesc": "一位戰士駕駛著戰車，頭戴星冠，肩上有月亮護肩。拉車的是一黑一白兩隻人面獅身獸（Sphinx），象徵二元對立的力量。戰車上有藍色星空帷幕。",
+    "upright": "克服障礙，目標導向，自律，旅程，凱旋而歸。",
+    "reversed": "失控，方向錯誤，缺乏意志力，暴力衝突，停滯不前。",
+    "element": "水元素 (Water)",
+    "astrology": "巨蟹座 (Cancer)",
+    "numerology": "7 (探究/內省)",
+    "chakra": "太陽神經叢 (Solar Plexus Chakra)",
+    "guidance": "握緊韁繩，只要你意志堅定，沒有什麼能阻擋你。專注於目標，不要被情緒左右。",
+    "meanings": {
+      "daily": "忙碌且充滿挑戰的一天，需要高強度的專注力來完成任務。",
+      "love": "積極追求愛情，或是在關係中掌握主導權。小心過於強勢。",
+      "work": "競爭激烈的環境，但你有能力勝出。適合出差或外派。",
+      "wealth": "積極理財，目標明確。買車或與交通工具有關的支出。",
+      "mind": "學習駕馭內在衝突的情緒（黑白獅芬克斯），將其轉化為前進的動力。"
+    }
+  },
+  "m08": {
+    "name": "Strength (力量)",
+    "keywords": ["內在力量", "勇氣", "耐心", "慈悲", "馴服"],
+    "imageDesc": "一位身穿白衣的女性溫柔地撫摸著一頭獅子，甚至能輕易掰開獅子的嘴。她頭頂有無限符號，腰間繫著花環，展現以柔克剛的力量。",
+    "upright": "以柔克剛，控制本能衝動，堅定的信念，自信，寬容。",
+    "reversed": "自我懷疑，軟弱，被情緒淹沒，濫用力量，恐懼。",
+    "element": "火元素 (Fire)",
+    "astrology": "獅子座 (Leo)",
+    "numerology": "8 (力量/業力)",
+    "chakra": "太陽神經叢 (Solar Plexus Chakra) / 心輪",
+    "guidance": "真正的力量不是武力，而是慈悲與耐心。接納你內在的野性。",
+    "meanings": {
+      "daily": "今天需要展現耐心。面對挑戰時，保持冷靜比發脾氣有效。",
+      "love": "一段溫柔而堅定的關係。用包容化解衝突。性的吸引力。",
+      "work": "有能力處理棘手的任務或難搞的人。堅持你的立場，但態度要溫和。",
+      "wealth": "財務狀況穩健。需要有紀律地執行儲蓄計畫。",
+      "mind": "與你的陰影（恐懼、憤怒）和解，不要壓抑它，而是引導它。"
+    }
+  },
+  "m09": {
+    "name": "The Hermit (隱士)",
+    "keywords": ["內省", "孤獨", "引導", "智慧", "探索"],
+    "imageDesc": "一位身穿灰色斗篷的老者站在雪山頂上，手提一盞內藏六角星的燈籠，另一手拄著長杖。他低頭沉思，遠離塵囂。",
+    "upright": "獨處，尋找內在答案，深思熟慮，精神導師，暫停腳步。",
+    "reversed": "孤僻，過度封閉，拒絕溝通，迷失方向，寂寞。",
+    "element": "土元素 (Earth)",
+    "astrology": "處女座 (Virgo)",
+    "numerology": "9 (完成/人道)",
+    "chakra": "頂輪 (Crown Chakra)",
+    "guidance": "抽離喧囂，給自己一段安靜的時間。答案不在外面，而在你心裡。",
+    "meanings": {
+      "daily": "適合獨處、思考或做研究的一天。減少社交活動。",
+      "love": "單身者享受獨處，不急於戀愛。有伴者需要個人空間來沉澱。",
+      "work": "專注於細節與深度分析。適合獨立作業，不需要太多團隊合作。",
+      "wealth": "重新審視財務規劃，不隨波逐流。節儉度日。",
+      "mind": "孤獨是靈魂的養分。在寂靜中，你會聽見內在智慧的聲音。"
+    }
+  },
+  "m10": {
+    "name": "Wheel of Fortune (命運之輪)",
+    "keywords": ["改變", "循環", "機遇", "命運", "轉捩點"],
+    "imageDesc": "一個懸浮在空中的巨大輪盤，周圍有四活物（獅、牛、人、鷹）在讀書。輪盤上有獅身人面像（智慧）、阿努比斯（死亡/復活）與蛇（物質世界）。",
+    "upright": "順流而行，好運降臨，意外的轉機，業力循環，把握當下。",
+    "reversed": "運勢低迷，抗拒改變，惡性循環，計畫趕不上變化，不幸。",
+    "element": "火元素 (Fire)",
+    "astrology": "木星 (Jupiter)",
+    "numerology": "10 (1+0=1 新循環)",
+    "chakra": "海底輪 (Root Chakra)",
+    "guidance": "唯一不變的就是改變。學會適應環境，轉動你的命運。",
+    "meanings": {
+      "daily": "事情會有意想不到的發展。保持彈性，隨遇而安。",
+      "love": "宿命般的相遇，或關係進入新的階段。緣分來了擋不住。",
+      "work": "局勢變動大，可能有調職或新機會。順勢而為是上策。",
+      "wealth": "財務有起伏，可能有意外之財，也可能有意外支出。適合短期投資。",
+      "mind": "理解生命的起落是自然的節奏。不要執著於永遠的高峰。"
+    }
+  },
+  "m11": {
+    "name": "Justice (正義)",
+    "keywords": ["公平", "真理", "因果", "法律", "平衡"],
+    "imageDesc": "一位神情嚴肅的女性坐在石椅上，右手持劍（理智裁決），左手持天秤（衡量輕重）。身後紫色帷幕象徵智慧。她不蒙眼，代表洞察真相。",
+    "upright": "公正的判決，誠實，承擔責任，法律事務順利，理性思考。",
+    "reversed": "不公不義，偏見，逃避責任，法律糾紛，猶豫不決。",
+    "element": "風元素 (Air)",
+    "astrology": "天秤座 (Libra)",
+    "numerology": "11/2 (直覺/平衡)",
+    "chakra": "心輪 (Heart Chakra)",
+    "guidance": "誠實面對自己與他人。你的每一個決定都有後果，請種下善因。",
+    "meanings": {
+      "daily": "需要做決定的時刻，請保持客觀理性。可能會處理合約或文件。",
+      "love": "追求平等尊重的關係。如果你曾經付出，現在會得到回報（好或壞）。",
+      "work": "職場講求公平與原則。簽約、談判順利。不要試圖走後門。",
+      "wealth": "財務收支平衡。法律訴訟相關的財務問題會有結果。",
+      "mind": "檢視你的內在天秤。你是否對自己太嚴厲或太放縱？"
+    }
+  },
+  "m12": {
+    "name": "The Hanged Man (吊人)",
+    "keywords": ["犧牲", "等待", "換位思考", "放下", "覺醒"],
+    "imageDesc": "一名男子被倒吊在T型樹幹上，雙腳交叉成「4」字，雙手背在身後形成三角形。他頭上有光環，表情平靜而非痛苦，象徵自願的犧牲。",
+    "upright": "暫停行動，不同的視角，以退為進，靈性開悟，順服。",
+    "reversed": "無謂的犧牲，掙扎，固執己見，拖延，受害者心態。",
+    "element": "水元素 (Water)",
+    "astrology": "海王星 (Neptune)",
+    "numerology": "12/3 (創造/犧牲)",
+    "chakra": "眉心輪 (Third Eye Chakra)",
+    "guidance": "如果你走不通，試著停下來或換個角度看世界。有時候「不做」比「做」更有力量。",
+    "meanings": {
+      "daily": "事情進展停滯，不要強求。利用這段空檔休息或反思。",
+      "love": "關係陷入僵局，需要給彼此空間。為了愛而做出的必要讓步。",
+      "work": "卡關期，努力不一定有回報。建議轉換思維模式，或暫時忍耐。",
+      "wealth": "資金被凍結或套牢。不適合大動作投資，靜觀其變。",
+      "mind": "放下我執（Ego）的控制欲。痛苦往往來自於我們抗拒當下的狀態。"
+    }
+  },
+  "m13": {
+    "name": "Death (死神)",
+    "keywords": ["結束", "轉化", "重生", "斷捨離", "不可抗力"],
+    "imageDesc": "身穿黑盔甲的骷髏騎士騎著白馬，手中揮舞著黑底白花的旗幟。馬下有國王屍體，前方有主教、婦女與孩童面對他，象徵死亡面前人人平等。背景有升起的太陽。",
+    "upright": "舊階段的結束，徹底的改變，放下過去，迎向新生，必然的結局。",
+    "reversed": "抗拒改變，停滯，無法釋懷，恐懼結束，腐敗。",
+    "element": "水元素 (Water)",
+    "astrology": "天蠍座 (Scorpio)",
+    "numerology": "13/4 (穩定/轉化)",
+    "chakra": "海底輪 (Root Chakra)",
+    "guidance": "不要害怕結束，那是新生的必經之路。放手那些不再服務於你的事物。",
+    "meanings": {
+      "daily": "某件事會在今天畫下句點。適合整理房間、丟棄舊物。",
+      "love": "分手或關係模式的徹底轉變。舊的不去，新的不來。",
+      "work": "離職、轉職或專案結案。公司組織重組。危機就是轉機。",
+      "wealth": "財務損失或收入來源斷絕，迫使你尋找新出路。",
+      "mind": "心理層面的死亡與重生。蛻變過程雖然痛苦，但會讓你更強大。"
+    }
+  },
+  "m14": {
+    "name": "Temperance (節制)",
+    "keywords": ["平衡", "療癒", "融合", "耐心", "中庸"],
+    "imageDesc": "一位長著紅翅膀的天使，一腳在水裡，一腳在岸上（潛意識與現實的連結）。手中拿著兩個杯子，將水流在兩杯之間倒來倒去，卻沒灑出一滴，象徵煉金術般的融合。",
+    "upright": "身心平衡，適度調節，化學反應，自我修復，和諧。",
+    "reversed": "失衡，過度放縱，缺乏耐心，衝突，身心不適。",
+    "element": "火元素 (Fire)",
+    "astrology": "射手座 (Sagittarius)",
+    "numerology": "14/5 (改變/適應)",
+    "chakra": "太陽神經叢 (Solar Plexus Chakra)",
+    "guidance": "保持中庸之道。試著將對立的事物融合，尋找第三條路。",
+    "meanings": {
+      "daily": "生活平順的一天。適合調整作息、飲食或進行身心療癒。",
+      "love": "細水長流的感情，彼此適應良好。溝通順暢，能夠互相包容。",
+      "work": "協調不同部門的意見。工作與生活達到良好的平衡。",
+      "wealth": "收支平衡。不適合高風險操作，穩健配置資產。",
+      "mind": "整合內在的矛盾。學習情緒調節，讓心靈之水流動而不氾濫。"
+    }
+  },
+  "m15": {
+    "name": "The Devil (惡魔)",
+    "keywords": ["束縛", "慾望", "物質主義", "成癮", "陰影"],
+    "imageDesc": "一隻巨大的惡魔（巴風特）蹲在黑色的立方體上。前方有一男一女被鐵鍊拴住，但鐵鍊很鬆，顯示他們其實可以逃脫卻選擇留下。這兩人的形象與「戀人」牌相似，但長出了角和尾巴。",
+    "upright": "沈迷於物質或肉慾，不健康的關係，自我限制，上癮，被恐懼控制。",
+    "reversed": "擺脫束縛，覺醒，戒除惡習，面對真相，重獲自由。",
+    "element": "土元素 (Earth)",
+    "astrology": "摩羯座 (Capricorn)",
+    "numerology": "15/6 (和諧/誘惑)",
+    "chakra": "海底輪 (Root Chakra)",
+    "guidance": "看清楚是什麼綁住了你？往往是你自己的恐懼與慾望。你有能力選擇離開。",
+    "meanings": {
+      "daily": "感到壓力大或被限制。小心過度飲食、消費或沈迷網路。",
+      "love": "充滿致命吸引力但具毀滅性的關係（如炮友、虐戀）。控制與佔有欲。",
+      "work": "對工作感到厭倦卻不敢離職（金手銬）。職場鬥爭與權力遊戲。",
+      "wealth": "被金錢奴役，為了錢出賣原則。沈迷賭博或投機。",
+      "mind": "直面你的陰影面（Shadow Work）。承認你的慾望，但不要被它主宰。"
+    }
+  },
+  "m16": {
+    "name": "The Tower (高塔)",
+    "keywords": ["毀滅", "劇變", "覺醒", "災難", "解放"],
+    "imageDesc": "一座高聳入雲的塔被閃電擊中，塔頂皇冠被掀飛。兩個人從塔上墜落。背景是黑夜與墜落的火星。象徵建立在虛假基礎上的結構崩塌。",
+    "upright": "突如其來的災難，幻覺破滅，信念崩塌，意外事故，必要的破壞。",
+    "reversed": "避免了災難但問題仍在，勉強維持現狀，恐懼改變，餘波盪漾。",
+    "element": "火元素 (Fire)",
+    "astrology": "火星 (Mars)",
+    "numerology": "16/7 (內省/真理)",
+    "chakra": "海底輪 (Root Chakra)",
+    "guidance": "別試圖修補已經腐爛的地基。讓它倒吧，唯有毀滅之後才能真實重建。",
+    "meanings": {
+      "daily": "計畫被打亂，突發狀況多。情緒容易爆發。",
+      "love": "關係突然破裂，發現令人震驚的真相（如外遇）。",
+      "work": "裁員、公司倒閉或重大失誤。舒適圈被打破。",
+      "wealth": "財務遭受重創，投資失利。破產危機。",
+      "mind": "雖然痛苦，但這是一次靈魂的震撼教育（Ego Death）。打破小我的殼。"
+    }
+  },
+  "m17": {
+    "name": "The Star (星星)",
+    "keywords": ["希望", "靈感", "療癒", "平靜", "指引"],
+    "imageDesc": "一位裸體女性單膝跪在水邊，一手將水倒在池中（潛意識），一手倒在地上（現實）。天上有八顆星，中間那顆最大。背景是寧靜的景色。",
+    "upright": "願望成真，充滿希望，身心康復，靈感湧現，美好的未來。",
+    "reversed": "失望，悲觀，缺乏靈感，自我懷疑，好高騖遠。",
+    "element": "風元素 (Air)",
+    "astrology": "水瓶座 (Aquarius)",
+    "numerology": "17/8 (力量/流動)",
+    "chakra": "頂輪 (Crown Chakra)",
+    "guidance": "保持信念，宇宙正在回應你。你是被祝福的，請展現真實的自己。",
+    "meanings": {
+      "daily": "心情平靜愉快，充滿創意。適合許願或規劃未來。",
+      "love": "柏拉圖式的美好戀情，療癒過去的傷痛。對未來充滿憧憬。",
+      "work": "工作上有新的願景，藝術或創意工作者靈感爆棚。",
+      "wealth": "財務前景看好，雖然不會立刻發財，但方向正確。",
+      "mind": "與宇宙連結，感受到深層的寧靜與信任。相信自己是獨一無二的星辰。"
+    }
+  },
+  "m18": {
+    "name": "The Moon (月亮)",
+    "keywords": ["不安", "幻覺", "潛意識", "恐懼", "未知"],
+    "imageDesc": "一輪滿月掛在夜空，臉上帶著愁容。月光下有一條小徑通向遠方山脈，路旁有一隻狼和一隻狗（野性與馴化），水池中有一隻螯蝦爬出（深層恐懼）。",
+    "upright": "情緒波動，曖昧不明，隱藏的危險，直覺敏銳，夢魘。",
+    "reversed": "撥雲見日，真相大白，擺脫恐懼，恢復理智。",
+    "element": "水元素 (Water)",
+    "astrology": "雙魚座 (Pisces)",
+    "numerology": "18/9 (完成/智慧)",
+    "chakra": "眉心輪 (Third Eye Chakra)",
+    "guidance": "不要被表象欺騙，也不要被恐懼吞噬。在黑暗中前行，依賴你的直覺而非眼睛。",
+    "meanings": {
+      "daily": "情緒起伏大，容易胡思亂想。小心詐騙或誤解。",
+      "love": "曖昧不明的關係，充滿猜忌與不安。可能有隱瞞的事情。",
+      "work": "局勢不明朗，小人流言蜚語多。不適合做重大決策。",
+      "wealth": "財務狀況不透明，小心投資陷阱。看不見的風險。",
+      "mind": "潛意識的恐懼浮上檯面。這是探索深層心理與夢境的好機會。"
+    }
+  },
+  "m19": {
+    "name": "The Sun (太陽)",
+    "keywords": ["快樂", "成功", "活力", "真相", "純真"],
+    "imageDesc": "巨大的太陽照耀著向日葵花園。一個裸體的小孩騎在白馬上，揮舞著紅色旗幟，表情充滿喜悅與自信。牆壁象徵過去的限制已被跨越。",
+    "upright": "光明磊落，充滿活力，成功，喜悅，受人矚目。",
+    "reversed": "短暫的快樂，過度樂觀，成功延遲，缺乏自信，虛榮。",
+    "element": "火元素 (Fire)",
+    "astrology": "太陽 (Sun)",
+    "numerology": "19/1 (自我/榮耀)",
+    "chakra": "太陽神經叢 (Solar Plexus Chakra)",
+    "guidance": "展現你的光芒！沒有什麼好隱藏的。保持樂觀，好運隨之而來。",
+    "meanings": {
+      "daily": "充滿活力與自信的一天。所有問題都能迎刃而解。",
+      "love": "熱情、公開且受祝福的戀情。單身者魅力四射。",
+      "work": "工作表現優異，升遷加薪在望。團隊氣氛極佳。",
+      "wealth": "財務豐盛，投資獲利。適合大方分享。",
+      "mind": "內在小孩感到安全與被愛。陰影消散，身心充滿正能量。"
+    }
+  },
+  "m20": {
+    "name": "Judgment (審判)",
+    "keywords": ["覺醒", "重生", "召喚", "決斷", "救贖"],
+    "imageDesc": "天使加百列在雲端吹響號角。地面上的人們（男人、女人、小孩）從棺材中站起，雙手合十仰望天使，膚色蒼白（象徵死而復生）。背景是雪山。",
+    "upright": "內在召喚，重大決定，因果回報，擺脫過去，人生轉捩點。",
+    "reversed": "拒絕成長，忽視良知，自我懷疑，拖延決定，沈溺過去。",
+    "element": "火元素 (Fire)",
+    "astrology": "冥王星 (Pluto)",
+    "numerology": "20/2 (直覺/決斷)",
+    "chakra": "頂輪 (Crown Chakra)",
+    "guidance": "這是你的喚醒時刻。聽從內心的召喚，原諒過去的自己，展開新篇章。",
+    "meanings": {
+      "daily": "可能會收到重要消息或通知。需要做一個關於未來的決定。",
+      "love": "舊愛回頭，或是關係面臨關鍵的抉擇（分手或結婚）。",
+      "work": "職涯的轉捩點，回應天職的召喚。考核或面試結果出爐。",
+      "wealth": "財務結算。過去投資的結果現在顯現。",
+      "mind": "靈魂的升級。自我寬恕，釋放長久以來的罪惡感。"
+    }
+  },
+  "m21": {
+    "name": "The World (世界)",
+    "keywords": ["完成", "圓滿", "整合", "旅行", "成就"],
+    "imageDesc": "一位裸體舞者手持兩根權杖，在橢圓形的桂冠花環中起舞，象徵無限循環。四周是四活物（獅、牛、人、鷹），象徵四大元素的完美整合。",
+    "upright": "目標達成，完美的結局，環遊世界，身心合一，新的層次。",
+    "reversed": "未完成，缺乏最後一塊拼圖，停滯，固步自封，延遲。",
+    "element": "土元素 (Earth)",
+    "astrology": "土星 (Saturn)",
+    "numerology": "21/3 (創造/完成)",
+    "chakra": "海底輪 (Root Chakra) / 頂輪",
+    "guidance": "慶祝你的成就！你已經完成了這段旅程的課題。現在，準備迎接下一個循環。",
+    "meanings": {
+      "daily": "事情圓滿解決，感到滿足與充實。適合慶祝。",
+      "love": "修成正果，完美的伴侶關係。異國戀情。",
+      "work": "專案大獲成功，達到事業高峰。可能會有海外發展機會。",
+      "wealth": "財務自由或達到設定的儲蓄目標。享受豐盛的成果。",
+      "mind": "天人合一的境界。感受到與萬物連結的完整性。"
+    }
+  },
+  "wa01": {
+    "name": "Ace of Wands (權杖一)",
+    "keywords": ["靈感", "新開始", "行動力", "潛能", "激情"],
+    "imageDesc": "一隻發光的手從雲中伸出，握著一根長滿嫩葉的權杖。背景是遠處的城堡與起伏的山丘，象徵著等待被征服的領域。",
+    "upright": "極佳的機會，充滿幹勁，創造力的爆發，新的冒險，生命力。",
+    "reversed": "延遲，缺乏動力，計畫受阻，錯失良機，熱情消退。",
+    "element": "火元素 (Fire)",
+    "astrology": "火象星座 (Aries/Leo/Sagittarius)",
+    "numerology": "1 (開端/意志)",
+    "chakra": "海底輪 (Root Chakra) / 臍輪",
+    "guidance": "點燃你心中的火種！這是一個採取行動的信號，不要猶豫，去創造吧。",
+    "meanings": {
+      "daily": "充滿活力的一天，可能會突然想到好點子或接到新任務。",
+      "love": "一段充滿激情的新戀情，或是現有關係重燃愛火。",
+      "work": "創業的好時機，接到新專案，工作熱情高漲。",
+      "wealth": "新的賺錢機會出現，適合投資新興市場或產品。",
+      "mind": "強烈的創造慾望，想要表達自我的衝動。"
+    }
+  },
+  "wa02": {
+    "name": "Two of Wands (權杖二)",
+    "keywords": ["規劃", "決定", "展望", "權力", "舒適圈"],
+    "imageDesc": "一位身穿紅袍的領主站在城堡城牆上，右手拿著地球儀，左手扶著權杖。他望著遠方的大海與陸地，正在思考下一步。",
+    "upright": "制定長遠計畫，在此地與彼方之間做選擇，掌控局勢，勇氣。",
+    "reversed": "恐懼未知，計畫不周，猶豫不決，安於現狀，缺乏自信。",
+    "element": "火元素 (Fire)",
+    "astrology": "火星在牡羊座 (Mars in Aries)",
+    "numerology": "2 (平衡/選擇)",
+    "chakra": "太陽神經叢 (Solar Plexus Chakra)",
+    "guidance": "你已經擁有了一切，現在該決定是否要踏出舒適圈，去探索更廣大的世界。",
+    "meanings": {
+      "daily": "需要做計畫或決策的日子。可能會考慮旅行或搬家。",
+      "love": "面臨關係的選擇題：要定下來還是繼續探索？遠距離戀愛的可能。",
+      "work": "職涯規劃的關鍵期。考慮跳槽、轉職或拓展海外業務。",
+      "wealth": "評估資產配置，規劃長期的財務藍圖。",
+      "mind": "渴望成長，但也對未知的風險感到猶豫。"
+    }
+  },
+  "wa03": {
+    "name": "Three of Wands (權杖三)",
+    "keywords": ["擴張", "遠見", "合作", "等待", "初步成果"],
+    "imageDesc": "一位背對著我們的男子站在山崖邊，扶著一根權杖，另外兩根立在身後。他看著金黃色的海面，船隻正在遠航。",
+    "upright": "眼光放遠，計畫開始實行，探索新領域，團隊合作，耐心等待回報。",
+    "reversed": "計畫延誤，期待落空，缺乏遠見，溝通不良，故步自封。",
+    "element": "火元素 (Fire)",
+    "astrology": "太陽在牡羊座 (Sun in Aries)",
+    "numerology": "3 (創造/群體)",
+    "chakra": "太陽神經叢 (Solar Plexus Chakra)",
+    "guidance": "你的船已經出發了，保持信心。現在是尋求合作夥伴與擴大視野的好時機。",
+    "meanings": {
+      "daily": "事情進展順利，可能需要與遠方的人聯繫或開會。",
+      "love": "關係穩定發展，規劃共同的未來。或是異地戀情。",
+      "work": "業務拓展，跨國合作，貿易往來。事業版圖擴大。",
+      "wealth": "長期投資開始見效。尋求海外投資機會。",
+      "mind": "心胸開闊，願意接納不同的觀點與可能性。"
+    }
+  },
+  "wa04": {
+    "name": "Four of Wands (權杖四)",
+    "keywords": ["慶祝", "和諧", "安定", "歸屬感", "里程碑"],
+    "imageDesc": "四根巨大的權杖插在地上，上方繫著花環與果實，形成一個拱門。兩個人手舉花束歡呼，背景是堅固的城堡（家）。",
+    "upright": "穩定的基礎，家庭幸福，婚禮或慶典，休假，放鬆。",
+    "reversed": "家庭不和，不穩定，過渡期，慶祝活動取消，人際衝突。",
+    "element": "火元素 (Fire)",
+    "astrology": "金星在牡羊座 (Venus in Aries)",
+    "numerology": "4 (穩定/秩序)",
+    "chakra": "海底輪 (Root Chakra)",
+    "guidance": "停下來慶祝你的成就吧！享受與親友相聚的時光，充電是為了走更長遠的路。",
+    "meanings": {
+      "daily": "心情愉快，適合聚餐、參加派對或享受家庭時光。",
+      "love": "關係穩定，甚至考慮同居或結婚。充滿安全感的愛。",
+      "work": "團隊達成目標，舉辦慶功宴。工作環境和諧。",
+      "wealth": "購置房產或裝修家居。財務狀況穩健。",
+      "mind": "內心感到平靜與踏實，找到了心靈的歸屬。"
+    }
+  },
+  "wa05": {
+    "name": "Five of Wands (權杖五)",
+    "keywords": ["衝突", "競爭", "混亂", "挑戰", "磨合"],
+    "imageDesc": "五個年輕人各自揮舞著權杖，似乎在打架，又像是在混戰。他們的動作不協調，每個人都想表達自己的意見。",
+    "upright": "良性競爭，意見不合，腦力激盪，忙碌，需要協調。",
+    "reversed": "惡性鬥爭，逃避衝突，內鬥，訴訟，身心俱疲。",
+    "element": "火元素 (Fire)",
+    "astrology": "土星在獅子座 (Saturn in Leo)",
+    "numerology": "5 (改變/衝突)",
+    "chakra": "太陽神經叢 (Solar Plexus Chakra)",
+    "guidance": "衝突不一定是壞事，它能激發火花。重點是如何在混亂中找到共識。",
+    "meanings": {
+      "daily": "忙亂的一天，瑣事很多，容易與人發生口角。",
+      "love": "情侶間的爭吵或磨合期。亦可能出現情敵。",
+      "work": "職場競爭激烈，團隊意見分歧，會議冗長且無效率。",
+      "wealth": "財務上的糾紛，或為了賺錢而過度勞累。",
+      "mind": "內在價值觀的衝突，思緒混亂，自我懷疑。"
+    }
+  },
+  "wa06": {
+    "name": "Six of Wands (權杖六)",
+    "keywords": ["勝利", "榮耀", "自信", "認可", "凱旋"],
+    "imageDesc": "一位戴著桂冠的騎士騎著白馬凱旋歸來，手中的權杖上也掛著桂冠。周圍的人群正在歡呼慶祝。",
+    "upright": "成功，受人愛戴，晉升，目標達成，好消息。",
+    "reversed": "驕傲自大，失敗，名聲受損，缺乏自信，被忽視。",
+    "element": "火元素 (Fire)",
+    "astrology": "木星在獅子座 (Jupiter in Leo)",
+    "numerology": "6 (和諧/成功)",
+    "chakra": "太陽神經叢 (Solar Plexus Chakra)",
+    "guidance": "這是你發光發熱的時刻，接受讚美吧！但切記，榮耀屬於團隊，不要迷失在掌聲中。",
+    "meanings": {
+      "daily": "受到表揚或肯定的一天。心情極佳，充滿自信。",
+      "love": "追求成功，或是感情公開受到祝福。自信讓你更有魅力。",
+      "work": "升職加薪，專案成功，成為領導人物。",
+      "wealth": "財務目標達成，獲得獎金或分紅。",
+      "mind": "建立健康的自信心，相信自己的價值。"
+    }
+  },
+  "wa07": {
+    "name": "Seven of Wands (權杖七)",
+    "keywords": ["防衛", "堅持", "勇氣", "挑戰", "孤軍奮戰"],
+    "imageDesc": "一位男子站在高地上，雙手握著權杖，採取防禦姿勢。下方有六根權杖正向他攻來，但他佔據有利位置。",
+    "upright": "捍衛立場，克服優勢敵軍，不屈不撓，保持優勢，堅定信念。",
+    "reversed": "放棄抵抗，被壓倒，失去優勢，缺乏自信，逃避責任。",
+    "element": "火元素 (Fire)",
+    "astrology": "火星在獅子座 (Mars in Leo)",
+    "numerology": "7 (探究/挑戰)",
+    "chakra": "太陽神經叢 (Solar Plexus Chakra)",
+    "guidance": "即使全世界都反對你，只要你是對的，就堅持下去。別讓他人動搖你的立場。",
+    "meanings": {
+      "daily": "面臨挑戰或質疑，需要據理力爭的一天。",
+      "love": "為了維護感情而努力，或是需要處理外在的反對聲音。",
+      "work": "職場上的競爭白熱化，你需要證明自己的能力。",
+      "wealth": "守護你的資產，避免被他人侵佔或借貸。",
+      "mind": "堅強的意志力，正在對抗內心的焦慮或恐懼。"
+    }
+  },
+  "wa08": {
+    "name": "Eight of Wands (權杖八)",
+    "keywords": ["速度", "行動", "消息", "旅行", "變化"],
+    "imageDesc": "八根權杖平行地在空中飛過，背景是開闊的天空與河流。畫面中沒有人物，強調的是純粹的動能與速度。",
+    "upright": "進展神速，突如其來的消息，空中旅行，效率高，趁勝追擊。",
+    "reversed": "延誤，混亂，衝動行事，錯過時機，交通受阻。",
+    "element": "火元素 (Fire)",
+    "astrology": "水星在射手座 (Mercury in Sagittarius)",
+    "numerology": "8 (力量/流動)",
+    "chakra": "喉輪 (Throat Chakra)",
+    "guidance": "事情即將快速發展，請繫好安全帶。猶豫就會敗北，跟上節奏！",
+    "meanings": {
+      "daily": "非常忙碌且充實的一天，訊息回不完，效率很高。",
+      "love": "一見鍾情，或是關係進展飛快。收到對方的訊息。",
+      "work": "業務量暴增，專案快速推進。適合差旅或行銷推廣。",
+      "wealth": "短期投資獲利快，資金流動迅速。",
+      "mind": "思緒敏捷，靈感源源不絕，但也容易焦慮停不下來。"
+    }
+  },
+  "wa09": {
+    "name": "Nine of Wands (權杖九)",
+    "keywords": ["堅持", "防禦", "韌性", "疲憊", "最後一搏"],
+    "imageDesc": "一位頭部受傷包紮的戰士，雙手緊握著一根權杖，神情警惕。身後立著八根權杖柵欄。他雖然受傷，但仍屹立不搖。",
+    "upright": "堅守崗位，蓄勢待發，即使疲憊仍不放棄，防備心強，接近終點。",
+    "reversed": "放棄，身心俱疲，防衛過當， paranoia，無法堅持。",
+    "element": "火元素 (Fire)",
+    "astrology": "月亮在射手座 (Moon in Sagittarius)",
+    "numerology": "9 (完成/極限)",
+    "chakra": "太陽神經叢 (Solar Plexus Chakra)",
+    "guidance": "你已經經歷了許多戰鬥，現在是黎明前的黑暗。不要放棄，你比自己想像的更強大。",
+    "meanings": {
+      "daily": "感到疲累與壓力，但必須撐住。保持警覺。",
+      "love": "在感情中受過傷而築起高牆。小心翼翼地維護關係。",
+      "work": "工作壓力大，已到極限，但只要撐過這關就是勝利。",
+      "wealth": "保護現有資產，不宜進行新的投資。",
+      "mind": "心力交瘁，需要休息，但內心仍有一股不服輸的氣。"
+    }
+  },
+  "wa10": {
+    "name": "Ten of Wands (權杖十)",
+    "keywords": ["重擔", "責任", "壓力", "過勞", "堅持"],
+    "imageDesc": "一位男子抱著十根沉重的權杖，彎腰駝背地走向遠方的房子。他的視線被權杖擋住，但他仍在前進。",
+    "upright": "責任重大，壓力過大，獨自承擔，接近目標但艱辛，需要釋放。",
+    "reversed": "卸下重擔，崩潰，推卸責任，無法負荷，懂得拒絕。",
+    "element": "火元素 (Fire)",
+    "astrology": "土星在射手座 (Saturn in Sagittarius)",
+    "numerology": "10 (圓滿/過度)",
+    "chakra": "肩頸/背部 (Physical Body)",
+    "guidance": "你承擔了太多不屬於你的責任。學會放手或授權，否則你會被壓垮。",
+    "meanings": {
+      "daily": "被工作或瑣事壓得喘不過氣，甚至影響健康。",
+      "love": "關係成為負擔，感到沈重。單方付出過多。",
+      "work": "工作量爆表，過勞。不懂得拒絕別人的請求。",
+      "wealth": "為了金錢拼命工作，卻犧牲了生活品質。",
+      "mind": "心理壓力極大，感覺不到快樂，只剩下責任感。"
+    }
+  },
+  "wapa": {
+    "name": "Page of Wands (權杖侍者)",
+    "keywords": ["消息", "熱情", "探索", "孩子氣", "新計畫"],
+    "imageDesc": "一位穿著華麗的年輕人，雙手握著權杖，仰望著頂端的嫩葉。他的帽子上有羽毛，背景是金字塔，象徵探索古老智慧或新奇事物。",
+    "upright": "好消息，新冒險的開端，充滿好奇心，衝動，創造力。",
+    "reversed": "壞消息，三分鐘熱度，優柔寡斷，缺乏行動力，幼稚。",
+    "element": "火中之土 (Earth of Fire)",
+    "astrology": "權杖宮廷牌",
+    "numerology": "11 (侍者)",
+    "chakra": "臍輪 (Sacral Chakra)",
+    "guidance": "保持赤子之心，去嘗試那些讓你興奮的事物，不要害怕犯錯。",
+    "meanings": {
+      "daily": "收到令人興奮的訊息或邀約。開始一個新興趣。",
+      "love": "一段有趣但可能不成熟的戀情。充滿新鮮感的互動。",
+      "work": "充滿新點子，適合發想創意。職場新鮮人的熱情。",
+      "wealth": "對於新的賺錢方式感興趣，但還在摸索階段。",
+      "mind": "心靈自由，渴望探索未知的領域。"
+    }
+  },
+  "wakn": {
+    "name": "Knight of Wands (權杖騎士)",
+    "keywords": ["行動", "冒險", "衝動", "熱情", "旅行"],
+    "imageDesc": "一位全副武裝的騎士騎著紅馬飛奔，馬的前腳騰空。他的戰袍上有蜥蜴圖案（火精靈）。他充滿自信與急躁。",
+    "upright": "迅速行動，充滿魅力，大膽冒險，變動，搬家或旅行。",
+    "reversed": "魯莽，暴力，缺乏耐心，不可靠，半途而廢。",
+    "element": "火中之火 (Fire of Fire)",
+    "astrology": "射手座 (Sagittarius)",
+    "numerology": "12 (騎士)",
+    "chakra": "太陽神經叢 (Solar Plexus Chakra)",
+    "guidance": "行動是你的代名詞。但在衝刺之前，確認一下方向是否正確。",
+    "meanings": {
+      "daily": "充滿能量的一天，事情變化很快。可能會有突發的行程。",
+      "love": "乾柴烈火的戀情，來得快去得也快。性感但不安定的對象。",
+      "work": "展現執行力，快速解決問題。適合業務或挑戰性高的工作。",
+      "wealth": "衝動消費或高風險投資。錢來得快去得快。",
+      "mind": "急躁不安，無法靜下來。需要透過運動來宣洩能量。"
+    }
+  },
+  "waqu": {
+    "name": "Queen of Wands (權杖皇后)",
+    "keywords": ["魅力", "自信", "獨立", "溫暖", "社交"],
+    "imageDesc": "一位穿著黃色長袍的女性坐在獅子座上有向日葵裝飾的寶座上。她右手持杖，左手拿著向日葵。黑貓坐在她腳邊，象徵直覺與神秘。",
+    "upright": "熱情大方，受歡迎，有主見，照顧他人，散發魅力。",
+    "reversed": "嫉妒，情緒化，控制欲強，虛榮，報復心。",
+    "element": "火中之水 (Water of Fire)",
+    "astrology": "牡羊座 (Aries)",
+    "numerology": "13 (皇后)",
+    "chakra": "臍輪 (Sacral Chakra) / 心輪",
+    "guidance": "相信你的直覺與魅力。你不需要討好任何人，做你自己就是最迷人的。",
+    "meanings": {
+      "daily": "社交運勢佳，成為聚焦點。充滿活力與自信。",
+      "love": "在關係中佔主導地位，熱情且忠誠。非常有魅力的伴侶。",
+      "work": "展現領導力與感染力，能激勵團隊。創業女強人。",
+      "wealth": "懂得享受生活，也會賺錢。花錢大方。",
+      "mind": "內心充滿陽光，但也擁有強大的內在力量。"
+    }
+  },
+  "waki": {
+    "name": "King of Wands (權杖國王)",
+    "keywords": ["領導", "遠見", "創造力", "權威", "創業"],
+    "imageDesc": "國王坐在裝飾有獅子與蜥蜴的寶座上，身穿火紅長袍。他目光炯炯有神地看著遠方，手持權杖，腳邊有蜥蜴。象徵成熟的火元素。",
+    "upright": "天生的領導者，激勵人心，目標導向，誠實，有魄力。",
+    "reversed": "獨裁，脾氣暴躁，傲慢，不切實際，利用他人。",
+    "element": "火中之風 (Air of Fire)",
+    "astrology": "獅子座 (Leo)",
+    "numerology": "14 (國王)",
+    "chakra": "太陽神經叢 (Solar Plexus Chakra)",
+    "guidance": "以身作則，用你的願景去引導他人，而不是用強權去壓迫。",
+    "meanings": {
+      "daily": "掌控大局的一天。適合做決策或發號施令。",
+      "love": "成熟穩重且熱情的伴侶。關係穩定且充滿活力。",
+      "work": "高階主管或創業者。具有長遠的眼光與執行力。",
+      "wealth": "財務狀況優異，善於投資與創造財富。",
+      "mind": "意志堅定，清楚自己要什麼，並且有能力去實現。"
+    }
+  },
+  "cu01": {
+    "name": "Ace of Cups (聖杯一)",
+    "keywords": ["愛", "情感", "直覺", "流動", "精神滿足"],
+    "imageDesc": "一隻手從雲中伸出，托著一個金色的聖杯，五道水流從杯中溢出，落入下方的蓮花池中。白鴿銜著十字圓餅飛入杯中，象徵靈性的祝福。",
+    "upright": "新戀情，情感滿溢，靈性開啟，懷孕，無條件的愛。",
+    "reversed": "情感受阻，空虛，單戀，情緒不穩，壓抑。",
+    "element": "水元素 (Water)",
+    "astrology": "水象星座 (Cancer/Scorpio/Pisces)",
+    "numerology": "1 (開端/情感)",
+    "chakra": "心輪 (Heart Chakra)",
+    "guidance": "打開你的心扉，讓愛流動。這是一個情感重生的時刻。",
+    "meanings": {
+      "daily": "心情愉悅，容易被感動。適合表達愛意。",
+      "love": "一段充滿靈性連結的新戀情。感情昇華。",
+      "work": "從事自己熱愛的工作，創意與靈感湧現。",
+      "wealth": "內心的富足感大於物質。可能會收到禮物。",
+      "mind": "直覺敏銳，感受到宇宙的愛與連結。"
+    }
+  },
+  "cu02": {
+    "name": "Two of Cups (聖杯二)",
+    "keywords": ["結合", "夥伴", "吸引力", "平等", "承諾"],
+    "imageDesc": "一男一女面對面站立，交換手中的聖杯。他們頭上有獅鷲獸的雙翼獅頭標誌（赫密士之杖），象徵對立面的結合與溝通。",
+    "upright": "兩情相悅，合作愉快，靈魂伴侶，求婚，和解。",
+    "reversed": "關係破裂，溝通不良，不平等，分手，誤解。",
+    "element": "水元素 (Water)",
+    "astrology": "金星在巨蟹座 (Venus in Cancer)",
+    "numerology": "2 (平衡/關係)",
+    "chakra": "心輪 (Heart Chakra)",
+    "guidance": "在關係中尋求平等與尊重。當你付出真誠，也會收穫真誠。",
+    "meanings": {
+      "daily": "與人互動良好，適合約會或洽談合作。",
+      "love": "熱戀中，彼此互相吸引。關係進入承諾階段。",
+      "work": "良好的合作夥伴關係，簽約順利。",
+      "wealth": "合資獲利。財務上的互助。",
+      "mind": "內在的陰陽能量平衡，自我接納。"
+    }
+  },
+  "cu03": {
+    "name": "Three of Cups (聖杯三)",
+    "keywords": ["歡慶", "友誼", "團體", "聚會", "結盟"],
+    "imageDesc": "三位女性圍成一圈，高舉聖杯互相致意。地上有南瓜與葡萄，象徵豐收。她們表情歡樂，氣氛融洽。",
+    "upright": "快樂的聚會，深厚的友誼，慶功宴，團隊合作，分享喜悅。",
+    "reversed": "過度放縱，小團體排擠，樂極生悲，八卦流言，短暫的快樂。",
+    "element": "水元素 (Water)",
+    "astrology": "水星在巨蟹座 (Mercury in Cancer)",
+    "numerology": "3 (創造/群體)",
+    "chakra": "心輪 (Heart Chakra) / 喉輪",
+    "guidance": "與朋友分享你的快樂，喜悅會加倍。珍惜身邊的支持系統。",
+    "meanings": {
+      "daily": "開心的社交活動，與老友相聚。",
+      "love": "朋友圈中的戀情，或是與伴侶及朋友共同出遊。小心三角關係。",
+      "work": "團隊氣氛佳，專案圓滿結束。適合舉辦活動。",
+      "wealth": "花費在娛樂與社交上。合夥賺錢。",
+      "mind": "感受到歸屬感與被支持的快樂。"
+    }
+  },
+  "cu04": {
+    "name": "Four of Cups (聖杯四)",
+    "keywords": ["冷漠", "倦怠", "錯過", "內省", "不滿足"],
+    "imageDesc": "一位男子坐在樹下，雙手抱胸，盯著地上的三個杯子。雲中伸出一隻手遞給他第四個杯子，但他視而不見，顯得無動於衷。",
+    "upright": "感到無聊，情緒低落，忽視眼前的機會，沈思，對現狀不滿。",
+    "reversed": "重新振作，把握機會，覺醒，脫離低潮，嘗試新事物。",
+    "element": "水元素 (Water)",
+    "astrology": "月亮在巨蟹座 (Moon in Cancer)",
+    "numerology": "4 (穩定/停滯)",
+    "chakra": "心輪 (Heart Chakra)",
+    "guidance": "機會就在你身邊，只是你選擇不看。試著改變視角，感恩你所擁有的。",
+    "meanings": {
+      "daily": "提不起勁的一天，對什麼都沒興趣。",
+      "love": "對感情感到厭倦，或是拒絕他人的追求。冷戰。",
+      "work": "職業倦怠，缺乏動力。錯失升遷或轉職良機。",
+      "wealth": "對財務狀況不滿意，但又懶得改變。",
+      "mind": "陷入自我封閉的情緒迴圈，需要向外尋求刺激。"
+    }
+  },
+  "cu05": {
+    "name": "Five of Cups (聖杯五)",
+    "keywords": ["悲傷", "失落", "遺憾", "專注失去", "殘留"],
+    "imageDesc": "一位身穿黑斗篷的人低著頭，看著地上打翻的三個杯子，流出的酒/血象徵失去。但他身後還有兩個立著的杯子，他卻沒看見。",
+    "upright": "沈浸在悲傷中，無法釋懷，失望，分手，只看到負面。",
+    "reversed": "走出陰霾，接受現實，看到希望，重新開始，原諒。",
+    "element": "水元素 (Water)",
+    "astrology": "火星在天蠍座 (Mars in Scorpio)",
+    "numerology": "5 (改變/失落)",
+    "chakra": "臍輪 (Sacral Chakra)",
+    "guidance": "悲傷是正常的，但不要永遠住在那裡。轉身看看，你還擁有著什麼？",
+    "meanings": {
+      "daily": "心情鬱悶，沈溺於過去的錯誤或遺憾。",
+      "love": "失戀，或是對關係感到極度失望。無法原諒對方的過錯。",
+      "work": "專案失敗，或是遭受挫折。對現狀感到灰心。",
+      "wealth": "投資失利，損失金錢。沈溺於沈沒成本。",
+      "mind": "情緒的低谷，需要時間哀悼，但也要學會放手。"
+    }
+  },
+  "cu06": {
+    "name": "Six of Cups (聖杯六)",
+    "keywords": ["回憶", "童年", "純真", "照顧", "懷舊"],
+    "imageDesc": "在一個古老的莊園裡，一個小男孩將裝滿五角星花的聖杯遞給小女孩。背景有守衛巡邏，象徵安全。充滿溫馨與懷舊的氣氛。",
+    "upright": "美好的回憶，舊地重遊，老友重逢，單純的快樂，被照顧。",
+    "reversed": "沈溺過去，拒絕成長，過度依賴，童年創傷浮現，不切實際。",
+    "element": "水元素 (Water)",
+    "astrology": "太陽在天蠍座 (Sun in Scorpio)",
+    "numerology": "6 (和諧/過去)",
+    "chakra": "心輪 (Heart Chakra)",
+    "guidance": "找回你內在小孩的純真。過去的美好是滋養，而不是逃避現實的避難所。",
+    "meanings": {
+      "daily": "懷舊的一天，可能會遇到老朋友或翻看舊照片。",
+      "love": "與前任復合，或是青梅竹馬般的戀情。單純無私的愛。",
+      "work": "穩定的工作環境，受前輩照顧。從過去的經驗找答案。",
+      "wealth": "繼承遺產，或是來自長輩的餽贈。",
+      "mind": "內心渴望單純與安全感，療癒內在小孩的時刻。"
+    }
+  },
+  "cu07": {
+    "name": "Seven of Cups (聖杯七)",
+    "keywords": ["幻想", "選擇", "誘惑", "迷惘", "白日夢"],
+    "imageDesc": "一個人的黑色剪影面對著雲端上的七個杯子。杯中分別裝著：蛇、城堡、珠寶、月桂冠、龍、人頭（自我）、蒙布發光物。象徵各種慾望與幻象。",
+    "upright": "選擇太多，不切實際的幻想，自我欺騙，創意發想，混亂。",
+    "reversed": "看清現實，做出決定，幻象破滅，目標明確，腳踏實地。",
+    "element": "水元素 (Water)",
+    "astrology": "金星在天蠍座 (Venus in Scorpio)",
+    "numerology": "7 (探究/幻想)",
+    "chakra": "眉心輪 (Third Eye Chakra)",
+    "guidance": "並非所有發光的都是金子。在做出選擇前，先分辨清楚什麼是真實，什麼是幻覺。",
+    "meanings": {
+      "daily": "想法很多但執行力低，容易分心。",
+      "love": "對感情有過度美好的幻想。桃花多但爛桃花也多。",
+      "work": "規劃了很多藍圖但缺乏執行。小心詐騙或畫大餅。",
+      "wealth": "不要輕信高獲利的投資誘惑。理財觀念混亂。",
+      "mind": "沈迷於幻想世界，逃避現實的壓力。"
+    }
+  },
+  "cu08": {
+    "name": "Eight of Cups (聖杯八)",
+    "keywords": ["離開", "尋找", "失望", "放下", "更深層的追求"],
+    "imageDesc": "一位身穿紅衣的人在月夜下，背對著疊好的八個杯子，拄著手杖走向荒野與高山。杯子雖然排列整齊（物質滿足），但他仍感到空虛。",
+    "upright": "放棄現有的一切，尋求心靈的滿足，不告而別，失望後的覺醒，旅行。",
+    "reversed": "猶豫不決，害怕改變，假裝快樂，重回舊地，逃避。",
+    "element": "水元素 (Water)",
+    "astrology": "土星在雙魚座 (Saturn in Pisces)",
+    "numerology": "8 (力量/移動)",
+    "chakra": "心輪 (Heart Chakra) / 頂輪",
+    "guidance": "當物質不再能滿足你，就是靈魂啟程的時候。勇敢地離開舒適圈吧。",
+    "meanings": {
+      "daily": "感到空虛，想要一個人靜一靜或出走。",
+      "love": "雖然關係看似完美，但內心感到缺失，選擇離開。",
+      "work": "離職，轉換跑道，尋求更有意義的工作。",
+      "wealth": "不再執著於賺錢，轉而追求精神財富。",
+      "mind": "靈性的覺醒，意識到外在的成功無法填補內在的洞。"
+    }
+  },
+  "cu09": {
+    "name": "Nine of Cups (聖杯九)",
+    "keywords": ["滿足", "願望成真", "享受", "自信", "獨處"],
+    "imageDesc": "一位身材富態的男子雙手抱胸，滿意地坐在長椅上。身後整齊排列著九個聖杯。他表情得意，象徵物質與情感的雙重滿足。",
+    "upright": "美夢成真，感官享受，自我滿足，情緒穩定，好運。",
+    "reversed": "貪婪，自滿，願望落空，物質過剩心靈空虛，傲慢。",
+    "element": "水元素 (Water)",
+    "astrology": "木星在雙魚座 (Jupiter in Pisces)",
+    "numerology": "9 (完成/盈滿)",
+    "chakra": "臍輪 (Sacral Chakra)",
+    "guidance": "恭喜你！這是許願牌。享受你的成就，但別忘了感恩。",
+    "meanings": {
+      "daily": "心情極佳，想吃什麼做什麼都能滿足。",
+      "love": "對目前的關係感到非常滿意。單身者享受單身生活。",
+      "work": "工作順利，獲得成就感。升遷或加薪。",
+      "wealth": "財務豐厚，物質生活優渥。適合犒賞自己。",
+      "mind": "內心充滿自信與喜悅，自我價值感高。"
+    }
+  },
+  "cu10": {
+    "name": "Ten of Cups (聖杯十)",
+    "keywords": ["圓滿", "家庭", "幸福", "和諧", "永恆"],
+    "imageDesc": "一對夫妻手牽手望著天上的彩虹，彩虹中有十個聖杯。身旁有兩個快樂跳舞的孩子。背景是綠色的田野與河流。",
+    "upright": "家庭幸福，情感的大圓滿，心靈平靜，長久的關係，團聚。",
+    "reversed": "家庭糾紛，貌合神離，代溝，理想破滅，破碎的家。",
+    "element": "水元素 (Water)",
+    "astrology": "火星在雙魚座 (Mars in Pisces)",
+    "numerology": "10 (圓滿/整體)",
+    "chakra": "心輪 (Heart Chakra)",
+    "guidance": "這是情感的極致。珍惜你所愛的人，並將這份愛傳遞出去。",
+    "meanings": {
+      "daily": "與家人度過美好時光，內心感到平靜。",
+      "love": "修成正果，結婚生子。靈魂與家庭的深度連結。",
+      "work": "團隊像家人一樣和諧。工作與生活完美平衡。",
+      "wealth": "家族資產豐厚。為家人的未來做好保障。",
+      "mind": "感受到無條件的愛與支持，內心無比踏實。"
+    }
+  },
+  "cupa": {
+    "name": "Page of Cups (聖杯侍者)",
+    "keywords": ["訊息", "直覺", "創意", "夢想家", "情感萌芽"],
+    "imageDesc": "一位穿著花俏的年輕人站在海邊，手拿著聖杯，杯中跳出一條魚與他對視。這象徵著意外的靈感或來自潛意識的訊息。",
+    "upright": "新的情感機會，直覺靈敏，藝術天份，溫柔的邀請，懷孕消息。",
+    "reversed": "情緒化，幼稚，逃避現實，受騙，創意受阻。",
+    "element": "水中之土 (Earth of Water)",
+    "astrology": "聖杯宮廷牌",
+    "numerology": "11 (侍者)",
+    "chakra": "心輪 (Heart Chakra)",
+    "guidance": "保持開放與好奇心，接受那些看似荒謬的靈感。你的直覺正在說話。",
+    "meanings": {
+      "daily": "會收到溫暖的訊息，或是突然有了藝術靈感。",
+      "love": "青澀的愛戀，暗戀，或是收到情書。感情純真。",
+      "work": "適合從事創意工作。職場上的新人，需要引導。",
+      "wealth": "對投資有直覺，但缺乏經驗。小額偏財運。",
+      "mind": "內心柔軟敏感，容易受傷但也容易被療癒。"
+    }
+  },
+  "cukn": {
+    "name": "Knight of Cups (聖杯騎士)",
+    "keywords": ["浪漫", "追求", "邀請", "理想主義", "誘惑"],
+    "imageDesc": "一位騎士騎著白馬緩緩前行，手捧聖杯，神情專注且溫柔。他的頭盔和腳跟有翅膀（赫密士），象徵信使。背景有河流。",
+    "upright": "浪漫的求愛，藝術氣質，溫柔體貼，遵循內心，美好的提議。",
+    "reversed": "花花公子，情緒化，不切實際，欺騙，虛情假意。",
+    "element": "水中之火 (Fire of Water)",
+    "astrology": "雙魚座 (Pisces)",
+    "numerology": "12 (騎士)",
+    "chakra": "心輪 (Heart Chakra)",
+    "guidance": "跟隨你的心，但不要迷失在浪漫的幻覺中。行動要溫柔而堅定。",
+    "meanings": {
+      "daily": "情緒起伏較大，容易感性用事。收到邀約。",
+      "love": "白馬王子出現，浪漫的追求。關係充滿詩意。",
+      "work": "適合藝術、表演或諮商工作。工作氣氛輕鬆。",
+      "wealth": "憑感覺花錢，容易情緒性消費。",
+      "mind": "充滿理想與夢想，但可能缺乏落實的能力。"
+    }
+  },
+  "cuqu": {
+    "name": "Queen of Cups (聖杯皇后)",
+    "keywords": ["慈悲", "直覺", "溫柔", "包容", "治癒"],
+    "imageDesc": "皇后坐在海邊裝飾華麗的寶座上，手持極其精緻的聖杯（這是唯一有蓋的聖杯，象徵潛意識的秘密）。她凝視著聖杯，神情專注。",
+    "upright": "情感豐富，善解人意，直覺極強，好的傾聽者，溫柔的母親。",
+    "reversed": "情緒勒索，過度敏感，依賴，受害者心態，憂鬱。",
+    "element": "水中之水 (Water of Water)",
+    "astrology": "巨蟹座 (Cancer)",
+    "numerology": "13 (皇后)",
+    "chakra": "心輪 (Heart Chakra) / 眉心輪",
+    "guidance": "信任你的感受，你的同理心是強大的治癒力量。照顧他人的同時也要照顧自己。",
+    "meanings": {
+      "daily": "情緒敏感，容易感受到他人的情緒。適合心靈交流。",
+      "love": "深情且包容的伴侶。關係中有深度的情感連結。",
+      "work": "適合助人工作者（護理、諮商）。依靠直覺做決策。",
+      "wealth": "憑直覺理財，重視金錢帶來的安全感。",
+      "mind": "連結潛意識，夢境清晰。內在充滿慈悲。"
+    }
+  },
+  "cuki": {
+    "name": "King of Cups (聖杯國王)",
+    "keywords": ["情緒成熟", "寬容", "外交", "平衡", "諮詢"],
+    "imageDesc": "國王坐在漂浮於海面的石座上，背景有船與跳躍的魚。他手持聖杯與權杖，神情平靜祥和，象徵雖然處於波動的情緒大海中，仍能保持穩定。",
+    "upright": "情緒穩定，富有同情心，良好的建議者，寬宏大量，顧家。",
+    "reversed": "情緒操控，冷酷無情，酗酒，表裡不一，情緒失控。",
+    "element": "水中之風 (Air of Water)",
+    "astrology": "天蠍座 (Scorpio)",
+    "numerology": "14 (國王)",
+    "chakra": "心輪 (Heart Chakra) / 喉輪",
+    "guidance": "在情緒風暴中保持冷靜。用智慧引導情感，而非壓抑它。",
+    "meanings": {
+      "daily": "能冷靜處理情緒問題的一天。適合找人談心。",
+      "love": "成熟體貼的伴侶，能給予強大的情緒支持。好父親。",
+      "work": "擅長協調人際關係，適合管理或外交工作。",
+      "wealth": "理智地處理財務，但願意為家人大方付出。",
+      "mind": "達到情緒平衡的境界，既不濫情也不冷漠。"
+    }
+  },
+  "sw01": {
+    "name": "Ace of Swords (寶劍一)",
+    "keywords": ["突破", "清晰", "真相", "新觀點", "決斷"],
+    "imageDesc": "一隻手從雲中伸出，緊握一把直立的寶劍。劍尖穿過皇冠（象徵理智戰勝物質），周圍有月桂葉（勝利）與棕櫚葉（受難）。背景是荒涼的山脈。",
+    "upright": "思緒清晰，突破性的想法，斬斷幻覺，手術般的精準，新的溝通。",
+    "reversed": "思緒混亂，判斷錯誤，語言暴力，計畫夭折，過度分析。",
+    "element": "風元素 (Air)",
+    "astrology": "風象星座 (Gemini/Libra/Aquarius)",
+    "numerology": "1 (開端/思想)",
+    "chakra": "喉輪 (Throat Chakra) / 眉心輪",
+    "guidance": "像手術刀一樣切除那些不再需要的東西。真相雖然銳利，但能帶給你自由。",
+    "meanings": {
+      "daily": "腦袋突然開竅，想到解決問題的好方法。",
+      "love": "理性的對話，釐清關係中的誤會。或是決定斬斷爛桃花。",
+      "work": "提出犀利的見解，計畫啟動。需要邏輯與決斷力。",
+      "wealth": "理智分析財務狀況，切除不必要的開支。",
+      "mind": "獲得頓悟（Aha moment），看穿了事情的本質。"
+    }
+  },
+  "sw02": {
+    "name": "Two of Swords (寶劍二)",
+    "keywords": ["僵局", "逃避", "防衛", "抉擇", "封閉"],
+    "imageDesc": "一位蒙著眼睛的女性坐在石凳上，雙手持劍交叉在胸前，形成防衛姿態。背景是平靜但充滿岩礁的大海與新月。她選擇不看真相。",
+    "upright": "陷入兩難，拒絕面對現實，情緒壓抑，冷戰，保持距離。",
+    "reversed": "做出決定，揭開眼罩，情緒爆發，看清真相，打破僵局。",
+    "element": "風元素 (Air)",
+    "astrology": "月亮在天秤座 (Moon in Libra)",
+    "numerology": "2 (平衡/對立)",
+    "chakra": "心輪 (Heart Chakra) / 眉心輪",
+    "guidance": "逃避做決定本身就是一種決定。拿掉眼罩吧，傾聽你的直覺而非恐懼。",
+    "meanings": {
+      "daily": "遇到難以抉擇的事情，傾向拖延。心情封閉。",
+      "love": "不願面對關係中的問題，或是陷入三角關係的拉扯。冷處理。",
+      "work": "在兩個方案中猶豫不決。工作陷入停滯狀態。",
+      "wealth": "財務資訊不明，暫時觀望，不宜輕舉妄動。",
+      "mind": "為了保護自己而關閉心門，切斷了與外界的情感連結。"
+    }
+  },
+  "sw03": {
+    "name": "Three of Swords (寶劍三)",
+    "keywords": ["心碎", "悲傷", "背叛", "分離", "痛苦"],
+    "imageDesc": "一顆紅色的心懸浮在空中，被三把寶劍無情地刺穿。背景是狂風暴雨。這是塔羅牌中少數意象完全負面的牌。",
+    "upright": "深刻的悲傷，失戀，第三者，被言語中傷，心理創傷。",
+    "reversed": "釋放痛苦，原諒，療癒開始，接受現實，拒絕沈溺悲傷。",
+    "element": "風元素 (Air)",
+    "astrology": "土星在天秤座 (Saturn in Libra)",
+    "numerology": "3 (創造/破壞)",
+    "chakra": "心輪 (Heart Chakra)",
+    "guidance": "痛苦是真實的，允許自己哭泣。但記住，雨後總會天晴，拔出劍需要勇氣。",
+    "meanings": {
+      "daily": "聽到令人難過的消息，或是感到情緒低落。",
+      "love": "分手、離婚或發現伴侶不忠。心如刀割。",
+      "work": "職場上的惡意中傷，專案失敗，被資遣。",
+      "wealth": "財務損失造成的心理壓力。破財。",
+      "mind": "正視你的傷口。壓抑悲傷只會讓傷口化膿。"
+    }
+  },
+  "sw04": {
+    "name": "Four of Swords (寶劍四)",
+    "keywords": ["休息", "恢復", "冥想", "暫停", "避世"],
+    "imageDesc": "一位騎士躺在教堂的石棺上祈禱，雙手合十。牆上掛著三把劍，第四把劍在石棺下方。彩色玻璃窗透出光芒。他在戰鬥後尋求寧靜。",
+    "upright": "身心俱疲需要休息，病後康復，休假，沈澱，在此時此刻什麼都不做。",
+    "reversed": "被迫休息（生病），過勞，重返戰場，焦躁不安，失眠。",
+    "element": "風元素 (Air)",
+    "astrology": "木星在天秤座 (Jupiter in Libra)",
+    "numerology": "4 (穩定/停滯)",
+    "chakra": "眉心輪 (Third Eye Chakra)",
+    "guidance": "充電是為了走更長遠的路。現在不是行動的時候，請徹底地讓大腦關機。",
+    "meanings": {
+      "daily": "感到疲憊，需要睡個好覺或獨處。",
+      "love": "關係進入冷靜期，給彼此空間喘息。暫時不想談戀愛。",
+      "work": "休年假，或是工作量減少。適合做規劃而非執行。",
+      "wealth": "暫停投資活動，靜觀其變。",
+      "mind": "透過冥想或靜坐來平復雜亂的思緒。"
+    }
+  },
+  "sw05": {
+    "name": "Five of Swords (寶劍五)",
+    "keywords": ["勝利", "欺騙", "空虛", "惡性競爭", "自私"],
+    "imageDesc": "一位臉上帶著冷笑的男子撿起地上的寶劍，背景有兩個垂頭喪氣離去的背影。天空佈滿灰雲。他贏了戰鬥，但輸了人心。",
+    "upright": "慘勝，不擇手段，背叛，霸凌，毫無意義的爭吵。",
+    "reversed": "想要和解，後悔過去的行為，接受失敗，遠離衝突，平息紛爭。",
+    "element": "風元素 (Air)",
+    "astrology": "金星在水瓶座 (Venus in Aquarius)",
+    "numerology": "5 (改變/衝突)",
+    "chakra": "喉輪 (Throat Chakra)",
+    "guidance": "這場勝利值得嗎？你有時候是對的，但卻沒人願意站在你這邊。",
+    "meanings": {
+      "daily": "與人發生爭執，雖然吵贏了但心裡不舒服。",
+      "love": "充滿敵意的關係，互相傷害。為了面子不肯低頭。",
+      "work": "職場鬥爭，被同事衝康。惡性競爭的環境。",
+      "wealth": "可能有金錢糾紛，或是透過不正當手段獲利。",
+      "mind": "檢視自己的攻擊性。是不是為了保護自尊而傷了別人？"
+    }
+  },
+  "sw06": {
+    "name": "Six of Swords (寶劍六)",
+    "keywords": ["過渡", "療癒", "離開", "平靜", "前進"],
+    "imageDesc": "一位船夫划著船載著一對母子渡河，船上有六把劍插著。水面右邊洶湧（過去），左邊平靜（未來）。他們正緩慢地離開痛苦之地。",
+    "upright": "緩慢的復原，遠行，轉換環境，接受幫助，憂鬱但平靜。",
+    "reversed": "無法擺脫過去，行程延誤，暈船，問題揮之不去，抗拒改變。",
+    "element": "風元素 (Air)",
+    "astrology": "水星在水瓶座 (Mercury in Aquarius)",
+    "numerology": "6 (和諧/移動)",
+    "chakra": "眉心輪 (Third Eye Chakra)",
+    "guidance": "雖然心情沈重，但你正在往更好的地方去。信任帶領你的人，順流而行。",
+    "meanings": {
+      "daily": "心情逐漸平復，適合去水邊走走或規劃旅行。",
+      "love": "關係在衝突後慢慢修復，或是決定分手搬離傷心地。",
+      "work": "專案轉型，或是調職。在混亂中尋找解決方案。",
+      "wealth": "財務狀況止跌回穩，慢慢走出困境。",
+      "mind": "帶著你的傷痕前進，它們會癒合的，只是需要時間。"
+    }
+  },
+  "sw07": {
+    "name": "Seven of Swords (寶劍七)",
+    "keywords": ["策略", "欺瞞", "隱秘", "逃避", "小聰明"],
+    "imageDesc": "一個男子躡手躡腳地從軍營偷走五把劍，回頭看著留下的兩把。他表情狡猾，似乎在慶幸沒被發現。背景是黃色的天空。",
+    "upright": "使用計謀，隱瞞真相，背著別人做事，獨行俠，不誠實。",
+    "reversed": "秘密曝光，良心發現，承認錯誤，計畫失敗，改邪歸正。",
+    "element": "風元素 (Air)",
+    "astrology": "月亮在水瓶座 (Moon in Aquarius)",
+    "numerology": "7 (探究/隱藏)",
+    "chakra": "喉輪 (Throat Chakra)",
+    "guidance": "有時候需要運用策略才能脫身。但要小心，聰明反被聰明誤。",
+    "meanings": {
+      "daily": "想要偷懶或走捷徑。小心東西被竊。",
+      "love": "隱瞞部分事實，或有地下情。不願意對伴侶坦誠。",
+      "work": "職場上需要運用手腕。小心商業機密外洩或有人搶功。",
+      "wealth": "投資需謹慎，可能有詐。或是暗中轉移資產。",
+      "mind": "你在逃避什麼？誠實面對自己是解決問題的第一步。"
+    }
+  },
+  "sw08": {
+    "name": "Eight of Swords (寶劍八)",
+    "keywords": ["束縛", "受害", "無力感", "自我限制", "困境"],
+    "imageDesc": "一位紅衣女子被綁住雙手、矇住雙眼，身邊圍繞著八把劍。腳下的水灘象徵情緒。其實劍並沒有形成封閉的牢籠，只要她想，隨時可以走出去。",
+    "upright": "覺得自己無能為力，畫地自限，恐懼導致癱瘓，等待救援，思維僵化。",
+    "reversed": "掙脫束縛，思想解放，看到出路，不再扮演受害者，採取行動。",
+    "element": "風元素 (Air)",
+    "astrology": "木星在雙子座 (Jupiter in Gemini)",
+    "numerology": "8 (力量/限制)",
+    "chakra": "眉心輪 (Third Eye Chakra)",
+    "guidance": "最大的監獄是你自己的思想。拿掉眼罩，你會發現其實你一直是自由的。",
+    "meanings": {
+      "daily": "感到焦慮，覺得四面楚歌，不知該往哪裡走。",
+      "love": "在關係中感到窒息或受委屈，但不敢離開。依賴心強。",
+      "work": "覺得工作沒有出路，被規定綁死。不敢換工作。",
+      "wealth": "因為恐懼而不敢理財，資金被死守。",
+      "mind": "破解你的「限制性信念」。別再說「我沒辦法」。"
+    }
+  },
+  "sw09": {
+    "name": "Nine of Swords (寶劍九)",
+    "keywords": ["焦慮", "惡夢", "罪惡感", "絕望", "失眠"],
+    "imageDesc": "一位女子坐在床上掩面哭泣，上半身被九把橫掛的劍籠罩。被單上有玫瑰與黃道十二宮符號。背景是一片漆黑。這是深夜的恐懼。",
+    "upright": "嚴重的焦慮，睡不好，悔恨，過度擔憂，精神崩潰邊緣。",
+    "reversed": "恐懼減輕，尋求幫助，天亮了，面對現實，釋放罪惡感。",
+    "element": "風元素 (Air)",
+    "astrology": "火星在雙子座 (Mars in Gemini)",
+    "numerology": "9 (完成/壓力)",
+    "chakra": "眉心輪 (Third Eye Chakra)",
+    "guidance": "大部分你擔心的事都不會發生。這是你的大腦在嚇你，深呼吸，回到當下。",
+    "meanings": {
+      "daily": "心情低落，壓力大到頭痛或胃痛。",
+      "love": "對關係充滿不安全感，胡思亂想。擔心被拋棄。",
+      "work": "工作壓力大到失眠。擔心出錯或被責罵。",
+      "wealth": "為錢愁白了頭。債務壓力。",
+      "mind": "面對內心的陰影。這是心理諮商介入的好時機。"
+    }
+  },
+  "sw10": {
+    "name": "Ten of Swords (寶劍十)",
+    "keywords": ["毀滅", "結束", "背叛", "谷底", "解脫"],
+    "imageDesc": "一個人趴在地上，背上插著十把劍。天空漆黑，但遠方水平線露出一絲曙光。這代表最痛苦的時刻已經發生，接下來只會變好了。",
+    "upright": "徹底的失敗，痛苦的結束，被人在背後捅刀，崩潰，最低點。",
+    "reversed": "起死回生，最壞的已經過去，康復中，僥倖逃過一劫，重組。",
+    "element": "風元素 (Air)",
+    "astrology": "太陽在雙子座 (Sun in Gemini)",
+    "numerology": "10 (圓滿/終結)",
+    "chakra": "海底輪 (Root Chakra)",
+    "guidance": "既然已經到了谷底，往哪個方向走都是向上的。接受結束，才能重生。",
+    "meanings": {
+      "daily": "可能會遇到非常倒霉的事，覺得人生好難。",
+      "love": "痛苦的分手，無法挽回。發現殘酷的真相。",
+      "work": "被裁員，或是專案徹底失敗。職場鬥爭的犧牲品。",
+      "wealth": "破產或重大損失。一切歸零。",
+      "mind": "雖然痛苦，但這也是一種解脫。不再需要掙扎了。"
+    }
+  },
+  "swpa": {
+    "name": "Page of Swords (寶劍侍者)",
+    "keywords": ["好奇", "觀察", "八卦", "敏捷", "新思維"],
+    "imageDesc": "一位年輕人站在高地，雙手握劍，身體轉向一側但頭看著另一側，彷彿在偵查四周。風吹亂了他的頭髮與雲層。他機靈且警惕。",
+    "upright": "搜集資訊，保持警戒，機智，誠實的溝通，間諜。",
+    "reversed": "說謊，散布謠言，說話不經大腦，多疑，神經質。",
+    "element": "風中之土 (Earth of Air)",
+    "astrology": "寶劍宮廷牌",
+    "numerology": "11 (侍者)",
+    "chakra": "喉輪 (Throat Chakra)",
+    "guidance": "保持好奇心，多問「為什麼」。但在開口之前，先思考這句話是否有益。",
+    "meanings": {
+      "daily": "一直在滑手機看新聞或八卦。頭腦轉得很快。",
+      "love": "透過社群軟體觀察對方。理智且帶點距離感的互動。",
+      "work": "適合做市場調查或數據分析。提出新點子但可能缺乏經驗。",
+      "wealth": "研究理財資訊，還在觀望階段。",
+      "mind": "思緒敏捷，渴望學習新知，但容易無法專注。"
+    }
+  },
+  "swkn": {
+    "name": "Knight of Swords (寶劍騎士)",
+    "keywords": ["衝動", "野心", "直接", "邏輯", "急躁"],
+    "imageDesc": "騎士騎著白馬全速衝刺，寶劍高舉，披風飛揚。背景的雲層被風吹得凌亂。他代表思想與行動的高度結合，但也伴隨著魯莽。",
+    "upright": "雷厲風行，說話直接，思維敏捷，為理想而戰，智力挑戰。",
+    "reversed": "魯莽行事，言語傷人，缺乏計畫，混亂，暴躁。",
+    "element": "風中之火 (Fire of Air)",
+    "astrology": "雙子座 (Gemini)",
+    "numerology": "12 (騎士)",
+    "chakra": "喉輪 (Throat Chakra)",
+    "guidance": "你的想法很棒，但行動太快了。慢下來，確認目標再衝刺。",
+    "meanings": {
+      "daily": "忙亂的一天，講話速度快，容易插嘴。",
+      "love": "喜歡辯論的伴侶。關係進展快，但可能缺乏情感交流。",
+      "work": "效率極高，能快速解決問題。適合高壓環境。",
+      "wealth": "短線操作，追求快錢。風險高。",
+      "mind": "大腦停不下來，容易焦慮。需要學習放鬆。"
+    }
+  },
+  "swqu": {
+    "name": "Queen of Swords (寶劍皇后)",
+    "keywords": ["獨立", "理智", "批判", "界線", "真相"],
+    "imageDesc": "皇后側身坐在石座上，右手高舉寶劍，左手向前伸出似在示意「停止」。表情嚴肅冷靜。天空有厚雲但高處晴朗。象徵歷經風霜後的智慧。",
+    "upright": "頭腦清晰，不被情緒左右，說話一針見血，獨立自主，離婚或單身。",
+    "reversed": "尖酸刻薄，冷漠，記恨，過度批判，孤立。",
+    "element": "風中之水 (Water of Air)",
+    "astrology": "天秤座 (Libra)",
+    "numerology": "13 (皇后)",
+    "chakra": "眉心輪 (Third Eye Chakra)",
+    "guidance": "用你的智慧去判斷，而不是情緒。設立健康的界線是必要的。",
+    "meanings": {
+      "daily": "理智在線，不廢話。處理事情講求效率。",
+      "love": "眼光高，不輕易投入感情。看重精神交流與智力匹配。",
+      "work": "專業能力強，公事公辦。適合法律、編輯或評論工作。",
+      "wealth": "理財精明，每一分錢都花在刀口上。",
+      "mind": "從痛苦的經驗中提煉出智慧。雖然孤獨，但很自由。"
+    }
+  },
+  "swki": {
+    "name": "King of Swords (寶劍國王)",
+    "keywords": ["權威", "邏輯", "公正", "法律", "決策"],
+    "imageDesc": "國王正面坐在寶座上，手持寶劍略微傾斜，眼神直視前方。他穿著藍袍與紫披肩，象徵智慧與尊貴。背景清冷。他是理性的最高化身。",
+    "upright": "專業權威，高智商，客觀公正，法律專家，決斷力強。",
+    "reversed": "濫用權力，操弄人心，殘酷，專斷獨行，思想偏激。",
+    "element": "風中之風 (Air of Air)",
+    "astrology": "水瓶座 (Aquarius)",
+    "numerology": "14 (國王)",
+    "chakra": "頂輪 (Crown Chakra)",
+    "guidance": "站在制高點看問題。用邏輯與原則來領導，保持客觀。",
+    "meanings": {
+      "daily": "需要做重大決策。諮詢專家的意見。",
+      "love": "理智冷靜的伴侶，不擅長表達情感，但值得信賴。",
+      "work": "位高權重的領導者，重視邏輯與數據。律師、醫生、工程師。",
+      "wealth": "依據專業分析進行投資。依法行事。",
+      "mind": "思想成熟，能夠統合各種觀點，形成自己的哲學。"
+    }
+  },
+  "pe01": {
+    "name": "Ace of Pentacles (錢幣一)",
+    "keywords": ["財富", "機會", "實質", "健康", "顯化"],
+    "imageDesc": "雲中伸出一隻手托著一顆巨大的金幣。下方是花園與通往遠方山脈的拱門。象徵物質世界的豐盛機會已經來到。",
+    "upright": "新的財源，加薪，投資機會，身體健康，腳踏實地的開始。",
+    "reversed": "錯失機會，貪婪，財務損失，計畫延遲，過度唯物。",
+    "element": "土元素 (Earth)",
+    "astrology": "土象星座 (Taurus/Virgo/Capricorn)",
+    "numerology": "1 (開端/物質)",
+    "chakra": "海底輪 (Root Chakra)",
+    "guidance": "種子已經落下，請用行動去灌溉它。這是將夢想顯化為現實的最佳時機。",
+    "meanings": {
+      "daily": "可能會撿到錢，或收到禮物。享受美食。",
+      "love": "一段穩定且有物質基礎的關係開始。重視感官享受。",
+      "work": "加薪、新工作或新專案啟動。能夠帶來實質收益。",
+      "wealth": "極佳的財運，適合開始存錢或投資。",
+      "mind": "感受到大地的支持，內心踏實安全。"
+    }
+  },
+  "pe02": {
+    "name": "Two of Pentacles (錢幣二)",
+    "keywords": ["平衡", "適應", "波動", "多工", "週轉"],
+    "imageDesc": "一位年輕人像雜耍般輪流拋接兩枚金幣，金幣外圍有無限符號。背後海浪起伏，船隻在波濤中航行。象徵在變動中維持平衡。",
+    "upright": "收支平衡，靈活應變，兼職，時間管理，苦中作樂。",
+    "reversed": "失衡，財務混亂，接太多工作，壓力過大，顧此失彼。",
+    "element": "土元素 (Earth)",
+    "astrology": "木星在摩羯座 (Jupiter in Capricorn)",
+    "numerology": "2 (平衡/變動)",
+    "chakra": "海底輪 (Root Chakra)",
+    "guidance": "生活就像騎腳踏車，要保持平衡就必須不斷移動。保持彈性是關鍵。",
+    "meanings": {
+      "daily": "忙著跑腿或處理多項雜事。錢左手進右手出。",
+      "love": "在感情與工作間尋求平衡。關係輕鬆有趣但不穩定。",
+      "work": "身兼數職，或是資金調度。需要高超的時間管理技巧。",
+      "wealth": "現金流緊張，需要挖東牆補西牆。投資波動大。",
+      "mind": "心情隨著外在環境起伏，學習在變動中找重心。"
+    }
+  },
+  "pe03": {
+    "name": "Three of Pentacles (錢幣三)",
+    "keywords": ["團隊", "專業", "學習", "合作", "技能"],
+    "imageDesc": "一位石匠站在板凳上雕刻教堂拱門，兩位拿著設計圖的僧侶與建築師正在與他討論。象徵不同專業的人共同完成偉大的作品。",
+    "upright": "團隊合作，展現專業，技能受肯定，進修，打下基礎。",
+    "reversed": "團隊不合，工作草率，缺乏技能，孤軍奮戰，批評。",
+    "element": "土元素 (Earth)",
+    "astrology": "火星在摩羯座 (Mars in Capricorn)",
+    "numerology": "3 (創造/建構)",
+    "chakra": "喉輪 (Throat Chakra) / 太陽神經叢",
+    "guidance": "三個臭皮匠勝過一個諸葛亮。尊重專業，虛心學習，合作能創造奇蹟。",
+    "meanings": {
+      "daily": "與同事討論工作，或是上課學習新技能。",
+      "love": "與伴侶共同經營生活或事業。關係建立在互相尊重上。",
+      "work": "專案需要團隊協作。你的專業能力被看見。",
+      "wealth": "投資自己，學習理財知識。合夥生意。",
+      "mind": "享受專注於工作的成就感，追求卓越。"
+    }
+  },
+  "pe04": {
+    "name": "Four of Pentacles (錢幣四)",
+    "keywords": ["守財", "控制", "安全感", "固執", "佔有"],
+    "imageDesc": "一位男子坐在城市邊緣，頭頂一枚金幣，雙手抱著一枚，雙腳踩著兩枚。他緊緊守護著他的財產，但也因此無法移動。",
+    "upright": "儲蓄，固守現狀，控制狂，物質安全感，不願分享。",
+    "reversed": "破財，慷慨，貪婪，放手，失去控制。",
+    "element": "土元素 (Earth)",
+    "astrology": "太陽在摩羯座 (Sun in Capricorn)",
+    "numerology": "4 (穩定/固著)",
+    "chakra": "海底輪 (Root Chakra)",
+    "guidance": "金錢是能量，必須流動才有價值。過度執著於擁有，反而讓你成為物質的奴隸。",
+    "meanings": {
+      "daily": "不想花錢，或是對某樣東西愛不釋手。",
+      "love": "佔有欲強，把伴侶當作私有財產。缺乏情感交流。",
+      "work": "固守舊有的工作模式，不願創新。權力下放困難。",
+      "wealth": "死存錢，但不懂得投資。守財奴。",
+      "mind": "內在極度缺乏安全感，試圖用外在物質來填補。"
+    }
+  },
+  "pe05": {
+    "name": "Five of Pentacles (錢幣五)",
+    "keywords": ["貧窮", "孤立", "疾病", "求助", "損失"],
+    "imageDesc": "兩個衣衫甚至跛腳的乞丐，在雪地中走過教堂有著彩色玻璃窗的牆外。窗內透出溫暖的光，但他們卻沒看見或不願進去。",
+    "upright": "經濟拮据，失業，健康亮紅燈，感到被遺棄，靈魂的暗夜。",
+    "reversed": "財務好轉，找到新工作，康復，尋求協助，重拾希望。",
+    "element": "土元素 (Earth)",
+    "astrology": "水星在金牛座 (Mercury in Taurus)",
+    "numerology": "5 (改變/匱乏)",
+    "chakra": "海底輪 (Root Chakra)",
+    "guidance": "不要獨自承擔痛苦。教堂的門是開著的，只要你願意開口求助，溫暖就在身邊。",
+    "meanings": {
+      "daily": "感覺身體不舒服，或是錢包弄丟了。",
+      "love": "被伴侶冷落，或是一起經歷貧賤夫妻百事哀的困境。",
+      "work": "失業，公司倒閉。職場邊緣人。",
+      "wealth": "嚴重的財務危機，負債累累。",
+      "mind": "覺得自己不值得被愛，陷入受害者情結。"
+    }
+  },
+  "pe06": {
+    "name": "Six of Pentacles (錢幣六)",
+    "keywords": ["施捨", "慷慨", "公平", "權力", "流動"],
+    "imageDesc": "一位富商手持天秤，正在分發金幣給兩個跪在地上的乞丐。他象徵資源的擁有者與分配者。",
+    "upright": "慈善，給予與接受，財務援助，還債，職場上的賞識。",
+    "reversed": "偽善，債務糾紛，不平等的交換，利用他人，渴望權力。",
+    "element": "土元素 (Earth)",
+    "astrology": "月亮在金牛座 (Moon in Taurus)",
+    "numerology": "6 (和諧/交換)",
+    "chakra": "海底輪 (Root Chakra)",
+    "guidance": "施比受更有福。如果你是富有者，請大方分享；如果你是匱乏者，請感恩接受。",
+    "meanings": {
+      "daily": "幫助別人，或是收到別人的禮物。",
+      "love": "關係中一方付出較多（金錢或情感）。照顧與被照顧。",
+      "work": "老闆加薪，或是獲得資金挹注。公平的交易。",
+      "wealth": "財務狀況良好，適合捐款或投資。",
+      "mind": "理解能量守恆定律，你給出什麼，就會收回什麼。"
+    }
+  },
+  "pe07": {
+    "name": "Seven of Pentacles (錢幣七)",
+    "keywords": ["等待", "評估", "耐心", "收成", "思索"],
+    "imageDesc": "一位農夫倚著鋤頭，看著藤蔓上結出的七枚金幣。他在思考是要現在收成，還是繼續投資讓它長得更多。",
+    "upright": "辛勤工作後的休息，檢視成果，長期投資，耐心等待，調整方向。",
+    "reversed": "投資失利，缺乏耐心，努力白費，半途而廢，焦慮。",
+    "element": "土元素 (Earth)",
+    "astrology": "土星在金牛座 (Saturn in Taurus)",
+    "numerology": "7 (探究/評估)",
+    "chakra": "海底輪 (Root Chakra)",
+    "guidance": "急事緩辦。現在是停下來評估的好時機：這真的是你想要的果實嗎？",
+    "meanings": {
+      "daily": "事情進展緩慢，只能等待。",
+      "love": "思考這段關係是否有未來。經營感情需要時間。",
+      "work": "專案進入停滯期或檢討期。考慮是否要轉換跑道。",
+      "wealth": "長期投資的獲利不如預期，或是需要重新配置資產。",
+      "mind": "對目前的成就感到懷疑，思考人生的下一步。"
+    }
+  },
+  "pe08": {
+    "name": "Eight of Pentacles (錢幣八)",
+    "keywords": ["工匠", "技能", "細節", "勤奮", "專注"],
+    "imageDesc": "一位年輕工匠坐在長凳上，專注地雕刻金幣。身旁已掛著做好的成品。背景有城鎮，但他遠離喧囂專心工作。",
+    "upright": "磨練技能，努力工作，注重細節，學徒精神，高品質。",
+    "reversed": "完美主義，工作枯燥，缺乏野心，粗製濫造，過勞。",
+    "element": "土元素 (Earth)",
+    "astrology": "太陽在處女座 (Sun in Virgo)",
+    "numerology": "8 (力量/累積)",
+    "chakra": "太陽神經叢 (Solar Plexus Chakra)",
+    "guidance": "魔鬼藏在細節裡。把簡單的事情做到極致，你就是專家。",
+    "meanings": {
+      "daily": "埋頭苦幹的一天，效率很高。",
+      "love": "為了共同的未來努力打拼。關係平淡但穩定。",
+      "work": "職人精神。透過重複練習來提升專業能力。",
+      "wealth": "正財運佳，多勞多得。",
+      "mind": "在專注的工作中找到心流（Flow）與平靜。"
+    }
+  },
+  "pe09": {
+    "name": "Nine of Pentacles (錢幣九)",
+    "keywords": ["富足", "優雅", "獨立", "享受", "自信"],
+    "imageDesc": "一位穿著華麗的貴婦站在自家的葡萄園中，左手背上停著一隻蒙頭的獵鷹（象徵自律與控制）。周圍結滿了果實與金幣。",
+    "upright": "財務自由，享受生活，單身貴族，自我紀律帶來的成功，優雅。",
+    "reversed": "依賴他人，揮霍無度，虛榮，投資錯誤，表面光鮮。",
+    "element": "土元素 (Earth)",
+    "astrology": "金星在處女座 (Venus in Virgo)",
+    "numerology": "9 (完成/收穫)",
+    "chakra": "海底輪 (Root Chakra)",
+    "guidance": "你值得擁有這一切美好。享受你的勞動成果，做自己花園的女王。",
+    "meanings": {
+      "daily": "犒賞自己，去美容、購物或享受高級下午茶。",
+      "love": "享受單身生活，或是與伴侶各自經濟獨立。有品味的戀情。",
+      "work": "事業有成，達到可以選擇工作內容的境界。",
+      "wealth": "財務狀況極佳，被動收入豐厚。",
+      "mind": "內在豐盛，懂得獨處的藝術，不需要依賴他人來證明價值。"
+    }
+  },
+  "pe10": {
+    "name": "Ten of Pentacles (錢幣十)",
+    "keywords": ["傳承", "家族", "富裕", "傳統", "基業"],
+    "imageDesc": "一個熱鬧的市集場景，拱門下有老人撫摸著白狗，旁邊是一對年輕夫妻與小孩。十枚金幣排列成生命之樹的形狀。象徵家族的繁榮。",
+    "upright": "家族企業，遺產，長期穩定的財富，家庭聚會，傳統價值。",
+    "reversed": "家族紛爭，爭奪遺產，家道中落，傳統束縛，揮霍祖產。",
+    "element": "土元素 (Earth)",
+    "astrology": "水星在處女座 (Mercury in Virgo) - 註：傳統占星對應有異議，但此為常見對應",
+    "numerology": "10 (圓滿/固化)",
+    "chakra": "海底輪 (Root Chakra)",
+    "guidance": "你種下的樹將會庇蔭後人。思考你的傳承與長遠的影響力。",
+    "meanings": {
+      "daily": "與家人團聚，或是處理房地產相關事務。",
+      "love": "受到家庭祝福的婚姻。穩定的家庭生活。",
+      "work": "在大企業工作，或是繼承家業。工作極度穩定。",
+      "wealth": "繼承遺產，或是建立長期的資產配置。房地產獲利。",
+      "mind": "認同自己的根源，感受到與祖先的連結。"
+    }
+  },
+  "pepa": {
+    "name": "Page of Pentacles (錢幣侍者)",
+    "keywords": ["學習", "務實", "新機會", "勤奮", "專注"],
+    "imageDesc": "一位年輕人站在花草繁茂的草地上，雙手小心翼翼地捧著一枚金幣，眼神專注地看著它。背景有耕好的田地與遠山。",
+    "upright": "新的學業或工作機會，腳踏實地，好學生，具體計畫，潛力股。",
+    "reversed": "懶惰，不切實際，浪費時間，缺乏常識，進度落後。",
+    "element": "土中之土 (Earth of Earth)",
+    "astrology": "錢幣宮廷牌",
+    "numerology": "11 (侍者)",
+    "chakra": "海底輪 (Root Chakra)",
+    "guidance": "萬丈高樓平地起。保持謙虛，認真學習每一個步驟，這是成功的基石。",
+    "meanings": {
+      "daily": "開始一項新的學習計畫，或收到面試通知。",
+      "love": "認真經營關係，雖然不浪漫但很可靠。觀察期。",
+      "work": "職場新人，肯做肯學。適合處理細節工作。",
+      "wealth": "開始記帳或學習投資理財。小額儲蓄。",
+      "mind": "務實的心態，相信只要努力就會有收穫。"
+    }
+  },
+  "pekn": {
+    "name": "Knight of Pentacles (錢幣騎士)",
+    "keywords": ["負責", "堅持", "保守", "效率", "頑固"],
+    "imageDesc": "騎士騎著一匹黑色的重型馬，穩穩地站在耕地上。他手持金幣，眼神望向遠方。他不求快，但求穩。他是最勤勞的騎士。",
+    "upright": "穩健前行，值得信賴，按部就班，重視例行公事，工作狂。",
+    "reversed": "停滯不前，固執不知變通，無聊，過度保守，懶散。",
+    "element": "土中之火 (Fire of Earth)",
+    "astrology": "處女座 (Virgo)",
+    "numerology": "12 (騎士)",
+    "chakra": "海底輪 (Root Chakra)",
+    "guidance": "持之以恆是成功的關鍵。不要嫌慢，只要方向正確，你終究會抵達終點。",
+    "meanings": {
+      "daily": "規律且枯燥的一天，按表操課。",
+      "love": "感情穩定但缺乏激情。伴侶忠誠可靠。",
+      "work": "工作進度雖慢但品質保證。負責任的態度。",
+      "wealth": "保守型投資，定存或儲蓄險。積少成多。",
+      "mind": "心如止水，專注於當下的任務，不受外界干擾。"
+    }
+  },
+  "pequ": {
+    "name": "Queen of Pentacles (錢幣皇后)",
+    "keywords": ["豐饒", "照顧", "務實", "好客", "安全感"],
+    "imageDesc": "皇后坐在飾有水果與羊頭的寶座上，被玫瑰與花草環繞。她雙手捧著金幣，低頭凝視，像是在呵護孩子。右下角有一隻兔子（生育/活力）。",
+    "upright": "母性光輝，善於理財，照顧家庭，腳踏實地，熱愛大自然。",
+    "reversed": "過度溺愛，物質主義，疑心病重，忽視心靈，工作狂。",
+    "element": "土中之水 (Water of Earth)",
+    "astrology": "摩羯座 (Capricorn)",
+    "numerology": "13 (皇后)",
+    "chakra": "海底輪 (Root Chakra)",
+    "guidance": "照顧好你的身體與生活環境。真正的富足是內外皆美。",
+    "meanings": {
+      "daily": "照顧植物、寵物或家人。享受家居生活。",
+      "love": "溫柔體貼且務實的伴侶。像媽媽一樣的照顧。",
+      "work": "資源豐富，善於管理。創造舒適的工作環境。",
+      "wealth": "理財高手，不僅會賺錢也會生活。豐衣足食。",
+      "mind": "內心充滿感激，懂得欣賞生活中的微小幸福。"
+    }
+  },
+  "peki": {
+    "name": "King of Pentacles (錢幣國王)",
+    "keywords": ["富商", "成功", "可靠", "實力", "享受"],
+    "imageDesc": "國王坐在飾有牛頭的寶座上，周圍是葡萄藤與城堡。他手持權杖與金幣，表情自信放鬆。他腳下踩著盔甲，象徵不需要戰鬥也能掌控大局。",
+    "upright": "事業有成，富豪，商業奇才，穩重可靠，樂於助人。",
+    "reversed": "貪婪，唯利是圖，固執，利用金錢控制他人，失敗的商人。",
+    "element": "土中之風 (Air of Earth)",
+    "astrology": "金牛座 (Taurus)",
+    "numerology": "14 (國王)",
+    "chakra": "海底輪 (Root Chakra)",
+    "guidance": "將你的願景實體化。你有能力創造一個穩固且豐盛的王國。",
+    "meanings": {
+      "daily": "處理財務大計，或是享受高品質的物質生活。",
+      "love": "提供穩固物質保障的伴侶。成熟且負責任。",
+      "work": "企業主或高階經理人。決策務實，重視績效。",
+      "wealth": "財務自由，資產龐大。點石成金的能力。",
+      "mind": "自信且沈穩，對於自己擁有的感到滿足與驕傲。"
+    }
+  },
+    };
+
+    // 如果全域沒有 tarotDetails，就用 placeholder
+    const db = window.tarotDetails || tarotDetailsPlaceholder;
+
+
+    // 1. 定義主題與牌陣
+    const themes = {
+        daily: { icon: "📅", name: "今日運勢", desc: "探索今天的能量與指引" },
+        love: { icon: "❤️", name: "愛情關係", desc: "了解關係中的阻礙與發展" },
+        work: { icon: "💼", name: "工作職涯", desc: "分析職業方向與職場人際" },
+        decision: { icon: "⚖️", name: "二擇一", desc: "在兩個選擇中找到方向" },
+        soul: { icon: "🌱", name: "靈性成長", desc: "探索當下的生命課題" }
+    };
+
+    const spreads = {
+        one: { name: "單張指引", count: 1, labels: ["指引"] },
+        time: { name: "聖三角 (時間流)", count: 3, labels: ["過去/原因", "現在/狀況", "未來/結果"] },
+        choice: { name: "二擇一抉擇", count: 3, labels: ["現狀", "選擇 A", "選擇 B"] },
+        relation: { name: "關係牌陣", count: 4, labels: ["你的想法", "對方的想法", "關係現狀", "建議"] },
+        cross: { name: "十字全觀", count: 5, labels: ["核心", "阻礙", "過去", "未來", "結果"] }
+    };
+
+    // 2. 狀態變數
+    let state = {
+        mode: 'reading', // reading, library
+        step: 'theme',   // theme, spread, shuffle, picking, result
+        theme: 'daily',
+        spreadKey: 'one',
+        deck: [],
+        selectedIndices: []
+    };
+
+    // HTML 結構
     container.innerHTML = `
-        <div id="tarot-container">
-            <div class="tarot-table" id="card-deck">
+        <div id="tarot-app">
+            <div class="tarot-header">
+                <h2>🔮 心靈塔羅室</h2>
+                <div class="tarot-menu">
+                    <button class="menu-btn active" id="btn-mode-reading">🃏 塔羅占卜</button>
+                    <button class="menu-btn" id="btn-mode-library">📚 卡片圖鑑</button>
                 </div>
-            
-            <div class="tarot-controls">
-                <button class="btn-primary" id="btn-shuffle">🔮 洗牌與展開</button>
             </div>
 
-            <div id="tarot-display-area">
-                <div id="tarot-card-name"></div>
-                <div id="tarot-reflection"></div>
+            <div id="tarot-main-stage">
+                <div id="step-theme" class="wizard-container">
+                    <h3>✨ 第一步：你想問什麼？</h3>
+                    <div class="selection-grid" id="theme-grid"></div>
+                </div>
+
+                <div id="step-spread" class="wizard-container hidden">
+                    <h3>✨ 第二步：選擇牌陣</h3>
+                    <div class="selection-grid" id="spread-grid"></div>
+                    <button class="btn-secondary" id="btn-back-theme">⬅ 上一步</button>
+                </div>
+
+                <div id="step-play" class="wizard-container hidden" style="width:100%; max-width:100%;">
+                    <h3 id="play-instruction">準備好後，請開始洗牌</h3>
+                    
+                    <div class="tarot-table" id="card-table">
+                        </div>
+
+                    <button class="btn-primary" id="btn-action">🔮 開始洗牌</button>
+                </div>
+
+                <div id="step-result" class="wizard-container hidden" style="width:100%;">
+                    <h3>✨ 牌陣解讀</h3>
+                    <div class="spread-result-container" id="result-area"></div>
+                    
+                    <div id="journal-section" class="hidden">
+                        <h4>📝 寫下你的直覺與感受</h4>
+                        <textarea id="journal-input" placeholder="這張牌讓你聯想到什麼？..."></textarea>
+                        <button class="btn-primary" id="btn-save-journal" style="font-size:0.9rem; padding:8px 20px;">保存日記</button>
+                        <span id="save-msg" style="margin-left:10px; color:green;"></span>
+                    </div>
+
+                    <div style="margin-top:30px;">
+                        <button class="btn-secondary" id="btn-restart">🔄 重新占卜</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tarot-library" class="hidden">
+                <div class="library-filters">
+                    <button class="filter-btn active" data-filter="all">全部</button>
+                    <button class="filter-btn" data-filter="major">大牌</button>
+                    <button class="filter-btn" data-filter="court">宮廷牌</button>
+                    <button class="filter-btn" data-filter="number">數字牌</button>
+                </div>
+                <div class="library-grid" id="library-grid"></div>
+            </div>
+        </div>
+
+        <div id="card-detail-modal" class="modal-overlay hidden">
+            <div class="modal-content">
+                <span class="close-modal">&times;</span>
+                <div class="modal-body">
+                    <div class="modal-img-wrapper">
+                        <img id="modal-card-img" src="" alt="Card">
+                    </div>
+                    <div class="modal-text-wrapper">
+                        <h3 id="modal-title"></h3>
+                        <div class="tags" id="modal-tags"></div>
+                        <div class="guidance-box">
+                            <strong id="modal-theme-title">✨ 解讀：</strong> 
+                            <span id="modal-theme-content"></span>
+                        </div>
+                        <div class="info-grid">
+                            <div><strong>元素：</strong><span id="modal-element"></span></div>
+                            <div><strong>占星：</strong><span id="modal-astro"></span></div>
+                        </div>
+                        <details style="margin-top:10px; cursor:pointer;">
+                            <summary>查看更多詳細資訊</summary>
+                            <p style="margin-top:10px;"><strong>🖼️ 圖像：</strong><span id="modal-desc"></span></p>
+                            <p><strong>💡 正位：</strong><span id="modal-upright"></span></p>
+                            <p><strong>🙃 逆位：</strong><span id="modal-reversed"></span></p>
+                            <p><strong>🔢 數字：</strong><span id="modal-num"></span></p>
+                            <p><strong>🧘 脈輪：</strong><span id="modal-chakra"></span></p>
+                        </details>
+                    </div>
+                </div>
             </div>
         </div>
     `;
 
-    const deckContainer = container.querySelector('#card-deck');
-    const displayArea = container.querySelector('#tarot-display-area');
-    const nameEl = container.querySelector('#tarot-card-name');
-    const reflectEl = container.querySelector('#tarot-reflection');
-    const btnShuffle = container.querySelector('#btn-shuffle');
+    // --- 核心邏輯 ---
 
-    // --- 1. 建構 78 張牌的資料庫 (配合你的檔案命名) ---
-    
-    let tarotDeck = [];
-
-    // A. 處理大阿爾克那 (Major Arcana): ar00 ~ ar21
-    const majorNames = [
-        "The Fool (愚者)", "The Magician (魔術師)", "The High Priestess (女祭司)", 
-        "The Empress (皇后)", "The Emperor (皇帝)", "The Hierophant (教皇)", 
-        "The Lovers (戀人)", "The Chariot (戰車)", "Strength (力量)", 
-        "The Hermit (隱士)", "Wheel of Fortune (命運之輪)", "Justice (正義)", 
-        "The Hanged Man (倒吊人)", "Death (死神)", "Temperance (節制)", 
-        "The Devil (惡魔)", "The Tower (高塔)", "The Star (星星)", 
-        "The Moon (月亮)", "The Sun (太陽)", "Judgement (審判)", 
-        "The World (世界)"
-    ];
-
-    majorNames.forEach((name, index) => {
-        // 數字補零：0 -> '00', 5 -> '05'
-        const idxStr = index.toString().padStart(2, '0');
-        tarotDeck.push({
-            id: `m${idxStr}`, // 內部 ID 維持 m 開頭
-            name: name,
-            // 檔名規則：ar + 兩位數編號
-            img: `./images/tarot/ar${idxStr}.jpg`,
-            type: 'Major'
-        });
-    });
-
-    // B. 處理小阿爾克那 (Minor Arcana)
-    // 對應規則：Wands->wa, Cups->cu, Swords->sw, Pentacles->pe
-    const suits = [
-        { name: 'Wands (權杖)', filePrefix: 'wa' }, 
-        { name: 'Cups (聖杯)', filePrefix: 'cu' }, 
-        { name: 'Swords (寶劍)', filePrefix: 'sw' }, 
-        { name: 'Pentacles (錢幣)', filePrefix: 'pe' }
-    ];
-    
-    suits.forEach(suit => {
-        for (let i = 1; i <= 14; i++) {
-            let rankName = i.toString();
-            let fileSuffix = ''; // 檔名後綴 (01, 10, pa, ki...)
-
-            // 判斷點數與宮廷牌的檔名規則
-            if (i <= 10) {
-                // 數字牌：Ace(1) -> 01, 10 -> 10
-                if (i === 1) rankName = "Ace";
-                fileSuffix = i.toString().padStart(2, '0');
-            } else {
-                // 宮廷牌：Page, Knight, Queen, King
-                if (i === 11) { rankName = "Page (侍者)"; fileSuffix = "pa"; }
-                else if (i === 12) { rankName = "Knight (騎士)"; fileSuffix = "kn"; }
-                else if (i === 13) { rankName = "Queen (皇后)"; fileSuffix = "qu"; }
-                else if (i === 14) { rankName = "King (國王)"; fileSuffix = "ki"; }
-            }
-            
-            tarotDeck.push({
-                id: `${suit.filePrefix}${fileSuffix}`,
-                name: `${rankName} of ${suit.name}`,
-                // 組合檔名：例如 cu + ki = cuki.jpg / cu + 01 = cu01.jpg
-                img: `./images/tarot/${suit.filePrefix}${fileSuffix}.jpg`, 
-                type: 'Minor'
-            });
+    // 1. 初始化牌組資料 (確保路徑與 ID 正確)
+    const initDeckData = () => {
+        let deck = [];
+        // Major Arcana (m00-m21)
+        for(let i=0; i<=21; i++) {
+            let id = `m${i.toString().padStart(2,'0')}`;
+            deck.push({ id, file: `ar${i.toString().padStart(2,'0')}.jpg`, type: 'major' });
         }
-    });
+        // Minor Arcana
+        const suits = [
+            {code:'wa', name:'wands'}, {code:'cu', name:'cups'}, 
+            {code:'sw', name:'swords'}, {code:'pe', name:'pentacles'}
+        ];
+        suits.forEach(s => {
+            for(let i=1; i<=14; i++) {
+                let suffix = i.toString().padStart(2,'0');
+                let type = 'number';
+                if(i===11) { suffix='pa'; type='court'; }
+                if(i===12) { suffix='kn'; type='court'; }
+                if(i===13) { suffix='qu'; type='court'; }
+                if(i===14) { suffix='ki'; type='court'; }
+                deck.push({ 
+                    id: `${s.code}${suffix}`, 
+                    file: `${s.code}${suffix}.jpg`, 
+                    type: type 
+                });
+            }
+        });
+        return deck;
+    };
+    const fullDeckData = initDeckData();
 
-    let isShuffled = false;
+    // 2. 介面渲染函式
+    const showSection = (id) => {
+        ['step-theme', 'step-spread', 'step-play', 'step-result'].forEach(sid => {
+            container.querySelector(`#${sid}`).classList.add('hidden');
+        });
+        container.querySelector(`#${id}`).classList.remove('hidden');
+    };
 
-    // --- 2. 初始化牌堆 (全部疊在一起) ---
-    const initDeck = () => {
-        deckContainer.innerHTML = '';
-        displayArea.classList.remove('visible');
+    const renderThemes = () => {
+        const grid = container.querySelector('#theme-grid');
+        grid.innerHTML = Object.entries(themes).map(([key, val]) => `
+            <div class="selection-card" onclick="window.selectTheme('${key}')">
+                <div class="selection-icon">${val.icon}</div>
+                <div class="selection-title">${val.name}</div>
+                <div class="selection-desc">${val.desc}</div>
+            </div>
+        `).join('');
+    };
+
+    const renderSpreads = () => {
+        const grid = container.querySelector('#spread-grid');
+        grid.innerHTML = Object.entries(spreads).map(([key, val]) => `
+            <div class="selection-card" onclick="window.selectSpread('${key}')">
+                <div class="selection-icon">🃏</div>
+                <div class="selection-title">${val.name}</div>
+                <div class="selection-desc">抽取 ${val.count} 張牌</div>
+            </div>
+        `).join('');
+    };
+
+    // 3. 流程控制
+    window.selectTheme = (key) => {
+        state.theme = key;
+        showSection('step-spread');
+    };
+
+    window.selectSpread = (key) => {
+        state.spreadKey = key;
+        prepareReadingTable();
+    };
+
+    // 4. 準備牌桌 (生成 78 張牌背)
+    const prepareReadingTable = () => {
+        showSection('step-play');
+        const table = container.querySelector('#card-table');
+        const btn = container.querySelector('#btn-action');
+        const instruction = container.querySelector('#play-instruction');
         
-        tarotDeck.forEach((cardData, index) => {
+        table.innerHTML = '';
+        state.selectedIndices = [];
+        state.deck = [...fullDeckData]; // 重置牌堆
+        
+        // 生成 78 張 DOM 元素 (堆疊狀態)
+        for(let i=0; i<78; i++) {
             const card = document.createElement('div');
             card.className = 'tarot-card';
-            card.dataset.name = cardData.name;
-            // 這裡把圖片路徑存到 dataset，等等點開才載入(或直接設背景)
-            // 為了預加載順暢，我們直接設在 style
+            // 隨機微小偏移，模擬真實牌堆
+            const randX = (Math.random() - 0.5) * 10;
+            const randY = (Math.random() - 0.5) * 10;
+            const randR = (Math.random() - 0.5) * 5;
+            card.style.transform = `translate(${randX}px, ${randY}px) rotate(${randR}deg)`;
             
-            // 初始位置：全部在中間，稍微隨機偏移
-            const randomAngle = (Math.random() - 0.5) * 5; 
-            const randomX = (Math.random() - 0.5) * 5;
-            const randomY = (Math.random() - 0.5) * 5;
+            card.innerHTML = `<div class="card-inner"><div class="card-back"></div></div>`;
+            table.appendChild(card);
+        }
+
+        instruction.textContent = "準備好後，請按下方的「洗牌」";
+        btn.textContent = "🔮 開始洗牌";
+        btn.onclick = startShuffleAnimation;
+        btn.style.display = 'block';
+    };
+
+    // 5. 洗牌與展開動畫
+    const startShuffleAnimation = () => {
+        const cards = container.querySelectorAll('#card-table .tarot-card');
+        const btn = container.querySelector('#btn-action');
+        
+        // 洗牌動畫 (亂飛)
+        cards.forEach((card, i) => {
+            const randX = (Math.random() - 0.5) * 200;
+            const randY = (Math.random() - 0.5) * 200;
+            const randR = (Math.random() - 0.5) * 180;
+            card.style.transition = 'transform 0.5s ease';
+            card.style.transform = `translate(${randX}px, ${randY}px) rotate(${randR}deg)`;
+        });
+
+        setTimeout(() => {
+            // 收牌 (回到中間)
+            cards.forEach(card => {
+                card.style.transform = `translate(0,0) rotate(0deg)`;
+            });
             
-            card.style.transform = `translate(${randomX}px, ${randomY}px) rotate(${randomAngle}deg)`;
+            // 實際打亂資料陣列
+            state.deck.sort(() => Math.random() - 0.5);
+
+            setTimeout(() => {
+                fanOutCards(); // 扇形展開
+            }, 600);
+        }, 600);
+
+        btn.style.display = 'none'; // 隱藏按鈕，改為點擊卡片
+    };
+
+    // 6. 扇形展開與選牌邏輯
+    const fanOutCards = () => {
+        const table = container.querySelector('#card-table');
+        const cards = Array.from(table.children);
+        const instruction = container.querySelector('#play-instruction');
+        const spreadInfo = spreads[state.spreadKey];
+        
+        instruction.innerHTML = `請憑直覺選取 <strong>${spreadInfo.count}</strong> 張牌`;
+        
+        // 計算扇形 (78張太多，我們只展開上層 40 張做代表，但每張都可以點)
+        const displayCount = 40; 
+        const arc = 180; // 展開角度
+        const startAng = -90;
+        
+        cards.forEach((card, i) => {
+            card.style.transition = 'transform 0.5s cubic-bezier(0.25, 0.8, 0.25, 1)';
             
-            // 內部結構 (正反面)
+            // 為了效能，後面的牌藏在中間底下，前面的牌展開
+            if (i < 78 - displayCount) {
+                card.style.transform = `translate(0, 10px)`;
+            } else {
+                // 正規劃索引 0 ~ 1
+                const idx = i - (78 - displayCount);
+                const angle = startAng + (idx / (displayCount-1)) * arc;
+                // 圓弧公式
+                const radius = 250; 
+                const x = radius * Math.cos((angle * Math.PI) / 180);
+                const y = radius * Math.sin((angle * Math.PI) / 180) + 100; // +100 往下推
+                
+                card.style.transform = `translate(${x}px, ${y}px) rotate(${angle+90}deg)`;
+            }
+
+            // 綁定點擊事件
+            card.onclick = () => handleCardPick(card, i);
+        });
+    };
+
+    const handleCardPick = (cardEl, index) => {
+        const spreadInfo = spreads[state.spreadKey];
+        if(state.selectedIndices.length >= spreadInfo.count) return;
+        if(state.selectedIndices.includes(index)) return;
+
+        // 選取視覺效果
+        cardEl.style.transform += ` translateY(-30px) scale(1.1)`;
+        cardEl.style.zIndex = 100 + state.selectedIndices.length;
+        cardEl.style.filter = "brightness(1.2)";
+        
+        state.selectedIndices.push(index);
+
+        // 檢查是否選完
+        if(state.selectedIndices.length === spreadInfo.count) {
+            setTimeout(revealResult, 800);
+        }
+    };
+
+    // 7. 揭曉結果 (修復白屏關鍵)
+    const revealResult = () => {
+        showSection('step-result');
+        const resultArea = container.querySelector('#result-area');
+        const spreadInfo = spreads[state.spreadKey];
+        const themeInfo = themes[state.theme];
+
+        resultArea.innerHTML = ''; // 清空舊結果
+
+        // 遍歷選到的牌索引
+        state.selectedIndices.forEach((deckIndex, i) => {
+            const cardData = state.deck[deckIndex];
+            const isReversed = Math.random() > 0.3; // 30% 機率逆位
+            const positionLabel = spreadInfo.labels[i] || `位置 ${i+1}`;
+
+            // 建立 DOM
+            const wrapper = document.createElement('div');
+            wrapper.className = 'spread-position';
+            
+            // 標籤
+            const label = document.createElement('div');
+            label.className = 'position-label';
+            label.textContent = positionLabel;
+            wrapper.appendChild(label);
+
+            // 卡片
+            const card = document.createElement('div');
+            card.className = 'tarot-card';
+            card.style.position = 'relative'; // 改為 relative 才能撐開容器
+            card.style.transform = 'none'; // 移除之前的位移
             card.innerHTML = `
-                <div class="card-inner">
-                    <div class="card-back"></div>
-                    <div class="card-front" style="background-image: url('${cardData.img}')"></div>
+                <div class="card-inner" style="transform: rotateY(180deg);">
+                    <div class="card-front" style="background-image: url('./images/tarot/${cardData.file}'); transform: rotateY(180deg) ${isReversed ? 'rotate(180deg)' : ''}"></div>
                 </div>
             `;
             
-            // 點擊事件
-            card.addEventListener('click', () => handleCardClick(card));
+            // 點擊事件 (Modal)
+            card.onclick = () => showCardDetail(cardData.id, isReversed);
             
-            deckContainer.appendChild(card);
-        });
-    };
-
-    // --- 3. 洗牌與扇形展開邏輯 ---
-    const shuffleAndSpread = () => {
-        const cards = Array.from(deckContainer.children);
-        const totalCards = cards.length;
-        const arcAngle = 120; // 扇形總角度
-        const startAngle = -60; // 起始角度
-        
-        // 重置狀態
-        displayArea.classList.remove('visible');
-        cards.forEach(c => {
-            c.classList.remove('flipped');
-            c.style.zIndex = '';
+            wrapper.appendChild(card);
+            resultArea.appendChild(wrapper);
         });
 
-        // 隨機排序 DOM
-        cards.sort(() => Math.random() - 0.5);
-        cards.forEach(card => deckContainer.appendChild(card));
-
-        // 展開動畫
-        setTimeout(() => {
-            cards.forEach((card, index) => {
-                const angle = startAngle + (index / totalCards) * arcAngle;
-                card.style.transitionDelay = `${index * 10}ms`;
-                // 扇形展開：旋轉 + 往外推 (Y軸負向)
-                card.style.transform = `
-                    rotate(${angle}deg) 
-                    translateY(-50px)
-                    translateZ(0)
-                `;
-            });
-            isShuffled = true;
-            btnShuffle.textContent = "🔄 重新洗牌";
-        }, 100);
-    };
-
-    // --- 4. 點擊卡片處理 ---
-    const handleCardClick = (card) => {
-        if (!isShuffled) {
-            // 呼叫麵團說話 (如果有的話)
-            if(window.showSpeech) window.showSpeech("先按下方的按鈕洗牌喔！( • ̀ω•́ )");
-            return;
+        // 處理日記區顯示
+        const journalSection = container.querySelector('#journal-section');
+        if (state.theme === 'daily') {
+            journalSection.classList.remove('hidden');
+            loadJournal();
+        } else {
+            journalSection.classList.add('hidden');
         }
-
-        if (card.classList.contains('flipped')) return; 
-
-        // 翻開邏輯：移到最上層
-        const allCards = deckContainer.querySelectorAll('.tarot-card');
-        allCards.forEach(c => c.style.zIndex = '0');
-        
-        card.style.zIndex = '100'; 
-        card.classList.add('flipped');
-        
-        // 移到中間並放大
-        card.style.transitionDelay = '0s'; 
-        card.style.transform = `translate(0, 50px) scale(1.5) rotate(0deg)`;
-
-        // 顯示資訊
-        const cardName = card.dataset.name;
-        
-        setTimeout(() => {
-            displayArea.classList.add('visible');
-            nameEl.textContent = `✨ ${cardName}`;
-            reflectEl.innerHTML = `
-                如果是這張牌...<br>
-                畫面中的哪個顏色或符號，現在最吸引你的注意？
-            `;
-            
-            if(window.getMoodIcon) {
-                // 這裡可以根據牌義給不同表情，現在先隨機
-                // window.setPetMood('excited'); 
-            }
-        }, 600); 
     };
 
-    // 綁定按鈕
-    btnShuffle.addEventListener('click', () => {
-        const cards = deckContainer.querySelectorAll('.tarot-card');
-        cards.forEach(c => {
-            c.style.transitionDelay = '0s';
-            c.style.transform = `translate(0,0) rotate(0)`;
-            c.classList.remove('flipped');
-        });
-        
-        displayArea.classList.remove('visible');
-        isShuffled = false;
+    // 8. 顯示詳情 (Modal)
+    const showCardDetail = (id, isReversed) => {
+        const modal = container.querySelector('#card-detail-modal');
+        const data = db[id] || { name: 'Loading...', keywords: [] };
+        const themeKey = state.theme;
 
-        setTimeout(shuffleAndSpread, 600);
+        // 圖片
+        const img = modal.querySelector('#modal-card-img');
+        const fileId = id.startsWith('m') ? `ar${id.substring(1)}` : id; // 修正 major id 對應 file
+        img.src = `./images/tarot/${fileId}.jpg`;
+        img.style.transform = isReversed ? 'rotate(180deg)' : 'none';
+
+        // 文字
+        modal.querySelector('#modal-title').textContent = `${data.name} ${isReversed ? '(逆位)' : ''}`;
+        modal.querySelector('#modal-tags').innerHTML = (data.keywords || []).map(k => `<span>#${k}</span>`).join('');
+        
+        // 主題解讀
+        const themeName = themes[themeKey] ? themes[themeKey].name : "解讀";
+        // 嘗試讀取 meanings 中的特定主題，若無則讀取 meanings.daily 或 upright
+        let interpretation = "請靜心感受牌面意義。";
+        if(data.meanings) {
+            interpretation = data.meanings[themeKey] || data.meanings.daily || data.upright;
+        } else {
+            interpretation = data.upright;
+        }
+        
+        modal.querySelector('#modal-theme-title').textContent = `✨ ${themeName}：`;
+        modal.querySelector('#modal-theme-content').textContent = interpretation;
+
+        // 詳細資訊
+        modal.querySelector('#modal-desc').textContent = data.imageDesc || '-';
+        modal.querySelector('#modal-upright').textContent = data.upright || '-';
+        modal.querySelector('#modal-reversed').textContent = data.reversed || '-';
+        modal.querySelector('#modal-element').textContent = data.element || '-';
+        modal.querySelector('#modal-astro').textContent = data.astrology || '-';
+        modal.querySelector('#modal-num').textContent = data.numerology || '-';
+        modal.querySelector('#modal-chakra').textContent = data.chakra || '-';
+
+        modal.classList.remove('hidden');
+    };
+
+    // 9. 圖鑑功能 (保留原樣)
+    const renderLibrary = (filter = 'all') => {
+        const grid = container.querySelector('#library-grid');
+        grid.innerHTML = '';
+        fullDeckData.forEach(card => {
+            if(filter !== 'all') {
+                if(filter === 'major' && card.type !== 'major') return;
+                if(filter === 'court' && card.type !== 'court') return;
+                if(filter === 'number' && card.type !== 'number') return;
+            }
+            const el = document.createElement('div');
+            el.className = 'library-card';
+            el.innerHTML = `<img src="./images/tarot/${card.file}" loading="lazy">`;
+            el.onclick = () => showCardDetail(card.id, false);
+            grid.appendChild(el);
+        });
+    };
+
+    // 10. 日記功能
+    const loadJournal = () => {
+        const d = new Date();
+        const key = `journal_${d.getFullYear()}_${d.getMonth()+1}_${d.getDate()}`;
+        container.querySelector('#journal-input').value = localStorage.getItem(key) || "";
+    };
+
+    container.querySelector('#btn-save-journal').onclick = () => {
+        const d = new Date();
+        const key = `journal_${d.getFullYear()}_${d.getMonth()+1}_${d.getDate()}`;
+        localStorage.setItem(key, container.querySelector('#journal-input').value);
+        const msg = container.querySelector('#save-msg');
+        msg.textContent = "✅ 已保存";
+        setTimeout(() => msg.textContent = "", 2000);
+    };
+
+    // --- 事件綁定 ---
+    container.querySelector('#btn-mode-reading').onclick = () => {
+        container.querySelector('#tarot-main-stage').classList.remove('hidden');
+        container.querySelector('#tarot-library').classList.add('hidden');
+        container.querySelector('#btn-mode-reading').classList.add('active');
+        container.querySelector('#btn-mode-library').classList.remove('active');
+        showSection('step-theme');
+    };
+
+    container.querySelector('#btn-mode-library').onclick = () => {
+        container.querySelector('#tarot-main-stage').classList.add('hidden');
+        container.querySelector('#tarot-library').classList.remove('hidden');
+        container.querySelector('#btn-mode-reading').classList.remove('active');
+        container.querySelector('#btn-mode-library').classList.add('active');
+        renderLibrary();
+    };
+
+    container.querySelector('#btn-back-theme').onclick = () => showSection('step-theme');
+    container.querySelector('#btn-restart').onclick = () => showSection('step-theme');
+
+    container.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.onclick = (e) => {
+            container.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            e.target.classList.add('active');
+            renderLibrary(e.target.dataset.filter);
+        };
     });
 
-    // 啟動
-    initDeck();
-},   
+    container.querySelector('.close-modal').onclick = () => container.querySelector('#card-detail-modal').classList.add('hidden');
+    container.querySelector('#card-detail-modal').onclick = (e) => {
+        if(e.target === container.querySelector('#card-detail-modal')) 
+            container.querySelector('#card-detail-modal').classList.add('hidden');
+    };
+
+    // 啟動初始化
+    renderThemes();
+    renderSpreads();
+},
 // 預設畫面 (給其他還沒做好的功能用)
     renderDefault: (container) => {
         container.innerHTML = `
