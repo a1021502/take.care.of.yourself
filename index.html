@@ -1043,10 +1043,10 @@ body.dark-mode .affirmation-overlay { background: rgba(0,0,0,0.85); }
 #active-feature-container {
     overscroll-behavior: contain;
 }
-/* --- Tarot 2.1: Clean UI & Real 78 Cards Fan --- */
+/* --- Tarot 2.2: Fix Jitter, Mobile Touch, Sticky Library --- */
 
 :root {
-    /* 預設淺色 (Light Mode) */
+    /* 變數保持不變 */
     --bg-color: #fcfbf9;
     --surface-color: #ffffff;
     --text-main: #5d4e46;
@@ -1066,7 +1066,7 @@ body.dark-mode .affirmation-overlay { background: rgba(0,0,0,0.85); }
     --box-bg: #faf9f7;
 }
 
-/* 深色模式 (Class-Based) */
+/* 深色模式保持不變 */
 body.dark-mode {
     --bg-color: #1a1816;
     --surface-color: #262320;
@@ -1094,11 +1094,11 @@ body {
     margin: 0;
     padding: 0;
     transition: background-color 0.3s ease, color 0.3s ease;
+    overscroll-behavior-y: none; /* 防止手機下拉刷新影響體驗 */
 }
 
 .hidden { display: none !important; }
 
-/* 容器調整 */
 #tarot-app {
     width: 100%;
     max-width: 100%;
@@ -1107,16 +1107,16 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    position: relative; /* 為了定位懸浮按鈕 */
-    padding-top: 60px; /* 留給懸浮按鈕空間 */
+    position: relative;
+    padding-top: 60px;
 }
 
-/* --- 新增：左上角懸浮圖鑑按鈕 --- */
+/* 左上角懸浮按鈕 - 提高層級以免被Sticky擋住 */
 .floating-library-btn {
-    position: absolute;
+    position: fixed; /* 改為 fixed 確保它永遠在視窗左上角，不受捲動影響 */
     top: 20px;
     left: 20px;
-    z-index: 1000;
+    z-index: 2000; /* 層級最高 */
     background: var(--surface-color);
     border: 1px solid rgba(212, 163, 115, 0.4);
     color: var(--text-main);
@@ -1135,10 +1135,6 @@ body {
     box-shadow: 0 6px 15px rgba(0,0,0,0.15);
     border-color: var(--accent-color);
 }
-.floating-library-btn span {
-    font-weight: 500;
-}
-/* 當在圖鑑模式時，按鈕樣式變化 */
 .floating-library-btn.active-mode {
     background: var(--accent-color);
     color: #fff;
@@ -1164,7 +1160,7 @@ body {
     font-size: 1.3rem;
 }
 
-/* 選項卡片 Grid */
+/* 選項卡片 Grid (保持不變) */
 .selection-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
@@ -1196,7 +1192,6 @@ body {
     box-shadow: var(--hover-shadow);
     border-color: rgba(212, 163, 115, 0.4);
 }
-
 .selection-icon {
     font-size: 2rem;
     width: 60px; height: 60px;
@@ -1208,13 +1203,12 @@ body {
 body.dark-mode .selection-icon { background: #332e2a; color: #d4a373; }
 .selection-title { font-weight: 600; font-size: 1.1rem; color: var(--text-main); }
 .selection-desc { font-size: 0.85rem; color: var(--text-sub); line-height: 1.5; }
-
 .spread-structure-list {
     margin-top: 10px; text-align: left; width: 100%; font-size: 0.8rem;
     color: var(--text-sub); background: var(--box-bg); padding: 12px; border-radius: 12px;
 }
 
-/* 按鈕 */
+/* 按鈕 (保持不變) */
 .btn-primary {
     background: var(--btn-gradient); color: white; border: none; padding: 14px 40px;
     border-radius: 50px; font-size: 1rem; letter-spacing: 1px; cursor: pointer;
@@ -1227,7 +1221,6 @@ body.dark-mode .selection-icon { background: #332e2a; color: #d4a373; }
     70% { box-shadow: 0 0 0 15px rgba(212, 163, 115, 0); }
     100% { box-shadow: 0 0 0 0 rgba(212, 163, 115, 0); }
 }
-
 .btn-secondary {
     background: transparent; border: 1px solid #ddd; color: var(--text-sub);
     padding: 10px 30px; border-radius: 50px; cursor: pointer; font-size: 0.9rem;
@@ -1236,11 +1229,12 @@ body.dark-mode .selection-icon { background: #332e2a; color: #d4a373; }
 .btn-secondary:hover { border-color: var(--text-main); color: var(--text-main); }
 body.dark-mode .btn-secondary { border-color: #444; }
 
-/* 牌桌區 - 支援 78 張牌展開 */
+/* 牌桌區 */
 #step-play {
     width: 100%; min-height: 60vh;
     display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
     overflow: hidden;
+    touch-action: none; /* 關鍵：防止手機上滑動牌區時觸發網頁捲動 */
 }
 .tarot-table {
     width: 100%; height: 380px;
@@ -1248,7 +1242,6 @@ body.dark-mode .btn-secondary { border-color: #444; }
     margin-top: 20px; max-width: 100vw;
 }
 
-/* 卡背 */
 .card-back {
     width: 100%; height: 100%;
     border-radius: 8px;
@@ -1256,35 +1249,32 @@ body.dark-mode .btn-secondary { border-color: #444; }
     background-image: repeating-linear-gradient(45deg, rgba(255,255,255,0.05) 0px, rgba(255,255,255,0.05) 1px, transparent 1px, transparent 10px);
     border: 2px solid #fff;
     box-shadow: inset 0 0 10px rgba(0,0,0,0.3);
+    pointer-events: none; /* 讓事件穿透到父層 .tarot-card */
 }
 
 .tarot-card {
-    /* 卡牌尺寸稍微調小一點點以適應78張 */
     width: 70px; height: 119px; 
     position: absolute;
     left: 50%; top: 50%;
     margin-left: -35px; margin-top: -60px;
     cursor: pointer;
-    transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); /* 讓滑過的反應變快 */
+    /* 優化 Transition：只針對 transform 做過渡，時間縮短讓反應更靈敏 */
+    transition: transform 0.2s cubic-bezier(0.1, 0.9, 0.2, 1);
     border-radius: 6px;
-    box-shadow: -2px 0 5px rgba(0,0,0,0.1); /* 側邊陰影 */
+    box-shadow: -2px 0 5px rgba(0,0,0,0.1);
     transform-origin: bottom center;
+    will-change: transform; /* 效能優化 */
 }
-/* 手機版卡牌再小一點 */
+
 @media(max-width: 600px) {
     .tarot-card { width: 60px; height: 102px; margin-left: -30px; margin-top: -51px; }
 }
 
-/* 卡片互動 - 凸起特效 */
-/* 注意：z-index 的變化會由 JS 的 mouseenter 事件輔助，確保凸起時在最上面 */
-.tarot-card.hover-active {
-    transform: translateY(-20px) scale(1.15) !important;
-    box-shadow: 0 10px 20px rgba(0,0,0,0.3);
-    border: 1px solid rgba(255,255,255,0.8);
-    z-index: 1000 !important; /* 強制最上層 */
-}
+/* 移除原本 CSS 裡的 .hover-active { transform ... } 
+   改由 JS 直接計算並寫入 inline style，以徹底解決抖動問題
+*/
 
-/* 結果展示區 */
+/* 結果展示區 (保持不變) */
 .spread-result-container {
     display: flex; flex-wrap: wrap; justify-content: center; gap: 25px; margin-top: 20px; width: 100%;
 }
@@ -1299,12 +1289,10 @@ body.dark-mode .btn-secondary { border-color: #444; }
     from { opacity: 0; transform: translateY(20px); }
     to { opacity: 1; transform: translateY(0); }
 }
-
 .position-label {
     margin-bottom: 12px; font-size: 0.8rem; font-weight: 600;
     color: var(--accent-color); letter-spacing: 1px; text-transform: uppercase;
 }
-
 .result-card {
     width: 90px; height: 153px;
     border-radius: 10px; cursor: pointer;
@@ -1315,7 +1303,7 @@ body.dark-mode .result-card { background: #333; }
 .result-card img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .result-card:hover { transform: translateY(-8px); box-shadow: 0 15px 35px rgba(212, 163, 115, 0.3); }
 
-/* 日記區 */
+/* 日記區 (保持不變) */
 #journal-section {
     width: 100%; max-width: 500px; margin: 40px auto 20px;
     background: var(--surface-color); padding: 25px; border-radius: 16px;
@@ -1336,12 +1324,36 @@ body.dark-mode .result-card { background: #333; }
     outline: none; box-shadow: 0 0 0 3px rgba(212, 163, 115, 0.1);
 }
 
-/* 圖鑑 & Modal */
+/* --- 圖鑑 & Sticky Header --- */
 #tarot-library {
-    padding: 0 20px; width: 100%; box-sizing: border-box; text-align: center;
+    width: 100%; 
+    box-sizing: border-box; 
+    text-align: center;
+    position: relative;
+    padding-bottom: 50px;
 }
+
+/* 新增：圖鑑頭部黏性容器 */
+.library-header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: var(--bg-color); /* 必須有背景色，不然透明會透出內容 */
+    padding: 20px 20px 10px 20px;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+    box-shadow: 0 5px 20px rgba(0,0,0,0.02);
+    /* 為了在固定時左右留白 */
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.library-header h3 {
+    margin: 0 0 5px 0;
+    padding-top: 10px; /* 給按鈕留一點空間 */
+}
+
 .library-filters {
-    display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-bottom: 25px;
+    display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: 15px;
 }
 .filter-btn {
     padding: 6px 16px; border: 1px solid rgba(0,0,0,0.1); background: var(--surface-color);
@@ -1353,6 +1365,7 @@ body.dark-mode .filter-btn.active { background: var(--accent-color); color: var(
 
 .library-grid {
     display: grid; grid-template-columns: repeat(auto-fill, minmax(70px, 1fr)); gap: 10px;
+    padding: 20px 20px; /* Grid 內容的 padding */
 }
 .library-card img {
     width: 100%; border-radius: 6px; cursor: pointer;
@@ -1360,11 +1373,12 @@ body.dark-mode .filter-btn.active { background: var(--accent-color); color: var(
 }
 .library-card img:hover { transform: scale(1.05); }
 
-/* Modal */
+/* Modal (保持不變) */
 .modal-overlay {
     position: fixed; top: 0; left: 0; width: 100%; height: 100%;
     background: var(--modal-overlay); backdrop-filter: blur(5px);
-    z-index: 2000; display: flex; justify-content: center; align-items: center;
+    z-index: 3000; /* Modal 層級最高 */
+    display: flex; justify-content: center; align-items: center;
 }
 .modal-content {
     background: var(--modal-bg); width: 90%; max-width: 500px; max-height: 85vh;
@@ -4402,7 +4416,7 @@ renderTarot:(container) => {
     // 如果全域沒有 tarotDetails，就用 placeholder
     const db = window.tarotDetails || tarotDetailsPlaceholder;
 
-    // 1. Themes & Spreads (同上，保持不變)
+    // 1. Themes & Spreads (不變)
     const themes = {
         daily: { icon: "☀️", name: "今日運勢", desc: "感受今天的能量流動", allowedSpreads: ['one'] },
         love: { icon: "💕", name: "愛情關係", desc: "探索心中的愛與連結", allowedSpreads: ['one', 'relation', 'cross', 'time'] },
@@ -4420,7 +4434,7 @@ renderTarot:(container) => {
     };
 
     let state = {
-        mode: 'reading', // reading or library
+        mode: 'reading',
         step: 'theme',
         theme: 'daily',
         spreadKey: 'one',
@@ -4428,7 +4442,7 @@ renderTarot:(container) => {
         selectedIndices: []
     };
 
-    // HTML Structure - 移除 Header，新增左上按鈕
+    // HTML Structure - 調整 Library 結構以支援 Sticky
     container.innerHTML = `
         <div id="tarot-app">
             <button id="btn-floating-library" class="floating-library-btn" title="查看塔羅牌圖鑑">
@@ -4472,18 +4486,20 @@ renderTarot:(container) => {
                 </div>
             </div>
 
-            <div id="tarot-library" class="hidden" style="margin-top:20px;">
-                <div style="margin-bottom:20px;">
-                    <h3>塔羅牌圖鑑</h3>
-                    <p style="font-size:0.9rem; color:var(--text-sub);">點擊卡牌查看詳細牌義</p>
-                </div>
-                <div class="library-filters">
-                    <button class="filter-btn active" data-filter="all">全部</button>
-                    <button class="filter-btn" data-filter="major">大牌</button>
-                    <button class="filter-btn" data-filter="wands">權杖</button>
-                    <button class="filter-btn" data-filter="cups">聖杯</button>
-                    <button class="filter-btn" data-filter="swords">寶劍</button>
-                    <button class="filter-btn" data-filter="pentacles">錢幣</button>
+            <div id="tarot-library" class="hidden">
+                <div class="library-header">
+                    <div style="margin-bottom:10px;">
+                        <h3>塔羅牌圖鑑</h3>
+                        <p style="font-size:0.9rem; color:var(--text-sub); margin:0;">點擊卡牌查看詳細牌義</p>
+                    </div>
+                    <div class="library-filters">
+                        <button class="filter-btn active" data-filter="all">全部</button>
+                        <button class="filter-btn" data-filter="major">大牌</button>
+                        <button class="filter-btn" data-filter="wands">權杖</button>
+                        <button class="filter-btn" data-filter="cups">聖杯</button>
+                        <button class="filter-btn" data-filter="swords">寶劍</button>
+                        <button class="filter-btn" data-filter="pentacles">錢幣</button>
+                    </div>
                 </div>
                 <div class="library-grid" id="library-grid"></div>
             </div>
@@ -4521,7 +4537,7 @@ renderTarot:(container) => {
 
     // --- Logic ---
 
-    // 1. Data Init
+    // 1. Data Init (不變)
     const initDeckData = () => {
         let deck = [];
         for(let i=0; i<=21; i++) {
@@ -4544,7 +4560,7 @@ renderTarot:(container) => {
     };
     const fullDeckData = initDeckData();
 
-    // 2. UI Control
+    // 2. UI Control & Renders (不變)
     const showSection = (id) => {
         ['step-theme', 'step-spread', 'step-play', 'step-result'].forEach(sid => {
             container.querySelector(`#${sid}`).classList.add('hidden');
@@ -4577,14 +4593,10 @@ renderTarot:(container) => {
         `).join('');
     };
 
-    // 3. User Flow
-    window.selectTheme = (key) => { 
-        state.theme = key; 
-        renderSpreads(themes[key].allowedSpreads);
-        showSection('step-spread'); 
-    };
+    window.selectTheme = (key) => { state.theme = key; renderSpreads(themes[key].allowedSpreads); showSection('step-spread'); };
     window.selectSpread = (key) => { state.spreadKey = key; prepareTable(); };
 
+    // 3. Table Logic
     const prepareTable = () => {
         showSection('step-play');
         const table = container.querySelector('#card-table');
@@ -4595,11 +4607,10 @@ renderTarot:(container) => {
         state.selectedIndices = [];
         state.deck = [...fullDeckData]; 
         
-        // Initial Pile (78 cards)
+        // Initial Pile
         for(let i=0; i<78; i++) {
             const card = document.createElement('div');
             card.className = 'tarot-card';
-            // Random jitter
             const rx = (Math.random() - 0.5) * 10;
             const ry = (Math.random() - 0.5) * 10;
             const rr = (Math.random() - 0.5) * 5;
@@ -4619,7 +4630,6 @@ renderTarot:(container) => {
         const btn = container.querySelector('#btn-action');
         btn.style.display = 'none';
         
-        // Shuffle scatter
         cards.forEach(c => {
             const rx = (Math.random() - 0.5) * 200;
             const ry = (Math.random() - 0.5) * 200;
@@ -4635,7 +4645,7 @@ renderTarot:(container) => {
         }, 800);
     };
 
-    // === 核心修正：78張全展開 & Hover特效 ===
+    // === 核心修正：解決抖動 & 手機滑動 ===
     const fanOut = () => {
         const table = container.querySelector('#card-table');
         const cards = Array.from(table.children);
@@ -4643,42 +4653,84 @@ renderTarot:(container) => {
         container.querySelector('#play-instruction').innerHTML = `請憑直覺選取 <strong>${count}</strong> 張牌`;
 
         const isMobile = window.innerWidth < 600;
-        const totalCards = 78; // 強制顯示78張
-        
-        // 角度設定 (78張需要廣一點的分布，但密度會很高)
-        // 手機版：扇形半徑較小，卡片重疊較多
+        const totalCards = 78;
         const angleSpan = isMobile ? 140 : 160; 
-        const startAngle = -(angleSpan / 2); // 左右對稱
+        const startAngle = -(angleSpan / 2);
         const radius = isMobile ? 120 : 250; 
         const yOffset = isMobile ? 140 : 100;
 
+        // 1. 設置所有卡片的基礎位置
         cards.forEach((card, i) => {
-            card.style.transition = 'transform 0.6s ease-out';
+            card.style.transition = 'transform 0.3s cubic-bezier(0.1, 0.9, 0.2, 1)'; // 讓動畫更順暢
             
-            // 計算角度
             const angle = startAngle + (i / (totalCards - 1)) * angleSpan;
-            
-            const x = radius * Math.cos(((angle - 90) * Math.PI) / 180); // -90 轉正上方
+            const x = radius * Math.cos(((angle - 90) * Math.PI) / 180); 
             const y = radius * Math.sin(((angle - 90) * Math.PI) / 180) + yOffset;
             
-            // 基礎旋轉
+            // 儲存基礎 Transform 字串到 dataset
             const baseTransform = `translate(${x}px, ${y}px) rotate(${angle}deg)`;
+            card.dataset.baseTrans = baseTransform;
+            card.dataset.index = i; // 為了識別
+            
             card.style.transform = baseTransform;
-            card.style.zIndex = 10 + i; // 確保層級順序
+            card.style.zIndex = 10 + i;
 
-            // Hover 特效事件 (模擬凸起)
-            card.onmouseenter = () => {
-                if (!card.classList.contains('picked')) {
-                    card.classList.add('hover-active');
-                    // 為了不讓 transform 被覆蓋，CSS 中用了 !important，但這裡不需要改 style
-                }
-            };
-            card.onmouseleave = () => {
-                card.classList.remove('hover-active');
-            };
-
+            // 事件綁定
             card.onclick = () => pickCard(card, i);
+            
+            // --- DESKTOP HOVER LOGIC (No Jitter) ---
+            // 使用 mouseenter/leave 並直接修改 style，而不是依賴 CSS hover，
+            // 這樣可以確保 transform 是基於 baseTransform 疊加，不會因為 CSS 覆蓋而閃爍。
+            card.onmouseenter = () => {
+                if (card.classList.contains('picked')) return;
+                // 浮起 + 放大 + 確保在最上層
+                card.style.transform = `${baseTransform} translateY(-20px) scale(1.15)`;
+                card.style.zIndex = 200; // 暫時拉高層級
+            };
+
+            card.onmouseleave = () => {
+                if (card.classList.contains('picked')) return;
+                // 回復原狀
+                card.style.transform = baseTransform;
+                card.style.zIndex = 10 + i; // 回復原本層級
+            };
         });
+
+        // --- MOBILE TOUCH SLIDE LOGIC ---
+        // 手機沒有 hover，我們監聽 Table 的 touchmove
+        table.ontouchmove = (e) => {
+            // 1. 取得觸控點座標
+            const touch = e.touches[0];
+            const x = touch.clientX;
+            const y = touch.clientY;
+            
+            // 2. 找出該座標下的元素
+            const target = document.elementFromPoint(x, y);
+            
+            // 3. 判斷是否為卡片 (或卡背)
+            // 因為 elementFromPoint 可能抓到 card-back，要往上找 parent
+            const cardEl = target ? target.closest('.tarot-card') : null;
+
+            // 清除所有卡片的 active 狀態 (除了已選的)
+            // 為了效能，可以只清除上一個 active 的，但這裡全部清除比較保險
+            cards.forEach((c, idx) => {
+                if (!c.classList.contains('picked')) {
+                    // 如果這張卡不是現在手指下的那張，就還原
+                    if (c !== cardEl) {
+                        c.style.transform = c.dataset.baseTrans;
+                        c.style.zIndex = 10 + idx;
+                    }
+                }
+            });
+
+            // 如果手指確實在某張卡片上
+            if (cardEl && !cardEl.classList.contains('picked')) {
+                const base = cardEl.dataset.baseTrans;
+                // 觸發凸起
+                cardEl.style.transform = `${base} translateY(-20px) scale(1.15)`;
+                cardEl.style.zIndex = 200;
+            }
+        };
     };
 
     const pickCard = (cardEl, index) => {
@@ -4688,17 +4740,18 @@ renderTarot:(container) => {
 
         if(navigator.vibrate) navigator.vibrate(20);
 
-        cardEl.classList.add('picked'); // 標記已選
-        cardEl.classList.remove('hover-active'); // 移除 hover 效果避免衝突
-        
-        // 選取動畫
+        cardEl.classList.add('picked');
+        // 取消事件監聽以免干擾
+        cardEl.onmouseenter = null; 
+        cardEl.onmouseleave = null;
+
         const isMobile = window.innerWidth < 600;
         const liftY = isMobile ? -40 : -60;
         
-        // 強制寫入 transform 覆蓋 hover
-        const currentTrans = cardEl.style.transform.split(' scale')[0]; // 移除可能的 scale
-        cardEl.style.transform = `${currentTrans} translateY(${liftY}px) scale(1.1)`;
-        cardEl.style.zIndex = 200 + state.selectedIndices.length;
+        // 強制鎖定位置
+        const base = cardEl.dataset.baseTrans;
+        cardEl.style.transform = `${base} translateY(${liftY}px) scale(1.1)`;
+        cardEl.style.zIndex = 300 + state.selectedIndices.length; // 選中的最高
         cardEl.style.boxShadow = "0 0 25px rgba(212, 163, 115, 0.8)";
         
         state.selectedIndices.push(index);
@@ -4708,7 +4761,7 @@ renderTarot:(container) => {
         }
     };
 
-    // 4. Result (同上，保持不變)
+    // 4. Result (不變)
     const revealResult = () => {
         showSection('step-result');
         const resultArea = container.querySelector('#result-area');
@@ -4719,26 +4772,23 @@ renderTarot:(container) => {
             const cardData = state.deck[deckIndex];
             const isReversed = Math.random() > 0.3; 
             const label = labels[i] || `Position ${i+1}`;
-
+            
             const wrapper = document.createElement('div');
             wrapper.className = 'spread-position';
             wrapper.innerHTML = `<div class="position-label">${label}</div>`;
-
+            
             const cardDiv = document.createElement('div');
             cardDiv.className = 'result-card';
-            
             const img = document.createElement('img');
             img.src = `./images/tarot/${cardData.file}`;
             img.style.transform = isReversed ? 'rotate(180deg)' : '';
             
             cardDiv.appendChild(img);
             cardDiv.onclick = () => showDetail(cardData.id, isReversed, true);
-            
             wrapper.appendChild(cardDiv);
             resultArea.appendChild(wrapper);
         });
 
-        // Journal
         const journalSec = container.querySelector('#journal-section');
         if (state.theme === 'daily') {
             journalSec.classList.remove('hidden');
@@ -4750,7 +4800,7 @@ renderTarot:(container) => {
         }
     };
 
-    // 5. Detail Modal (同上)
+    // 5. Modal & Library (不變)
     const showDetail = (id, isReversed, isReading) => {
         const modal = container.querySelector('#card-detail-modal');
         const data = db[id] || { name: "Card", keywords: [] };
@@ -4790,7 +4840,6 @@ renderTarot:(container) => {
         modal.classList.remove('hidden');
     };
 
-    // 6. Library Logic
     const renderLibrary = (filter='all') => {
         const grid = container.querySelector('#library-grid');
         grid.innerHTML = '';
@@ -4813,22 +4862,20 @@ renderTarot:(container) => {
         });
     };
 
-    // === Event Listeners for the New Button Logic ===
     const toggleLibrary = () => {
         const btn = container.querySelector('#btn-floating-library');
         const mainStage = container.querySelector('#tarot-main-stage');
         const libStage = container.querySelector('#tarot-library');
         
         if (state.mode === 'reading') {
-            // 切換到圖鑑
             state.mode = 'library';
             mainStage.classList.add('hidden');
             libStage.classList.remove('hidden');
             btn.classList.add('active-mode');
-            btn.innerHTML = `⬅ 返回`; // 改變按鈕文字
+            btn.innerHTML = `⬅ 返回`;
             renderLibrary();
+            window.scrollTo(0, 0); // 切換時回到頂部
         } else {
-            // 切換回占卜
             state.mode = 'reading';
             libStage.classList.add('hidden');
             mainStage.classList.remove('hidden');
