@@ -1043,9 +1043,10 @@ body.dark-mode .affirmation-overlay { background: rgba(0,0,0,0.85); }
 #active-feature-container {
     overscroll-behavior: contain;
 }
-/* --- Tarot 2.3: Premium Feel, Sticky Fix & Mobile UX --- */
+/* --- Tarot 2.3: Warm Healing Premium (Sticky Fixed & Court Added) --- */
 
 :root {
+    /* 核心色調：保持溫暖療癒 */
     --bg-color: #fcfbf9;
     --surface-color: #ffffff;
     --text-main: #5d4e46;
@@ -1053,18 +1054,18 @@ body.dark-mode .affirmation-overlay { background: rgba(0,0,0,0.85); }
     --accent-color: #d4a373;
     --accent-hover: #c59266;
     
+    /* 漸層與陰影 (升級版) */
     --primary-gradient: linear-gradient(135deg, #e3dac9 0%, #f3e7e9 100%); 
     --btn-gradient: linear-gradient(135deg, #d4a373 0%, #c59266 100%);
-    --card-shadow: 0 10px 30px rgba(140, 120, 100, 0.08); 
-    --hover-shadow: 0 15px 35px rgba(140, 120, 100, 0.15);
+    --card-shadow: 0 10px 25px -5px rgba(140, 120, 100, 0.1); /* 更細緻的陰影 */
+    --hover-shadow: 0 20px 40px -5px rgba(140, 120, 100, 0.2);
+    --glass-header: rgba(252, 251, 249, 0.85); /* 毛玻璃背景色 */
     
     --modal-bg: #ffffff;
-    --modal-overlay: rgba(93, 78, 70, 0.4);
+    --modal-overlay: rgba(93, 78, 70, 0.5); /* 加深一點增加專注感 */
     --input-bg: #fafafa;
-    --input-border: #dcdcdc;
+    --input-border: #e0e0e0;
     --box-bg: #faf9f7;
-    /* 調整 Header 背景透明度以配合毛玻璃 */
-    --header-bg: rgba(252, 251, 249, 0.85); 
 }
 
 /* 深色模式 */
@@ -1080,13 +1081,13 @@ body.dark-mode {
     --btn-gradient: linear-gradient(135deg, #d4a373 0%, #b08d55 100%);
     --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
     --hover-shadow: 0 15px 35px rgba(0, 0, 0, 0.7);
+    --glass-header: rgba(26, 24, 22, 0.85);
 
     --modal-bg: #262320;
-    --modal-overlay: rgba(0, 0, 0, 0.7);
+    --modal-overlay: rgba(0, 0, 0, 0.8);
     --input-bg: #302b26;
     --input-border: #444444;
     --box-bg: #302b26;
-    --header-bg: rgba(26, 24, 22, 0.85);
 }
 
 body {
@@ -1096,8 +1097,7 @@ body {
     margin: 0;
     padding: 0;
     transition: background-color 0.3s ease, color 0.3s ease;
-    /* 確保 sticky 生效 */
-    overflow-x: hidden; 
+    -webkit-font-smoothing: antialiased; /* 字體更清晰 */
 }
 
 .hidden { display: none !important; }
@@ -1106,39 +1106,42 @@ body {
 #tarot-app {
     width: 100%;
     max-width: 100%;
-    min-height: 100vh;
+    /* 移除 overflow-x: hidden 以避免 sticky 失效，改用 width: 100% 控制 */
+    padding-bottom: 120px;
     display: flex;
     flex-direction: column;
     align-items: center;
     position: relative;
-    padding-top: 60px; /* 預留頂部空間 */
+    padding-top: 60px;
 }
 
 /* 左上角懸浮圖鑑按鈕 */
 .floating-library-btn {
-    position: fixed; /* 改為 fixed 確保一直看得到 */
+    position: absolute;
     top: 20px;
     left: 20px;
-    z-index: 2000; /* 層級最高 */
+    z-index: 1100; /* 比 sticky header 高 */
     background: var(--surface-color);
-    border: 1px solid rgba(212, 163, 115, 0.4);
+    border: 1px solid rgba(212, 163, 115, 0.3);
     color: var(--text-main);
-    padding: 8px 16px;
+    padding: 8px 18px;
     border-radius: 30px;
     font-size: 0.9rem;
     cursor: pointer;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
     display: flex;
     align-items: center;
-    gap: 6px;
-    transition: all 0.3s ease;
+    gap: 8px;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    backdrop-filter: blur(5px);
 }
 .floating-library-btn:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.12);
     border-color: var(--accent-color);
 }
-.floating-library-btn span { font-weight: 500; }
+.floating-library-btn:active { transform: scale(0.95); }
+.floating-library-btn span { font-weight: 600; letter-spacing: 0.5px; }
 .floating-library-btn.active-mode {
     background: var(--accent-color);
     color: #fff;
@@ -1152,75 +1155,89 @@ body {
     margin: 0 auto;
     padding: 20px 0;
     text-align: center;
-    animation: fadeIn 0.5s ease-out;
+    animation: fadeIn 0.6s ease-out;
     box-sizing: border-box;
 }
-@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
 
 .wizard-step h3 {
-    font-weight: 400;
+    font-weight: 500;
     color: var(--text-main);
-    margin-bottom: 30px;
-    font-size: 1.3rem;
+    margin-bottom: 35px;
+    font-size: 1.4rem;
+    letter-spacing: 1px;
 }
 
 /* 選項卡片 */
 .selection-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-    gap: 15px;
+    gap: 20px;
     margin-bottom: 40px;
     width: 100%;
 }
 .spread-grid-layout { grid-template-columns: 1fr; }
 @media(min-width: 600px) { 
     .spread-grid-layout { grid-template-columns: 1fr 1fr; } 
-    .selection-grid { gap: 20px; }
+    .selection-grid { gap: 25px; }
 }
 
 .selection-card {
     background: var(--surface-color);
-    padding: 25px 20px;
-    border-radius: 20px;
+    padding: 30px 20px;
+    border-radius: 24px;
     cursor: pointer;
-    border: 1px solid rgba(0,0,0,0.03);
+    border: 1px solid rgba(0,0,0,0.02);
     box-shadow: var(--card-shadow);
-    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
+    position: relative;
+    overflow: hidden;
+}
+.selection-card::after { /* 增加光澤感 */
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0) 100%);
+    opacity: 0; transition: opacity 0.3s;
 }
 .selection-card:hover {
-    transform: translateY(-5px);
+    transform: translateY(-6px);
     box-shadow: var(--hover-shadow);
-    border-color: rgba(212, 163, 115, 0.4);
+    border-color: rgba(212, 163, 115, 0.3);
 }
+.selection-card:hover::after { opacity: 1; }
+.selection-card:active { transform: scale(0.98); }
 
 .selection-icon {
-    font-size: 2rem;
-    width: 60px; height: 60px;
+    font-size: 2.2rem;
+    width: 68px; height: 68px;
     display: flex; align-items: center; justify-content: center;
-    background: #fdf6f0; 
+    background: #fff8f2; 
     border-radius: 50%;
-    margin-bottom: 5px;
+    margin-bottom: 8px;
+    box-shadow: inset 0 0 10px rgba(212, 163, 115, 0.1);
 }
-body.dark-mode .selection-icon { background: #332e2a; color: #d4a373; }
-.selection-title { font-weight: 600; font-size: 1.1rem; color: var(--text-main); }
-.selection-desc { font-size: 0.85rem; color: var(--text-sub); line-height: 1.5; }
+body.dark-mode .selection-icon { background: #332e2a; color: #d4a373; box-shadow: none; }
+.selection-title { font-weight: 600; font-size: 1.15rem; color: var(--text-main); }
+.selection-desc { font-size: 0.9rem; color: var(--text-sub); line-height: 1.6; }
 
 .spread-structure-list {
-    margin-top: 10px; text-align: left; width: 100%; font-size: 0.8rem;
-    color: var(--text-sub); background: var(--box-bg); padding: 12px; border-radius: 12px;
+    margin-top: 10px; text-align: left; width: 100%; font-size: 0.85rem;
+    color: var(--text-sub); background: var(--box-bg); padding: 15px; border-radius: 12px;
 }
 
 /* 按鈕 */
 .btn-primary {
-    background: var(--btn-gradient); color: white; border: none; padding: 14px 40px;
-    border-radius: 50px; font-size: 1rem; letter-spacing: 1px; cursor: pointer;
-    box-shadow: 0 8px 20px rgba(212, 163, 115, 0.3); transition: all 0.3s;
+    background: var(--btn-gradient); color: white; border: none; padding: 15px 45px;
+    border-radius: 50px; font-size: 1.05rem; letter-spacing: 1px; cursor: pointer;
+    box-shadow: 0 8px 25px rgba(212, 163, 115, 0.35); transition: all 0.3s;
+    font-weight: 600;
 }
-.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 12px 25px rgba(212, 163, 115, 0.4); }
+.btn-primary:hover { transform: translateY(-3px); box-shadow: 0 12px 30px rgba(212, 163, 115, 0.5); }
+.btn-primary:active { transform: scale(0.97); }
 .btn-pulse { animation: pulse-gold 2s infinite; }
 @keyframes pulse-gold {
     0% { box-shadow: 0 0 0 0 rgba(212, 163, 115, 0.7); }
@@ -1229,11 +1246,11 @@ body.dark-mode .selection-icon { background: #332e2a; color: #d4a373; }
 }
 
 .btn-secondary {
-    background: transparent; border: 1px solid #ddd; color: var(--text-sub);
-    padding: 10px 30px; border-radius: 50px; cursor: pointer; font-size: 0.9rem;
-    margin-top: 15px; transition: all 0.2s;
+    background: transparent; border: 1px solid #e0e0e0; color: var(--text-sub);
+    padding: 10px 32px; border-radius: 50px; cursor: pointer; font-size: 0.95rem;
+    margin-top: 20px; transition: all 0.2s;
 }
-.btn-secondary:hover { border-color: var(--text-main); color: var(--text-main); }
+.btn-secondary:hover { border-color: var(--text-main); color: var(--text-main); background: rgba(0,0,0,0.02); }
 body.dark-mode .btn-secondary { border-color: #444; }
 
 /* 牌桌區 */
@@ -1246,34 +1263,18 @@ body.dark-mode .btn-secondary { border-color: #444; }
     width: 100%; height: 380px;
     position: relative; perspective: 1000px;
     margin-top: 20px; max-width: 100vw;
-    touch-action: none; /* 防止滑動觸發頁面捲動 */
+    touch-action: none;
 }
 
-/* 卡背 (增加高級流光感) */
+/* 卡背 */
 .card-back {
     width: 100%; height: 100%;
     border-radius: 8px;
     background-color: #5d4e46; 
     background-image: repeating-linear-gradient(45deg, rgba(255,255,255,0.05) 0px, rgba(255,255,255,0.05) 1px, transparent 1px, transparent 10px);
-    border: 1px solid rgba(255,255,255,0.3);
+    border: 2px solid #fff;
     box-shadow: inset 0 0 10px rgba(0,0,0,0.3);
     pointer-events: none; 
-    overflow: hidden;
-    position: relative;
-}
-/* 流光特效 */
-.card-back::after {
-    content: "";
-    position: absolute;
-    top: -50%; left: -50%;
-    width: 200%; height: 200%;
-    background: linear-gradient(to right, transparent, rgba(255,255,255,0.1), transparent);
-    transform: rotate(45deg) translate(-100%, -100%);
-    animation: shimmer 3s infinite;
-}
-@keyframes shimmer {
-    0% { transform: rotate(45deg) translate(-100%, -100%); }
-    100% { transform: rotate(45deg) translate(100%, 100%); }
 }
 
 .tarot-card {
@@ -1282,7 +1283,7 @@ body.dark-mode .btn-secondary { border-color: #444; }
     left: 50%; top: 50%;
     margin-left: -35px; margin-top: -60px;
     cursor: pointer;
-    transition: transform 0.25s cubic-bezier(0.1, 0.7, 1.0, 0.1), filter 0.2s ease; 
+    transition: transform 0.2s cubic-bezier(0.1, 0.7, 1.0, 0.1); 
     border-radius: 6px;
     box-shadow: -2px 0 5px rgba(0,0,0,0.1);
     transform-origin: bottom center;
@@ -1291,41 +1292,12 @@ body.dark-mode .btn-secondary { border-color: #444; }
     .tarot-card { width: 60px; height: 102px; margin-left: -30px; margin-top: -51px; }
 }
 
-/* 互動特效：選中聚焦 (Focus Mode) */
 .tarot-card.hover-active {
-    transform: translateY(-40px) scale(1.15) !important;
-    z-index: 1000 !important;
-    box-shadow: 0 15px 30px rgba(0,0,0,0.4);
+    transform: translateY(-25px) scale(1.15) !important;
+    box-shadow: 0 15px 30px rgba(0,0,0,0.25);
     border: 1px solid rgba(255,255,255,0.9);
-    filter: brightness(1.1); /* 稍微變亮 */
+    z-index: 1000 !important;
 }
-
-/* 當有卡片被選中時，其他的卡片稍微變暗，製造聚光燈效果 */
-.tarot-table.has-selection .tarot-card:not(.hover-active):not(.picked) {
-    filter: brightness(0.8) blur(0.5px);
-    transform: scale(0.95); /* 稍微縮小 */
-}
-
-/* 懸浮名稱標籤 (Premium Feature) */
-#hover-card-label {
-    position: absolute;
-    top: 10px; /* 位於牌桌上方 */
-    left: 50%;
-    transform: translateX(-50%);
-    background: rgba(0, 0, 0, 0.75);
-    color: white;
-    padding: 6px 16px;
-    border-radius: 20px;
-    font-size: 0.9rem;
-    letter-spacing: 1px;
-    pointer-events: none;
-    opacity: 0;
-    transition: opacity 0.2s;
-    z-index: 2000;
-    backdrop-filter: blur(4px);
-    white-space: nowrap;
-}
-#hover-card-label.visible { opacity: 1; }
 
 /* 結果展示區 */
 .spread-result-container {
@@ -1333,134 +1305,146 @@ body.dark-mode .btn-secondary { border-color: #444; }
 }
 .spread-position {
     display: flex; flex-direction: column; align-items: center;
-    animation: slideUpFade 0.6s ease-out backwards;
+    animation: slideUpFade 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) backwards;
 }
 .spread-position:nth-child(1) { animation-delay: 0.1s; }
 .spread-position:nth-child(2) { animation-delay: 0.2s; }
+.spread-position:nth-child(3) { animation-delay: 0.3s; }
+.spread-position:nth-child(4) { animation-delay: 0.4s; }
+.spread-position:nth-child(5) { animation-delay: 0.5s; }
 
 @keyframes slideUpFade {
-    from { opacity: 0; transform: translateY(20px); }
+    from { opacity: 0; transform: translateY(30px); }
     to { opacity: 1; transform: translateY(0); }
 }
 
 .position-label {
-    margin-bottom: 12px; font-size: 0.8rem; font-weight: 600;
+    margin-bottom: 12px; font-size: 0.85rem; font-weight: 700;
     color: var(--accent-color); letter-spacing: 1px; text-transform: uppercase;
 }
 
 .result-card {
     width: 90px; height: 153px;
-    border-radius: 10px; cursor: pointer;
+    border-radius: 12px; cursor: pointer;
     box-shadow: 0 10px 25px rgba(93, 78, 70, 0.15);
     transition: all 0.3s ease; overflow: hidden; background: #eee;
 }
 body.dark-mode .result-card { background: #333; }
-.result-card img { width: 100%; height: 100%; object-fit: cover; display: block; }
-.result-card:hover { transform: translateY(-8px); box-shadow: 0 15px 35px rgba(212, 163, 115, 0.3); }
+.result-card img { width: 100%; height: 100%; object-fit: cover; display: block; animation: imgFadeIn 0.5s ease-out; }
+@keyframes imgFadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+.result-card:hover { transform: translateY(-8px); box-shadow: 0 20px 40px rgba(212, 163, 115, 0.3); }
 
 /* 日記區 */
 #journal-section {
-    width: 100%; max-width: 500px; margin: 40px auto 20px;
-    background: var(--surface-color); padding: 25px; border-radius: 16px;
+    width: 100%; max-width: 500px; margin: 50px auto 30px;
+    background: var(--surface-color); padding: 30px; border-radius: 20px;
     box-shadow: var(--card-shadow); text-align: left; box-sizing: border-box;
 }
 #journal-section h4 {
-    margin: 0 0 15px 0; color: var(--text-main); font-weight: 500;
-    font-size: 1rem; display: flex; align-items: center; gap: 8px;
+    margin: 0 0 15px 0; color: var(--text-main); font-weight: 600;
+    font-size: 1.05rem; display: flex; align-items: center; gap: 8px;
 }
 #journal-input {
-    width: 100%; height: 100px; border: 1px dashed var(--input-border);
-    border-radius: 8px; padding: 15px; font-size: 0.95rem; color: var(--text-main);
+    width: 100%; height: 120px; border: 1px dashed var(--input-border);
+    border-radius: 12px; padding: 15px; font-size: 1rem; color: var(--text-main);
     background: var(--input-bg); resize: none; transition: all 0.3s; line-height: 1.6;
     box-sizing: border-box;
 }
 #journal-input:focus {
     background: var(--surface-color); border-color: var(--accent-color);
-    outline: none; box-shadow: 0 0 0 3px rgba(212, 163, 115, 0.1);
+    outline: none; box-shadow: 0 0 0 3px rgba(212, 163, 115, 0.15);
 }
 
 /* 圖鑑相關 */
 #tarot-library {
-    width: 100%; 
-    box-sizing: border-box; 
-    text-align: center;
-    position: relative; /* 確保 sticky 在內部運作 */
+    padding: 0; width: 100%; box-sizing: border-box; text-align: center;
 }
 
-/* --- FIX: 圖鑑置頂標題區 --- */
+/* --- Sticky Header Fix (關鍵修復) --- */
 .library-sticky-header {
+    position: -webkit-sticky; /* Safari 支援 */
     position: sticky;
-    top: 0; /* 緊貼視窗頂部 */
-    z-index: 1500; /* 確保在卡片之上 */
-    background: var(--header-bg); 
-    backdrop-filter: blur(12px); /* 毛玻璃質感加強 */
-    -webkit-backdrop-filter: blur(12px);
-    padding: 15px 20px;
+    top: 0;
+    z-index: 999;
+    background: var(--glass-header); /* 毛玻璃背景 */
+    backdrop-filter: blur(15px); /* 強力模糊 */
+    -webkit-backdrop-filter: blur(15px);
+    padding: 15px 10px; /* 增加 padding */
     margin-bottom: 20px;
-    border-bottom: 1px solid rgba(0,0,0,0.06);
-    box-shadow: 0 4px 20px rgba(0,0,0,0.03); /* 輕微陰影增加層次 */
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.03); /* 輕微陰影區隔 */
 }
 body.dark-mode .library-sticky-header { border-bottom-color: rgba(255,255,255,0.05); }
 
 .library-filters {
-    display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: 10px;
+    display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 10px;
 }
 .filter-btn {
-    padding: 6px 14px; border: 1px solid rgba(0,0,0,0.1); background: var(--surface-color);
-    border-radius: 20px; font-size: 0.85rem; color: var(--text-sub); cursor: pointer;
-    transition: all 0.2s;
+    padding: 8px 18px; border: 1px solid rgba(0,0,0,0.08); background: var(--surface-color);
+    border-radius: 30px; font-size: 0.9rem; color: var(--text-sub); cursor: pointer;
+    transition: all 0.2s ease;
 }
 body.dark-mode .filter-btn { border-color: #444; }
-.filter-btn:hover { border-color: var(--accent-color); color: var(--accent-color); }
-.filter-btn.active { 
-    background: var(--text-main); color: #fff; border-color: var(--text-main); 
-    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+
+.filter-btn:hover { background: #fafafa; transform: translateY(-1px); }
+.filter-btn:active { transform: scale(0.95); }
+
+.filter-btn.active {
+    background: var(--text-main); color: #fff; border-color: var(--text-main);
+    box-shadow: 0 4px 10px rgba(93, 78, 70, 0.2);
 }
 body.dark-mode .filter-btn.active { background: var(--accent-color); color: var(--bg-color); border-color: var(--accent-color); }
 
 .library-grid {
-    display: grid; grid-template-columns: repeat(auto-fill, minmax(70px, 1fr)); gap: 12px;
-    padding: 0 20px 40px 20px; 
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 15px;
+    padding: 0 20px 80px 20px; /* 底部留白給 Grid */
 }
 .library-card img {
     width: 100%; border-radius: 8px; cursor: pointer;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1); transition: transform 0.2s;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.08); transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    background: #eee;
+    animation: imgFadeIn 0.6s ease-out;
 }
-.library-card img:hover { transform: scale(1.08); box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
+.library-card img:hover { transform: translateY(-5px) scale(1.05); box-shadow: 0 10px 20px rgba(0,0,0,0.15); }
 
 /* Modal */
 .modal-overlay {
     position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: var(--modal-overlay); backdrop-filter: blur(5px);
-    z-index: 3000; display: flex; justify-content: center; align-items: center;
+    background: var(--modal-overlay); backdrop-filter: blur(8px);
+    z-index: 2000; display: flex; justify-content: center; align-items: center;
+    padding: 20px; box-sizing: border-box; /* 防止 Modal 貼邊 */
 }
 .modal-content {
-    background: var(--modal-bg); width: 90%; max-width: 500px; max-height: 85vh;
-    border-radius: 20px; overflow-y: auto; padding: 30px 25px; position: relative;
-    box-shadow: 0 20px 50px rgba(0,0,0,0.2); animation: zoomIn 0.3s ease-out; box-sizing: border-box;
+    background: var(--modal-bg); width: 100%; max-width: 500px; max-height: 85vh;
+    border-radius: 24px; overflow-y: auto; padding: 35px 25px; position: relative;
+    box-shadow: 0 25px 60px rgba(0,0,0,0.25); animation: zoomIn 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    box-sizing: border-box;
 }
 @keyframes zoomIn { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 
 .close-modal {
-    position: absolute; top: 20px; right: 20px; font-size: 24px; color: #ccc; cursor: pointer; transition: color 0.2s;
+    position: absolute; top: 20px; right: 20px; font-size: 24px; color: #bbb; cursor: pointer; transition: color 0.2s;
+    background: rgba(0,0,0,0.03); width: 36px; height: 36px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
 }
-.close-modal:hover { color: var(--text-main); }
+.close-modal:hover { color: var(--text-main); background: rgba(0,0,0,0.08); }
 
 .guidance-box {
-    background: var(--box-bg); border-left: 3px solid var(--accent-color);
-    padding: 15px 20px; margin: 20px 0; border-radius: 0 8px 8px 0;
+    background: var(--box-bg); border-left: 4px solid var(--accent-color);
+    padding: 20px; margin: 25px 0; border-radius: 0 12px 12px 0;
 }
 .section-title {
-    font-size: 0.9rem; font-weight: 700; color: var(--accent-hover); margin-top: 25px;
-    display: block; border-bottom: 1px solid #eee; padding-bottom: 5px; margin-bottom: 10px;
+    font-size: 0.95rem; font-weight: 700; color: var(--accent-hover); margin-top: 30px;
+    display: block; border-bottom: 1px solid #eee; padding-bottom: 8px; margin-bottom: 12px;
 }
 body.dark-mode .section-title { border-bottom-color: #444; }
 
 .info-grid-bottom {
-    display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
-    background: var(--box-bg); padding: 15px; border-radius: 12px; margin-top: 20px; font-size: 0.85rem;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 15px;
+    background: var(--box-bg); padding: 20px; border-radius: 16px; margin-top: 30px; font-size: 0.9rem;
 }
-.info-item strong { color: var(--text-sub); display: block; margin-bottom: 3px; font-size: 0.8rem; }
+.info-item strong { color: var(--text-sub); display: block; margin-bottom: 4px; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px; }
   </style>
 </head>
 <body>
@@ -4469,7 +4453,7 @@ renderTarot:(container) => {
 
     // 如果全域沒有 tarotDetails，就用 placeholder
     const db = window.tarotDetails || tarotDetailsPlaceholder;
- // (Themes & Spreads 設定保持不變，省略以節省空間，請直接使用原本的內容)
+ // 1. Themes & Spreads
     const themes = {
         daily: { icon: "☀️", name: "今日運勢", desc: "感受今天的能量流動", allowedSpreads: ['one'] },
         love: { icon: "💕", name: "愛情關係", desc: "探索心中的愛與連結", allowedSpreads: ['one', 'relation', 'cross', 'time'] },
@@ -4516,9 +4500,6 @@ renderTarot:(container) => {
 
                 <div id="step-play" class="wizard-container hidden">
                     <h3 id="play-instruction" style="margin-bottom:10px;">請靜下心...</h3>
-                    
-                    <div id="hover-card-label"></div>
-
                     <div class="tarot-table" id="card-table"></div>
                     <button class="btn-primary btn-pulse" id="btn-action">開始洗牌</button>
                 </div>
@@ -4544,7 +4525,7 @@ renderTarot:(container) => {
 
             <div id="tarot-library" class="hidden">
                 <div class="library-sticky-header">
-                    <h3 style="margin:0; font-size:1.2rem; color:var(--text-main); margin-bottom:5px;">塔羅牌圖鑑</h3>
+                    <h3 style="margin:0 0 10px 0; font-size:1.2rem; color:var(--text-main); font-weight:600;">塔羅牌圖鑑</h3>
                     <div class="library-filters">
                         <button class="filter-btn active" data-filter="all">全部</button>
                         <button class="filter-btn" data-filter="major">大牌</button>
@@ -4561,23 +4542,28 @@ renderTarot:(container) => {
         <div id="card-detail-modal" class="modal-overlay hidden">
             <div class="modal-content">
                 <div class="close-modal">&times;</div>
-                <div style="text-align:center; margin-bottom:15px;">
-                    <img id="modal-card-img" src="" style="width:140px; border-radius:8px; box-shadow:0 5px 15px rgba(0,0,0,0.1);">
+                <div style="text-align:center; margin-bottom:20px;">
+                    <img id="modal-card-img" src="" style="width:150px; border-radius:10px; box-shadow:0 8px 20px rgba(0,0,0,0.15);">
                 </div>
                 <h3 id="modal-title" style="text-align:center; color:var(--text-main); margin-bottom:5px;"></h3>
-                <div class="tags" id="modal-tags" style="text-align:center; color:var(--text-sub); font-size:0.9rem; margin-bottom:20px;"></div>
+                <div class="tags" id="modal-tags" style="text-align:center; color:var(--text-sub); font-size:0.9rem; margin-bottom:25px;"></div>
+                
                 <div class="guidance-box">
-                    <strong id="modal-theme-title" style="color:var(--text-main); display:block; margin-bottom:5px;">💡 指引：</strong> 
+                    <strong id="modal-theme-title" style="color:var(--text-main); display:block; margin-bottom:8px;">💡 指引：</strong> 
                     <span id="modal-theme-content" style="line-height:1.6; color:var(--text-main);"></span>
                 </div>
-                <div style="margin-top:20px;">
+
+                <div style="margin-top:25px;">
                     <span class="section-title">牌面意象</span>
-                    <p id="modal-desc" style="font-size:0.95rem; color:var(--text-main); line-height:1.6;"></p>
+                    <p id="modal-desc" style="font-size:0.95rem; color:var(--text-main); line-height:1.65;"></p>
+
                     <span class="section-title">正位解析</span>
-                    <p id="modal-upright" style="font-size:0.95rem; color:var(--text-main); line-height:1.6;"></p>
+                    <p id="modal-upright" style="font-size:0.95rem; color:var(--text-main); line-height:1.65;"></p>
+
                     <span class="section-title">逆位解析</span>
-                    <p id="modal-reversed" style="font-size:0.95rem; color:var(--text-main); line-height:1.6;"></p>
+                    <p id="modal-reversed" style="font-size:0.95rem; color:var(--text-main); line-height:1.65;"></p>
                 </div>
+
                 <div class="info-grid-bottom">
                     <div class="info-item"><strong>🔥 元素</strong><span id="modal-element"></span></div>
                     <div class="info-item"><strong>✨ 占星</strong><span id="modal-astro"></span></div>
@@ -4590,52 +4576,35 @@ renderTarot:(container) => {
 
     // --- Logic ---
 
-    // 1. Data Init (包含 Type 屬性)
+    // 1. Data Init
     const initDeckData = () => {
         let deck = [];
-        // Major
         for(let i=0; i<=21; i++) {
             let id = `m${i.toString().padStart(2,'0')}`;
-            // 為了預覽功能，簡單從 DB 或預設生成名稱 (真實環境應用完整 DB)
-            let name = (db[id] && db[id].name) ? db[id].name : `Major ${i}`;
-            deck.push({ id, file: `ar${i.toString().padStart(2,'0')}.jpg`, type: 'major', name: name });
+            deck.push({ id, file: `ar${i.toString().padStart(2,'0')}.jpg`, type: 'major' });
         }
-        // Minors
-        const suits = [
-            {code:'wa', name:'Wands'}, 
-            {code:'cu', name:'Cups'}, 
-            {code:'sw', name:'Swords'}, 
-            {code:'pe', name:'Pentacles'}
-        ];
+        const suits = [{code:'wa'}, {code:'cu'}, {code:'sw'}, {code:'pe'}];
         suits.forEach(s => {
             for(let i=1; i<=14; i++) {
                 let suffix = i.toString().padStart(2,'0');
                 let type = 'number';
-                let cardName = `${s.name} ${i}`;
-                if(i===1) cardName = `Ace of ${s.name}`;
-                if(i===11) { suffix='pa'; type='court'; cardName = `Page of ${s.name}`; }
-                if(i===12) { suffix='kn'; type='court'; cardName = `Knight of ${s.name}`; }
-                if(i===13) { suffix='qu'; type='court'; cardName = `Queen of ${s.name}`; }
-                if(i===14) { suffix='ki'; type='court'; cardName = `King of ${s.name}`; }
-                
-                // 嘗試從 db 獲取更準確的中文名
-                let id = `${s.code}${suffix}`;
-                if(db[id]) cardName = db[id].name;
-
-                deck.push({ id, file: `${s.code}${suffix}.jpg`, type: type, name: cardName });
+                if(i===11) { suffix='pa'; type='court'; }
+                if(i===12) { suffix='kn'; type='court'; }
+                if(i===13) { suffix='qu'; type='court'; }
+                if(i===14) { suffix='ki'; type='court'; }
+                deck.push({ id: `${s.code}${suffix}`, file: `${s.code}${suffix}.jpg`, type: type });
             }
         });
         return deck;
     };
     const fullDeckData = initDeckData();
 
-    // 2. UI Control Helpers
+    // 2. UI Control
     const showSection = (id) => {
         ['step-theme', 'step-spread', 'step-play', 'step-result'].forEach(sid => {
             container.querySelector(`#${sid}`).classList.add('hidden');
         });
         container.querySelector(`#${id}`).classList.remove('hidden');
-        // 切換時回到頂部，確保 sticky header 位置正確
         window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
@@ -4684,7 +4653,6 @@ renderTarot:(container) => {
         for(let i=0; i<78; i++) {
             const card = document.createElement('div');
             card.className = 'tarot-card';
-            // Random scatter
             const rx = (Math.random() - 0.5) * 10;
             const ry = (Math.random() - 0.5) * 10;
             const rr = (Math.random() - 0.5) * 5;
@@ -4719,27 +4687,23 @@ renderTarot:(container) => {
         }, 800);
     };
 
-    // === Premium Mobile Selection Logic ===
+    // Fan Out Logic (Same as 2.2)
     const fanOut = () => {
         const table = container.querySelector('#card-table');
         const cards = Array.from(table.children);
         const count = spreads[state.spreadKey].count;
-        const labelEl = container.querySelector('#hover-card-label');
-        
         container.querySelector('#play-instruction').innerHTML = `請憑直覺選取 <strong>${count}</strong> 張牌`;
 
         const isMobile = window.innerWidth < 600;
-        const totalDisplay = 78;
+        const totalDisplay = 78; 
+        
         const angleSpan = isMobile ? 140 : 160; 
         const startAngle = -(angleSpan / 2);
         const radius = isMobile ? 120 : 250; 
         const yOffset = isMobile ? 140 : 100;
 
-        // 計算每張牌的位置並儲存
-        const cardPositions = [];
-
         cards.forEach((card, i) => {
-            card.style.transition = 'transform 0.4s ease-out'; // 加快一點反應速度
+            card.style.transition = 'transform 0.6s ease-out';
             
             const angle = startAngle + (i / (totalDisplay - 1)) * angleSpan;
             const x = radius * Math.cos(((angle - 90) * Math.PI) / 180);
@@ -4749,108 +4713,23 @@ renderTarot:(container) => {
             card.style.transform = baseTransform;
             card.dataset.baseTransform = baseTransform;
             card.style.zIndex = 10 + i;
-            
-            // 儲存中心點以便計算距離 (近似值)
-            // 這裡我們需要知道它相對於 table 的位置，但 table 是 centered 的
-            // 簡化：我們假設 transform x 即為相對中心的偏移
-            cardPositions.push({ x: x, y: y, el: card, index: i });
 
-            // Desktop Mouse Events
-            card.onmouseenter = () => {
-                if (!card.classList.contains('picked')) {
-                    cards.forEach(c => c.classList.remove('hover-active'));
-                    card.classList.add('hover-active');
-                    table.classList.add('has-selection');
-                    // 顯示標籤
-                    const cardName = state.deck[i].name || "Tarot Card";
-                    labelEl.textContent = cardName;
-                    labelEl.classList.add('visible');
-                }
-            };
-            card.onmouseleave = () => {
-                card.classList.remove('hover-active');
-                table.classList.remove('has-selection');
-                labelEl.classList.remove('visible');
-            };
-
+            card.onmouseenter = () => { if (!card.classList.contains('picked')) card.classList.add('hover-active'); };
+            card.onmouseleave = () => { card.classList.remove('hover-active'); };
             card.onclick = () => pickCard(card, i);
         });
 
-        // --- Touch Move Logic (魚眼放大 + 磁吸感) ---
-        // 移除舊監聽
         if (table._touchHandler) table.removeEventListener('touchmove', table._touchHandler);
-        if (table._touchEndHandler) table.removeEventListener('touchend', table._touchEndHandler);
-
         table._touchHandler = (e) => {
-            e.preventDefault(); // 防止滾動
             const touch = e.touches[0];
-            
-            // 取得 table 的邊界，計算手指相對於 table 中心的 X 座標
-            const rect = table.getBoundingClientRect();
-            const centerX = rect.left + rect.width / 2;
-            const touchRelativeX = touch.clientX - centerX;
-            const touchRelativeY = touch.clientY - rect.top; // 簡單高度判斷
-
-            // 如果手指太上面或太下面，就取消選取
-            if (touchRelativeY < 0 || touchRelativeY > rect.height) {
-                cards.forEach(c => c.classList.remove('hover-active'));
-                table.classList.remove('has-selection');
-                labelEl.classList.remove('visible');
-                return;
-            }
-
-            // 尋找距離手指 X 座標最近的卡片 (使用我們之前算的 x 位置)
-            let closestCard = null;
-            let minDist = 9999;
-
-            cardPositions.forEach(pos => {
-                // 只比較 X 軸距離，這樣比較容易選到
-                const dist = Math.abs(pos.x - touchRelativeX);
-                if (dist < minDist) {
-                    minDist = dist;
-                    closestCard = pos;
-                }
-            });
-
-            // 只有當距離在一定範圍內才觸發 (例如 30px 寬度)
-            // 手機上因為有弧度，這個範圍可以寬鬆一點
-            if (closestCard && minDist < 40 && !closestCard.el.classList.contains('picked')) {
-                // 清除其他
-                cards.forEach(c => c.classList.remove('hover-active'));
-                
-                // 啟用當前
-                closestCard.el.classList.add('hover-active');
-                table.classList.add('has-selection');
-
-                // 顯示標籤
-                const cardName = state.deck[closestCard.index].name || "Tarot Card";
-                labelEl.textContent = cardName;
-                labelEl.classList.add('visible');
-                
-                // 震動回饋 (當切換卡片時)
-                if (window.lastVibratedCard !== closestCard.index) {
-                    if(navigator.vibrate) navigator.vibrate(5);
-                    window.lastVibratedCard = closestCard.index;
-                }
-            }
-        };
-
-        table._touchEndHandler = (e) => {
-            // 手指放開時，如果有 hover-active 的牌，就選取它
-            const activeCard = table.querySelector('.tarot-card.hover-active');
-            if (activeCard) {
-                // 觸發 click
-                activeCard.click();
-            }
-            // 清理狀態
+            const target = document.elementFromPoint(touch.clientX, touch.clientY);
             cards.forEach(c => c.classList.remove('hover-active'));
-            table.classList.remove('has-selection');
-            labelEl.classList.remove('visible');
-            window.lastVibratedCard = null;
+            const card = target ? target.closest('.tarot-card') : null;
+            if (card && !card.classList.contains('picked')) {
+                card.classList.add('hover-active');
+            }
         };
-        
-        table.addEventListener('touchmove', table._touchHandler, { passive: false });
-        table.addEventListener('touchend', table._touchEndHandler);
+        table.addEventListener('touchmove', table._touchHandler, { passive: true });
     };
 
     const pickCard = (cardEl, index) => {
@@ -4863,10 +4742,6 @@ renderTarot:(container) => {
         cardEl.classList.add('picked');
         cardEl.classList.remove('hover-active');
         
-        // 選取後隱藏標籤
-        container.querySelector('#hover-card-label').classList.remove('visible');
-        container.querySelector('#card-table').classList.remove('has-selection');
-
         const isMobile = window.innerWidth < 600;
         const liftY = isMobile ? -40 : -60;
         
@@ -4874,7 +4749,6 @@ renderTarot:(container) => {
         cardEl.style.transform = `${currentTrans} translateY(${liftY}px) scale(1.1)`;
         cardEl.style.zIndex = 200 + state.selectedIndices.length;
         cardEl.style.boxShadow = "0 0 25px rgba(212, 163, 115, 0.8)";
-        cardEl.style.filter = "none"; // 移除變暗效果
         
         state.selectedIndices.push(index);
 
@@ -4922,7 +4796,7 @@ renderTarot:(container) => {
             const key = `tarot_journal_${d.getFullYear()}_${d.getMonth()+1}_${d.getDate()}`;
             container.querySelector('#journal-input').value = localStorage.getItem(key) || "";
         } else {
-            container.querySelector('#journal-section').classList.add('hidden');
+            journalSec.classList.add('hidden');
         }
     };
 
@@ -4930,7 +4804,6 @@ renderTarot:(container) => {
     const showDetail = (id, isReversed, isReading) => {
         const modal = container.querySelector('#card-detail-modal');
         const data = db[id] || { name: "Card", keywords: [] };
-        
         const img = modal.querySelector('#modal-card-img');
         const file = id.startsWith('m') ? `ar${id.substring(1)}.jpg` : `${id}.jpg`;
         img.src = `./images/tarot/${file}`;
@@ -4967,7 +4840,7 @@ renderTarot:(container) => {
         modal.classList.remove('hidden');
     };
 
-    // 6. Library (Added Court Logic)
+    // 6. Library Logic
     const renderLibrary = (filter='all') => {
         const grid = container.querySelector('#library-grid');
         grid.innerHTML = '';
@@ -4975,7 +4848,7 @@ renderTarot:(container) => {
             let match = false;
             if(filter === 'all') match = true;
             else if(filter === 'major' && c.type === 'major') match = true;
-            else if(filter === 'court' && c.type === 'court') match = true; // 新增宮廷牌邏輯
+            else if(filter === 'court' && c.type === 'court') match = true; // Added Court
             else if(filter === 'wands' && c.id.startsWith('wa')) match = true;
             else if(filter === 'cups' && c.id.startsWith('cu')) match = true;
             else if(filter === 'swords' && c.id.startsWith('sw')) match = true;
@@ -4984,14 +4857,14 @@ renderTarot:(container) => {
             if(match) {
                 const el = document.createElement('div');
                 el.className = 'library-card';
-                el.innerHTML = `<img src="./images/tarot/${c.file}" loading="lazy" alt="${c.name}">`;
+                el.innerHTML = `<img src="./images/tarot/${c.file}" loading="lazy">`;
                 el.onclick = () => showDetail(c.id, false, false);
                 grid.appendChild(el);
             }
         });
     };
 
-    // === Control Logic ===
+    // Events & Toggle
     const toggleLibrary = () => {
         const btn = container.querySelector('#btn-floating-library');
         const mainStage = container.querySelector('#tarot-main-stage');
@@ -5003,8 +4876,6 @@ renderTarot:(container) => {
             libStage.classList.remove('hidden');
             btn.classList.add('active-mode');
             btn.innerHTML = `⬅ <span>返回</span>`;
-            // 切換時重置並置頂
-            window.scrollTo({top: 0});
             renderLibrary();
         } else {
             state.mode = 'reading';
@@ -5024,8 +4895,6 @@ renderTarot:(container) => {
             container.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
             e.target.classList.add('active');
             renderLibrary(e.target.dataset.filter);
-            // 點擊篩選時，稍微滾動一下確保使用者看到變化
-            window.scrollTo({top: 0, behavior: 'smooth'});
         };
     });
 
