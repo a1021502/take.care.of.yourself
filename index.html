@@ -1043,7 +1043,7 @@ body.dark-mode .affirmation-overlay { background: rgba(0,0,0,0.85); }
 #active-feature-container {
     overscroll-behavior: contain;
 }
-/* --- Tarot 2.8: Absolute Stability & Premium Knowledge --- */
+/* --- Tarot 3.0: Premium UI, Slider Control & Deep Knowledge --- */
 
 @import url('https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@300;400;500;700&display=swap');
 
@@ -1188,18 +1188,16 @@ body.dark-mode .selection-icon { background: #332e2a; }
 .btn-secondary:hover { border-color: var(--text-main); color: var(--text-main); }
 body.dark-mode .btn-secondary { border-color: #444; }
 
-/* 牌桌區 - 針對左右被切問題優化 */
+/* 牌桌區 */
 #step-play {
     width: 100%; min-height: 60vh;
     display: flex; flex-direction: column; align-items: center; 
-    justify-content: flex-start; overflow: hidden; /* 防止捲軸 */
+    justify-content: flex-start; overflow: hidden;
 }
 .tarot-table {
     width: 100%; height: 380px; position: relative; 
     perspective: 1000px; margin-top: 10px; 
-    max-width: 100vw; /* 限制最大寬度 */
-    touch-action: none;
-    /* 確保有足夠的內距防止切邊 */
+    max-width: 100vw; touch-action: none;
     box-sizing: border-box; 
 }
 @media(max-width: 600px) {
@@ -1230,18 +1228,42 @@ body.dark-mode .btn-secondary { border-color: #444; }
     pointer-events: none; 
 }
 
-/* 電腦版 Hover */
-@media (hover: hover) {
-    .tarot-card.hover-active {
-        box-shadow: 0 0 20px rgba(212, 163, 115, 0.6);
-        border: 1px solid rgba(255,255,255,0.9);
-    }
-}
-/* 手機版 Touch Active (JS控制) */
-.tarot-card.touch-active {
-    box-shadow: 0 0 25px rgba(212, 163, 115, 0.9); /* 更明顯的光暈 */
+/* 狀態樣式 */
+.tarot-card.active-focus {
+    box-shadow: 0 0 30px rgba(212, 163, 115, 0.8);
     border: 1px solid #fff;
-    /* transform 在 JS 中控制以確保順暢 */
+    z-index: 1000 !important;
+}
+
+/* --- Mobile Selection Control (NEW) --- */
+#mobile-selection-control {
+    width: 85%; max-width: 400px;
+    background: var(--surface-color);
+    padding: 15px 20px; border-radius: 20px;
+    box-shadow: 0 -5px 20px rgba(0,0,0,0.05);
+    position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
+    z-index: 900;
+    display: flex; flex-direction: column; gap: 10px; align-items: center;
+    border: 1px solid rgba(212, 163, 115, 0.2);
+    backdrop-filter: blur(10px);
+}
+.slider-label { font-size: 0.85rem; color: var(--accent-color); font-weight: 700; }
+.card-slider {
+    -webkit-appearance: none; width: 100%; height: 6px;
+    background: rgba(0,0,0,0.1); border-radius: 5px; outline: none;
+}
+.card-slider::-webkit-slider-thumb {
+    -webkit-appearance: none; appearance: none;
+    width: 24px; height: 24px; border-radius: 50%;
+    background: var(--accent-color); cursor: pointer;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2); border: 2px solid #fff;
+    transition: transform 0.1s;
+}
+.card-slider::-webkit-slider-thumb:active { transform: scale(1.2); }
+#btn-confirm-selection {
+    padding: 8px 25px; font-size: 0.9rem; border-radius: 30px;
+    background: var(--text-main); color: #fff; border: none;
+    cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.1);
 }
 
 /* 結果區 */
@@ -1332,37 +1354,42 @@ body.dark-mode .filter-btn.active { background: var(--accent-color); }
 .library-card img { width: 100%; height: auto; display: block; transition: transform 0.3s; cursor: pointer; }
 .library-card img:hover { transform: scale(1.08); }
 
-/* --- 知識卡片 (全新精緻設計) --- */
+/* --- 知識卡片 (Accordion Design) --- */
 .knowledge-grid {
-    display: flex; flex-direction: column; gap: 30px; max-width: 800px; margin: 0 auto;
+    display: flex; flex-direction: column; gap: 20px; max-width: 800px; margin: 0 auto;
 }
 .knowledge-card {
-    background: var(--surface-color); border-radius: 24px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    background: var(--surface-color); border-radius: 16px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.03);
     border: 1px solid rgba(0,0,0,0.03);
-    overflow: hidden;
-    position: relative;
+    overflow: hidden; transition: all 0.3s ease;
 }
-.knowledge-card::before {
-    content: ''; position: absolute; top: 0; left: 0; width: 6px; height: 100%;
-    background: var(--gold-border);
-}
-.k-main-title {
-    font-size: 1.2rem; font-weight: 700; color: var(--text-main);
-    padding: 20px 25px; border-bottom: 1px dashed rgba(0,0,0,0.08);
+.k-header {
+    padding: 20px 25px; cursor: pointer; display: flex; justify-content: space-between; align-items: center;
     background: linear-gradient(to right, var(--box-bg), transparent);
 }
-.k-body { padding: 20px 25px; }
-.k-item { margin-bottom: 20px; }
-.k-item:last-child { margin-bottom: 0; }
-.k-item-title { font-size: 1rem; font-weight: 700; color: var(--accent-color); margin-bottom: 5px; }
-.k-item-desc { font-size: 0.9rem; color: var(--text-main); line-height: 1.7; text-align: justify; }
-.k-sub-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 10px; }
-.k-sub-card {
-    background: var(--box-bg); padding: 15px; border-radius: 12px;
+.k-header:hover { background: rgba(0,0,0,0.02); }
+.k-main-title { font-size: 1.1rem; font-weight: 700; color: var(--text-main); }
+.k-icon { font-size: 1.2rem; color: var(--text-sub); transition: transform 0.3s; }
+
+.knowledge-card.active .k-icon { transform: rotate(180deg); }
+.k-body {
+    max-height: 0; overflow: hidden; transition: max-height 0.4s cubic-bezier(0, 1, 0, 1);
+    background: var(--surface-color);
 }
+.knowledge-card.active .k-body { max-height: 2000px; transition: max-height 0.8s ease-in-out; }
+
+.k-content-pad { padding: 25px; }
+.k-item { margin-bottom: 25px; border-bottom: 1px dashed rgba(0,0,0,0.05); padding-bottom: 20px; }
+.k-item:last-child { margin-bottom: 0; border-bottom: none; }
+.k-item-title { font-size: 1rem; font-weight: 700; color: var(--accent-color); margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+.k-item-desc { font-size: 0.95rem; color: var(--text-main); line-height: 1.8; text-align: justify; }
+
+/* Sub Grid for short items like Chakras/Planets */
+.k-sub-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-top: 15px; }
+.k-sub-card { background: var(--box-bg); padding: 15px; border-radius: 12px; }
 .k-sub-title { font-size: 0.9rem; font-weight: 700; color: var(--text-main); margin-bottom: 5px; }
-.k-sub-desc { font-size: 0.85rem; color: var(--text-sub); line-height: 1.5; }
+.k-sub-desc { font-size: 0.85rem; color: var(--text-sub); line-height: 1.4; }
 
 /* 日記列表 */
 .journal-list { display: flex; flex-direction: column; gap: 25px; max-width: 800px; margin: 0 auto; }
@@ -1373,31 +1400,22 @@ body.dark-mode .filter-btn.active { background: var(--accent-color); }
     display: flex; gap: 25px; align-items: flex-start;
     animation: slideUpFade 0.5s ease forwards;
 }
-/* 手機版日記置中修正 */
 @media (max-width: 600px) {
-    .journal-entry { 
-        flex-direction: column; 
-        align-items: center; /* 讓子元素水平置中 */
-        text-align: center;  /* 讓文字置中 */
-    }
+    .journal-entry { flex-direction: column; align-items: center; text-align: center; }
     .j-left { margin-bottom: 10px; }
-    .j-right { width: 100%; align-items: center; } /* 右側容器也置中 */
+    .j-right { width: 100%; align-items: center; } 
     .j-card-names { justify-content: center; }
 }
-
 .j-left { flex-shrink: 0; display: flex; flex-direction: column; gap: 10px; align-items: center; }
 .j-card-img {
     width: 100px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.15);
     cursor: zoom-in; transition: transform 0.2s; object-fit: cover; background: #eee;
 }
-.j-card-img:hover { transform: scale(1.05); }
 .j-img-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 5px; width: 140px; }
 .j-img-grid .j-card-img { width: 100%; }
 
 .j-right { flex: 1; display: flex; flex-direction: column; gap: 8px; }
-.j-meta-header {
-    border-bottom: 1px dashed rgba(0,0,0,0.1); padding-bottom: 10px; margin-bottom: 5px; width: 100%;
-}
+.j-meta-header { border-bottom: 1px dashed rgba(0,0,0,0.1); padding-bottom: 10px; margin-bottom: 5px; width: 100%; }
 .j-date { font-size: 0.8rem; color: var(--text-sub); font-weight: 500; letter-spacing: 1px; margin-bottom: 4px; display: block;}
 .j-card-names { font-size: 1rem; font-weight: 700; color: var(--accent-color); line-height: 1.4; display: block; }
 .j-card-names span { display: block; font-size: 0.85rem; color: var(--text-sub); font-weight: 400; margin-top: 2px; }
@@ -4445,65 +4463,88 @@ renderTarot:(container) => {
 
     // 如果全域沒有 tarotDetails，就用 placeholder
     const db = window.tarotDetails || tarotDetailsPlaceholder;
-   // 1. Tarot Knowledge Base (Using provided JSON structure)
+
+   // 1. Expanded Knowledge Base
     const tarotKnowledgeBase = {
-        "elements": [
-            {
-                "id": "el_fire",
-                "title": "🔥 火元素 (Wands)",
-                "desc": "火是宇宙的第一股衝動，象徵直覺、意志與創造的原始能量。它對應著靈魂中渴望擴張、燃燒與留名於世的部分。如同普羅米修斯的火種，它帶來文明與靈感，但也潛藏著毀滅與焦躁。",
-                "energy": "對應能量：行動力、熱情、直覺、冒險、性驅力。",
-                "lesson": "靈魂課題：如何將內在稍縱即逝的靈感火花，透過意志轉化為可見的現實？學習駕馭衝動，而非被其吞噬。"
-            },
-            {
-                "id": "el_water",
-                "title": "💧 水元素 (Cups)",
-                "desc": "水是流動的潛意識與情感的載體。它象徵著愛、關係、夢境與治癒的力量。水無常形，能順應容器，也能滴水穿石。它代表我們內在柔軟、感性以及與他人建立連結的能力。",
-                "energy": "對應能量：情感、愛、人際關係、直覺力、潛意識。",
-                "lesson": "靈魂課題：如何在情感的海洋中學會游泳，既不封閉心門，也不被情緒的浪潮淹沒？學習接納脆弱，將其轉化為慈悲。"
-            },
-            {
-                "id": "el_air",
-                "title": "🌬 風元素 (Swords)",
-                "desc": "風是理智、邏輯與溝通的象徵。它代表「心智（Mind）」的力量，如同一把雙面刃，既能斬斷幻象、釐清真理，也能因過度銳利而傷人傷己。風元素掌管著我們的信念系統與思考模式。",
-                "energy": "對應能量：思考、邏輯、真理、衝突、正義、決策。",
-                "lesson": "靈魂課題：如何運用理智來服務生命，而非讓恐懼與焦慮主宰心靈？穿越思想的迷霧，看見事物的本質。"
-            },
-            {
-                "id": "el_earth",
-                "title": "🌱 土元素 (Pentacles)",
-                "desc": "土是顯化、物質與身體的象徵。它是四大元素中最穩固的存在，代表著將靈性落實於物質世界的成果。它關乎金錢、工作、健康以及我們與「家」的連結。土元素提醒我們，神性存在於萬物之中。",
-                "energy": "對應能量：財富、物質顯化、健康、安全感、傳承。",
-                "lesson": "靈魂課題：如何在追求物質豐盛的同時，保持靈魂的輕盈？理解身體是靈魂的殿堂，金錢是能量流動的一種形式。"
-            }
-        ],
-        "numerology": [
-            { "number": 1, "title": "數字 1 (Ace)", "keywords": "潛能、開端、神聖的禮物、意志的種子", "desc": "生命階段：種子破土而出的瞬間。這是一股純粹且未分化的能量，象徵著無限的可能性與新的契機。它是宇宙遞給你的邀請函。" },
-            { "number": 2, "title": "數字 2 (Two)", "keywords": "平衡、二元性、選擇、結合、對立", "desc": "生命階段：分裂與相遇。能量從「一」分裂為「二」，產生了對話與張力。這是關於如何在兩個選項、兩個人或兩種立場之間尋求和諧的階段。" },
-            { "number": 3, "title": "數字 3 (Three)", "keywords": "創造、成長、初步成果、合作、擴張", "desc": "生命階段：創造的喜悅。二元對立結合後產生了第三者（1+2=3），象徵孕育與生長。這是能量開始流動並產生初步具體成果的時刻。" },
-            { "number": 4, "title": "數字 4 (Four)", "keywords": "穩定、結構、秩序、基礎、鞏固", "desc": "生命階段：建立根基。為了讓能量持久，必須建立結構與邊界。這是一個休息、鞏固與享受安全感的時期，但也可能隱含僵化的風險。" },
-            { "number": 5, "title": "數字 5 (Five)", "keywords": "衝突、變動、挑戰、失序、自由", "desc": "生命階段：成長的陣痛。為了突破「四」的限制，混亂是必須的。這是打破舊有結構、面對挑戰的時刻，雖痛苦卻是靈魂進化的催化劑。" },
-            { "number": 6, "title": "數字 6 (Six)", "keywords": "和諧、療癒、交換、復原、美", "desc": "生命階段：風雨後的寧靜。在經歷「五」的衝突後，能量重新回歸平衡。這是關於給予與接受、解決問題並在關係中找到美的階段。" },
-            { "number": 7, "title": "數字 7 (Seven)", "keywords": "評估、內省、夢想、策略、測試", "desc": "生命階段：內在的探索。在採取進一步行動前，停下來審視內心的動機與外在的選擇。這是一個需要運用智慧分辨幻象與真實的時刻。" },
-            { "number": 8, "title": "數字 8 (Eight)", "keywords": "行動、轉化、力量、重生、精通", "desc": "生命階段：能量的高速流動。這是將內在累積的力量轉化為具體行動的階段，也是關於捨棄舊殼、精進技能或快速前進的時期。" },
-            { "number": 9, "title": "數字 9 (Nine)", "keywords": "圓滿、孤獨、巔峰、智慧、收穫", "desc": "生命階段：個人的完成式。個位數的終點，象徵著獨自達到的成就與智慧。這是一種飽滿的狀態，但也暗示著需要與他人分享的孤獨感。" },
-            { "number": 10, "title": "數字 10 (Ten)", "keywords": "完成、循環終結、遺產、集體、過渡", "desc": "生命階段：週期的結束與重啟。能量已達極限，轉化為集體的遺產或徹底的結束。這是終點，也是下一個「一」的起點。" }
-        ],
-        "others": [
-            {
-                "section": "court_cards",
-                "title": "👑 宮廷牌階級解析",
-                "content": [
-                    { "rank": "侍者 (Page)", "archetype": "學徒與信使", "desc": "象徵該元素的「土」向特質（初始、學習）。他們是年輕的靈魂，對世界充滿好奇，帶來新的消息與契機，但缺乏經驗與定性。" },
-                    { "rank": "騎士 (Knight)", "archetype": "行動者與探索者", "desc": "象徵該元素的「火」向特質（行動、極端）。他們專注於目標、充滿爆發力，代表著該元素的動態展現，但也容易魯莽或過度激進。" },
-                    { "rank": "皇后 (Queen)", "archetype": "滋養者與內化者", "desc": "象徵該元素的「水」向特質（感受、內在）。她們成熟地掌握了該元素的陰性力量，懂得滋養、守護並向內探索，擁有深刻的理解力。" },
-                    { "rank": "國王 (King)", "archetype": "統治者與建立者", "desc": "象徵該元素的「風/土」向特質（權威、結構）。他們是成熟的陽性力量，代表該元素的最高成就、社會責任與對外在世界的掌控。" }
-                ]
-            },
-            { "section": "fools_journey", "title": "🌟 愚人之旅 (The Fool's Journey)", "desc": "大阿爾克納牌（Major Arcana）描繪了一場靈魂的英雄之旅。從「0 號愚人」的天真出發，經歷父母原型的教導（魔術師、女祭司、皇后、皇帝），面對社會化的考驗（教皇、戀人），學習掌控意志（戰車）。\n隨後進入內在的煉金術轉化（力量、隱士、命運之輪），面對陰影與死亡（吊人、死神、節制、惡魔、塔），最終在星辰的指引下重獲新生（星星、月亮、太陽），回應召喚（審判），達成圓滿的統合（世界）。這是一張人類心理成長的地圖。" },
-            { "section": "reversals", "title": "🔄 正逆位觀念 (Upright & Reversed)", "desc": "逆位並不單純代表「吉凶」，在榮格心理學中，它常指向「內在的」或「陰影的」運作。\n1. **能量受阻**：該牌的能量無法順暢流動，例如「權杖八逆位」可能代表延遲。\n2. **內在化**：能量轉向內在運作，而非外顯，例如「隱士逆位」可能代表過度孤僻或被迫進入內省。\n3. **過度或不足**：能量的極端表現，例如「自信」變成了「自大」（權杖六逆位），或「謹慎」變成了「畏縮」。\n4. **前一階段的未完成**：提示當事人需要回到上一張牌的課題重新修煉。" },
-            { "section": "purification", "title": "🌿 淨化與儀式 (Purification Rituals)", "desc": "塔羅牌是連結潛意識的工具，定期的淨化能保持能量的純淨與讀牌的準確性。\n1. **白鼠尾草/聖木**：利用煙燻的方式，將四大元素中的「風」與「火」結合，清理附著在牌上的混雜情緒。\n2. **水晶消磁**：將牌置於白水晶簇或紫水晶洞中，利用礦石穩定的頻率重置牌卡的能量場。\n3. **月光浴**：在滿月之夜將牌置於月光下，連結直覺與陰性力量（特別適合聖杯牌組）。\n4. **敲擊歸零**：使用指節輕敲牌疊三次，觀想白光注入，這是最簡單快速的重置儀式，象徵「敲醒」沈睡的靈性。" }
-        ]
+        "elements": {
+            "title": "🔥 四大元素 (The Elements)",
+            "items": [
+                { "id": "el_fire", "title": "火元素 (Wands)", "desc": "火是創造與意志的原始能量。對應：權杖牌組。\n能量：行動力、熱情、直覺、冒險。\n課題：如何將靈感轉化為行動？" },
+                { "id": "el_water", "title": "水元素 (Cups)", "desc": "水是情感與潛意識的載體。對應：聖杯牌組。\n能量：愛、關係、夢境、療癒。\n課題：如何接納脆弱並建立連結？" },
+                { "id": "el_air", "title": "風元素 (Swords)", "desc": "風是理智與溝通的象徵。對應：寶劍牌組。\n能量：邏輯、真理、衝突、決策。\n課題：如何穿越思想迷霧看見真相？" },
+                { "id": "el_earth", "title": "土元素 (Pentacles)", "desc": "土是物質與顯化的結果。對應：錢幣牌組。\n能量：財富、健康、安全感、傳承。\n課題：如何在物質中活出靈性？" }
+            ]
+        },
+        "numerology": {
+            "title": "🔢 靈數旅程 (Numerology)",
+            "items": [
+                { "title": "1 (Ace) - 種子", "desc": "純粹的潛能，神的禮物，新的開端。" },
+                { "title": "2 (Two) - 平衡", "desc": "二元對立，選擇，合作或對峙。" },
+                { "title": "3 (Three) - 創造", "desc": "初步的成果，團體合作，成長。" },
+                { "title": "4 (Four) - 穩定", "desc": "結構，秩序，安全感，但也可能僵化。" },
+                { "title": "5 (Five) - 衝突", "desc": "變動，打破結構，混亂與挑戰。" },
+                { "title": "6 (Six) - 和諧", "desc": "療癒，解決問題，美與交換。" },
+                { "title": "7 (Seven) - 評估", "desc": "內省，策略，夢想與現實的考量。" },
+                { "title": "8 (Eight) - 行動", "desc": "力量的展現，快速移動，轉化。" },
+                { "title": "9 (Nine) - 圓滿", "desc": "孤獨的智慧，個人的巔峰，收穫。" },
+                { "title": "10 (Ten) - 完成", "desc": "週期的結束，集體遺產，過渡到下一個1。" }
+            ]
+        },
+        "astrology": {
+            "title": "✨ 占星對應 (Astrology)",
+            "desc": "塔羅與占星密不可分，黃金黎明會（Golden Dawn）確立了其對應體系。",
+            "subType": "grid",
+            "items": [
+                { "rank": "火星 (Mars)", "archetype": "塔 (The Tower)", "desc": "破壞、衝突、爆發力。" },
+                { "rank": "金星 (Venus)", "archetype": "皇后 (The Empress)", "desc": "愛、美、豐盛。" },
+                { "rank": "水星 (Mercury)", "archetype": "魔術師 (The Magician)", "desc": "溝通、智力、連結。" },
+                { "rank": "月亮 (Moon)", "archetype": "女祭司 (High Priestess)", "desc": "直覺、潛意識、陰性。" },
+                { "rank": "太陽 (Sun)", "archetype": "太陽 (The Sun)", "desc": "活力、自我、意識。" },
+                { "rank": "土星 (Saturn)", "archetype": "世界 (The World)", "desc": "限制、結構、完成。" },
+                { "rank": "木星 (Jupiter)", "archetype": "命運之輪 (Wheel)", "desc": "擴張、幸運、業力。" }
+            ]
+        },
+        "chakras": {
+            "title": "🧘 脈輪系統 (Chakras)",
+            "desc": "透過塔羅牌檢視身體能量中心的運作狀態。",
+            "subType": "grid",
+            "items": [
+                { "rank": "海底輪 (Root)", "archetype": "錢幣牌組", "desc": "生存、安全感、紅色。" },
+                { "rank": "臍輪 (Sacral)", "archetype": "聖杯牌組", "desc": "創造力、性、情緒、橙色。" },
+                { "rank": "太陽神經叢 (Solar)", "archetype": "權杖牌組", "desc": "意志力、自信、黃色。" },
+                { "rank": "心輪 (Heart)", "archetype": "戀人/寶劍三", "desc": "愛、慈悲、接納、綠色。" },
+                { "rank": "喉輪 (Throat)", "archetype": "寶劍牌組", "desc": "溝通、表達真實、藍色。" },
+                { "rank": "眉心輪 (Third Eye)", "archetype": "女祭司/隱士", "desc": "直覺、洞見、靛色。" },
+                { "rank": "頂輪 (Crown)", "archetype": "愚人/世界", "desc": "靈性連結、合一、紫色。" }
+            ]
+        },
+        "jung": {
+            "title": "🧠 榮格心理學 (Jungian Psychology)",
+            "items": [
+                { "title": "共時性 (Synchronicity)", "desc": "榮格認為塔羅牌運作的原理並非因果律，而是「有意義的巧合」。你抽到的牌反映了你當下的心靈狀態，內在與外在世界是同步反映的。" },
+                { "title": "原型 (Archetypes)", "desc": "塔羅牌的圖像（如皇帝、母親、隱士）對應人類集體潛意識中的通用原型。透過解讀這些圖像，我們能喚醒內在深層的智慧。" },
+                { "title": "陰影 (The Shadow)", "desc": "那些我們不願承認、壓抑的特質。逆位牌或令人恐懼的牌（如惡魔、塔）通常指向陰影的工作，提示我們整合這些面向才能完整。" },
+                { "title": "個體化 (Individuation)", "desc": "愚人之旅就是一場個體化過程——從無意識的合一，經歷分裂與挑戰，最終整合成一個獨特且完整的自我。" }
+            ]
+        },
+        "guide": {
+            "title": "📖 學習與使用指南",
+            "items": [
+                { "title": "如何提問？", "desc": "避免「是非題」（會不會復合？），改用「開放式問題」（這段關係目前的能量如何？我能做什麼來改善？）。將力量拿回自己手中。" },
+                { "title": "直覺先決", "desc": "書本的解釋只是參考。當你看到牌時，第一眼的感覺、顏色、符號帶給你的聯想，往往比書本更準確對應你的當下。" },
+                { "title": "自我照顧儀式", "desc": "抽牌前，先深呼吸三次，設下結界（想像白光包圍）。抽完牌後，記錄在日記中，觀察幾天後的驗證，這是最好的學習方式。" }
+            ]
+        },
+        "others": {
+            "title": "👑 宮廷牌階級",
+            "subType": "grid",
+            "items": [
+                { "rank": "侍者 (Page)", "archetype": "學徒", "desc": "學習、訊息、初始階段。" },
+                { "rank": "騎士 (Knight)", "archetype": "行動者", "desc": "追求、速度、極端表現。" },
+                { "rank": "皇后 (Queen)", "archetype": "照顧者", "desc": "內化、滋養、陰性力量。" },
+                { "rank": "國王 (King)", "archetype": "管理者", "desc": "結構、權威、陽性力量。" }
+            ]
+        }
     };
 
     const themes = {
@@ -4531,12 +4572,14 @@ renderTarot:(container) => {
         deck: [],
         selectedIndices: [],
         currentResultCards: [],
-        isShuffling: false 
+        isShuffling: false,
+        focusedCardIndex: -1 // For slider
     };
 
-    // Helper
+    // Helper Functions
     const getCardEngName = (id) => {
-        if(id.startsWith('m')) {
+         // (Keep existing logic)
+         if(id.startsWith('m')) {
              const majors = ["The Fool","The Magician","The High Priestess","The Empress","The Emperor","The Hierophant","The Lovers","The Chariot","Strength","The Hermit","Wheel of Fortune","Justice","The Hanged Man","Death","Temperance","The Devil","The Tower","The Star","The Moon","The Sun","Judgement","The World"];
              const idx = parseInt(id.substring(1));
              return majors[idx] || "Major Arcana";
@@ -4549,7 +4592,7 @@ renderTarot:(container) => {
         return `${rank} of ${s}`;
     };
 
-    // HTML
+    // HTML Structure
     container.innerHTML = `
         <div id="tarot-app">
             <button id="btn-floating-library" class="floating-library-btn" title="打開圖書館">
@@ -4569,6 +4612,13 @@ renderTarot:(container) => {
                 <div id="step-play" class="wizard-container hidden">
                     <h3 id="play-instruction" style="margin-bottom:10px;">請靜下心...</h3>
                     <div class="tarot-table" id="card-table"></div>
+                    
+                    <div id="mobile-selection-control" class="hidden">
+                        <div class="slider-label">左右拖動選擇牌卡</div>
+                        <input type="range" min="0" max="77" value="39" class="card-slider" id="card-picker-slider">
+                        <button id="btn-confirm-selection">✨ 確認選擇這張</button>
+                    </div>
+
                     <button class="btn-primary btn-pulse" id="btn-action" style="margin-top:-20px;">開始洗牌</button>
                 </div>
                 <div id="step-result" class="wizard-container hidden">
@@ -4577,7 +4627,7 @@ renderTarot:(container) => {
                     
                     <div id="journal-section" class="hidden">
                         <h4>✏️ 塔羅日記</h4>
-                        <textarea id="journal-input" placeholder="看著這幾張牌，你有什麼感覺？..."></textarea>
+                        <textarea id="journal-input" placeholder="看著這幾張牌，閉上眼睛深呼吸...它們帶給你什麼感覺？寫下來，這也是療癒的一部分。"></textarea>
                         <div style="text-align:right; margin-top:10px;">
                             <span id="save-msg" style="margin-right:10px; color:#a1887f; font-size:0.85rem;"></span>
                             <button class="btn-primary" id="btn-save-journal" style="font-size:0.9rem; padding:8px 24px;">保存日記</button>
@@ -4703,6 +4753,9 @@ renderTarot:(container) => {
         const table = container.querySelector('#card-table');
         const btn = container.querySelector('#btn-action');
         const instruction = container.querySelector('#play-instruction');
+        const sliderCtrl = container.querySelector('#mobile-selection-control');
+        
+        sliderCtrl.classList.add('hidden'); // Hide slider initially
         table.innerHTML = ''; state.selectedIndices = []; state.currentResultCards = []; state.deck = [...fullDeckData]; state.isShuffling = false;
         
         for(let i=0; i<78; i++) {
@@ -4733,7 +4786,7 @@ renderTarot:(container) => {
         }, 800);
     };
 
-    // --- Fan Out Logic (Stability Fix) ---
+    // --- Fan Out with Slider Control ---
     const fanOut = () => {
         const table = container.querySelector('#card-table');
         const cards = Array.from(table.children);
@@ -4742,7 +4795,7 @@ renderTarot:(container) => {
 
         const isMobile = window.innerWidth < 600;
         const totalDisplay = 78;
-        const angleSpan = isMobile ? 120 : 160; // 縮小手機角度，避免切邊
+        const angleSpan = isMobile ? 120 : 160;
         const startAngle = -(angleSpan / 2);
         const radius = isMobile ? 120 : 250; 
         const yOffset = isMobile ? 160 : 100;
@@ -4755,12 +4808,12 @@ renderTarot:(container) => {
             const y = radius * Math.sin(rad) + yOffset;
             const baseTransform = `translate(${x}px, ${y}px) rotate(${angle}deg)`;
             
+            card.dataset.baseTransform = baseTransform;
+            card.dataset.index = i;
             card.style.transform = baseTransform;
-            card.dataset.baseTransform = baseTransform; 
-            card.dataset.cx = x + table.offsetWidth/2; // Static center X
-            card.dataset.cy = y + table.offsetHeight/2; // Static center Y
             card.style.zIndex = 10 + i;
 
+            // Desktop Hover (unchanged)
             card.onmouseenter = () => {
                 if (!card.classList.contains('picked') && !isMobile) {
                     card.classList.add('hover-active');
@@ -4775,72 +4828,61 @@ renderTarot:(container) => {
                     card.style.transform = baseTransform;
                 }
             };
-            card.onclick = (e) => { e.stopPropagation(); pickCard(card, i); };
+            // Desktop Click
+            card.onclick = (e) => { 
+                if(!isMobile) { e.stopPropagation(); pickCard(card, i); }
+            };
         });
 
-        // Touch Logic
-        if (table._touchHandler) table.removeEventListener('touchmove', table._touchHandler);
-        
-        let lastActiveCard = null; 
-        table._touchHandler = (e) => {
-            if(e.cancelable) e.preventDefault();
-            const touch = e.touches[0];
-            const touchX = touch.clientX;
-            const touchY = touch.clientY;
+        // --- NEW: Mobile Slider Logic ---
+        if (isMobile) {
+            const sliderControl = container.querySelector('#mobile-selection-control');
+            const slider = container.querySelector('#card-picker-slider');
+            const confirmBtn = container.querySelector('#btn-confirm-selection');
             
-            let closestCard = null;
-            let minDist = 9999;
+            sliderControl.classList.remove('hidden');
+            slider.value = 39; // Center
+            state.focusedCardIndex = 39;
+            highlightCard(39); // Initial highlight
 
-            // Use STATIC centers for distance
-            cards.forEach(c => {
+            slider.oninput = (e) => {
+                const idx = parseInt(e.target.value);
+                highlightCard(idx);
+            };
+
+            confirmBtn.onclick = () => {
+                const c = cards[state.focusedCardIndex];
+                if(c && !c.classList.contains('picked')) pickCard(c, state.focusedCardIndex);
+            };
+
+            // Allow touch on card to move slider (Sync)
+            cards.forEach((c, i) => {
+                c.onclick = (e) => {
+                    e.stopPropagation();
+                    slider.value = i;
+                    highlightCard(i);
+                };
+            });
+        }
+        
+        function highlightCard(idx) {
+            if(state.selectedIndices.includes(idx)) return; 
+            state.focusedCardIndex = idx;
+            
+            // Reset others
+            cards.forEach((c, i) => {
                 if(c.classList.contains('picked')) return;
-                // Reading static coords from dataset calculated during fanOut
-                // Note: fanOut positions are relative to table center. We need to convert to viewport coords.
-                const rect = table.getBoundingClientRect();
-                const tableCenterX = rect.left + rect.width/2;
-                const tableCenterY = rect.top + rect.height/2;
-                
-                // If we didn't store cx/cy correctly or resize happened, fallback to current pos won't work well.
-                // Let's use getBoundingClientRect but only when NOT active to get a stable read? No.
-                // Best way: Use the dataset cx/cy calculated once.
-                // Re-calculate center absolute position:
-                // transform translate is relative to center of table (due to how we set it up usually? No, absolute top/left 50%)
-                // In CSS: left 50%, top 50%.
-                
-                // Since css uses translate from center, we can approximate:
-                // This is a simplified "magnet" logic.
-                const cRect = c.getBoundingClientRect();
-                const dist = Math.hypot(touchX - (cRect.left + cRect.width/2), touchY - (cRect.top + cRect.height/2));
-                
-                if(dist < minDist && dist < 80) { // Distance threshold
-                    minDist = dist;
-                    closestCard = c;
+                if(i === idx) {
+                    c.classList.add('active-focus');
+                    c.style.zIndex = 2000;
+                    c.style.transform = `${c.dataset.baseTransform} translateY(-40px) scale(1.2)`;
+                } else {
+                    c.classList.remove('active-focus');
+                    c.style.zIndex = 10 + i;
+                    c.style.transform = c.dataset.baseTransform;
                 }
             });
-
-            if (closestCard === lastActiveCard) return; // Anti-jitter lock
-
-            if (lastActiveCard && lastActiveCard !== closestCard) {
-                lastActiveCard.classList.remove('touch-active');
-                lastActiveCard.style.zIndex = 10 + cards.indexOf(lastActiveCard);
-                lastActiveCard.style.transform = lastActiveCard.dataset.baseTransform;
-            }
-
-            if (closestCard) {
-                closestCard.classList.add('touch-active');
-                closestCard.style.zIndex = 1000;
-                closestCard.style.transform = `${closestCard.dataset.baseTransform} translateY(-30px) scale(1.1)`;
-            }
-            lastActiveCard = closestCard;
-        };
-        table.addEventListener('touchmove', table._touchHandler, { passive: false });
-        table.addEventListener('touchend', () => {
-            if(lastActiveCard) {
-                const index = cards.indexOf(lastActiveCard);
-                pickCard(lastActiveCard, index);
-                lastActiveCard = null;
-            }
-        });
+        }
     };
 
     const pickCard = (cardEl, index) => {
@@ -4851,10 +4893,10 @@ renderTarot:(container) => {
 
         cardEl.classList.add('picked');
         cardEl.classList.remove('hover-active');
-        cardEl.classList.remove('touch-active');
+        cardEl.classList.remove('active-focus'); // Remove highlight focus
         
         const isMobile = window.innerWidth < 600;
-        const liftY = isMobile ? -50 : -80; 
+        const liftY = isMobile ? -60 : -80; 
         
         cardEl.style.transform = `${cardEl.dataset.baseTransform} translateY(${liftY}px) scale(1.15)`;
         cardEl.style.zIndex = 200 + state.selectedIndices.length;
@@ -4862,7 +4904,12 @@ renderTarot:(container) => {
         cardEl.style.border = "2px solid #fff";
         
         state.selectedIndices.push(index);
-        if(state.selectedIndices.length === limit) setTimeout(revealResult, 1000);
+        
+        // Mobile: Check if done
+        if (state.selectedIndices.length === limit) {
+             container.querySelector('#mobile-selection-control').classList.add('hidden');
+             setTimeout(revealResult, 1000);
+        }
     };
 
     const revealResult = () => {
@@ -4902,7 +4949,8 @@ renderTarot:(container) => {
             const d = new Date();
             const key = `tarot_journal_${d.getFullYear()}_${d.getMonth()+1}_${d.getDate()}`;
             const existingRaw = localStorage.getItem(key);
-            let defaultText = `今日牌卡：${cardNames.join('、')}\n\n我的心得：`;
+            // Relaxing text
+            let defaultText = `今日牌卡：${cardNames.join('、')}\n\n我的感受與覺察：`;
             
             if (existingRaw) {
                 try {
@@ -4955,7 +5003,7 @@ renderTarot:(container) => {
         modal.classList.remove('hidden');
     };
 
-    // --- Library Section ---
+    // --- Library Section (Refined) ---
     const renderLibraryCards = (filter='all') => {
         const grid = container.querySelector('#library-grid');
         grid.innerHTML = '';
@@ -4987,34 +5035,54 @@ renderTarot:(container) => {
         const grid = container.querySelector('#knowledge-grid');
         grid.innerHTML = '';
         
-        const renderBlock = (title, items, isComplex=false) => {
-            items.forEach(item => {
-                let contentHTML = '';
-                if(isComplex && item.content) {
-                    contentHTML = `<div class="k-sub-grid">
-                        ${item.content.map(sub => `
-                            <div class="k-sub-card">
-                                <div class="k-sub-title">${sub.rank} - ${sub.archetype}</div>
-                                <div class="k-sub-desc">${sub.desc}</div>
-                            </div>
-                        `).join('')}
-                    </div>`;
-                } else {
-                    contentHTML = `<div class="k-content">${item.desc}</div>`;
-                }
-
-                grid.innerHTML += `
-                    <div class="knowledge-card">
-                        <div class="k-main-title">${item.title}</div>
-                        <div class="k-body">${contentHTML}</div>
+        // Accordion Render Logic
+        Object.values(tarotKnowledgeBase).forEach(section => {
+            const card = document.createElement('div');
+            card.className = 'knowledge-card';
+            
+            let contentHTML = '';
+            
+            if (section.subType === 'grid') {
+                 contentHTML = `<div class="k-sub-grid">
+                    ${section.items.map(sub => `
+                        <div class="k-sub-card">
+                            <div class="k-sub-title">${sub.rank || sub.title}</div>
+                            <div class="k-sub-desc">${sub.desc} ${sub.archetype ? `<br><small>原型: ${sub.archetype}</small>` : ''}</div>
+                        </div>
+                    `).join('')}
+                </div>`;
+            } else {
+                contentHTML = section.items.map(item => `
+                    <div class="k-item">
+                        <div class="k-item-title">${item.title}</div>
+                        <div class="k-item-desc">${item.desc}</div>
                     </div>
-                `;
-            });
-        };
+                `).join('');
+            }
 
-        renderBlock("四大元素", tarotKnowledgeBase.elements);
-        renderBlock("靈數意涵", tarotKnowledgeBase.numerology);
-        renderBlock("進階知識", tarotKnowledgeBase.others, true);
+            card.innerHTML = `
+                <div class="k-header">
+                    <div class="k-main-title">${section.title}</div>
+                    <div class="k-icon">▼</div>
+                </div>
+                <div class="k-body">
+                    <div class="k-content-pad">
+                        ${section.desc ? `<p style="margin-bottom:20px; color:var(--text-sub); font-size:0.9rem;">${section.desc}</p>` : ''}
+                        ${contentHTML}
+                    </div>
+                </div>
+            `;
+            
+            // Toggle Logic
+            card.querySelector('.k-header').onclick = () => {
+                const isActive = card.classList.contains('active');
+                // Close others (optional, keeps UI clean)
+                grid.querySelectorAll('.knowledge-card').forEach(c => c.classList.remove('active'));
+                if(!isActive) card.classList.add('active');
+            };
+
+            grid.appendChild(card);
+        });
     };
 
     const renderJournal = () => {
@@ -5045,16 +5113,13 @@ renderTarot:(container) => {
             const parts = key.split('_');
             const dateStr = `${parts[2]} / ${parts[3]} / ${parts[4]}`;
             
-            // Generate Journal HTML
             let imgHtml = '', namesHtml = '';
             
             if (cards.length > 0) {
-                // If single card
                 if (cards.length === 1) {
                     const c = cards[0];
                     imgHtml = `<img class="j-card-img" src="./images/tarot/${c.file}" style="width:100px; transform: ${c.isReversed ? 'rotate(180deg)' : 'none'}" onclick="showJournalCardDetail('${c.id}', ${c.isReversed})">`;
                 } else {
-                    // Multi card
                     imgHtml = `<div class="j-img-grid">
                         ${cards.map(c => `<img class="j-card-img" src="./images/tarot/${c.file}" style="transform: ${c.isReversed ? 'rotate(180deg)' : 'none'}" onclick="showJournalCardDetail('${c.id}', ${c.isReversed})">`).join('')}
                     </div>`;
