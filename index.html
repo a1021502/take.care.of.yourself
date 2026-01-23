@@ -1043,9 +1043,8 @@ body.dark-mode .affirmation-overlay { background: rgba(0,0,0,0.85); }
 #active-feature-container {
     overscroll-behavior: contain;
 }
-/* --- Tarot 2.6: Journal Images, Font Fix, Spacing Fix --- */
+/* --- Tarot 2.7: Journal Layout, Mobile Fix, Knowledge UI --- */
 
-/* 1. 引入字體 */
 @import url('https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@300;400;500;700&display=swap');
 
 :root {
@@ -1067,6 +1066,9 @@ body.dark-mode .affirmation-overlay { background: rgba(0,0,0,0.85); }
     --input-border: #dcdcdc;
     --box-bg: #faf9f7;
     --header-bg: rgba(252, 251, 249, 0.95);
+
+    /* 新增：精緻化邊框色 */
+    --gold-border: linear-gradient(135deg, #e6cfb8 0%, #d4a373 50%, #e6cfb8 100%);
 }
 
 body.dark-mode {
@@ -1088,20 +1090,14 @@ body.dark-mode {
     --input-border: #444444;
     --box-bg: #302b26;
     --header-bg: rgba(26, 24, 22, 0.95);
+    --gold-border: linear-gradient(135deg, #554a40 0%, #8c735a 50%, #554a40 100%);
 }
-
-::-webkit-scrollbar { width: 4px; height: 4px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1); border-radius: 10px; }
-body.dark-mode ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); }
 
 body {
     background-color: var(--bg-color);
     color: var(--text-main);
-    /* 2. 字體修正：套用 Zen Maru Gothic */
     font-family: 'Zen Maru Gothic', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     margin: 0; 
-    /* 3. 首頁間距修正：給 body 一個基礎 padding，讓 APP 首頁內容不會貼邊 */
     padding: 0 20px; 
     transition: background-color 0.3s ease, color 0.3s ease;
     overflow-x: hidden;
@@ -1109,26 +1105,19 @@ body {
     box-sizing: border-box;
 }
 
-/* 標題強制套用字體 */
-h1, h2, h3, h4, h5, .brand-title {
-    font-family: 'Zen Maru Gothic', sans-serif;
-}
-
+h1, h2, h3, h4, h5, .brand-title { font-family: 'Zen Maru Gothic', sans-serif; }
 .hidden { display: none !important; }
 
 #tarot-app {
     width: 100%; min-height: 100vh;
     display: flex; flex-direction: column; align-items: center;
     position: relative; padding-bottom: 80px;
-    /* Tarot App 內部不需要額外 padding，因為它有自己的佈局，所以這裡重置 */
-    margin: 0 -20px; /* 抵消 body 的 padding */
-    width: calc(100% + 40px); /* 補回寬度 */
+    margin: 0 -20px; width: calc(100% + 40px);
 }
 
 /* 懸浮按鈕 */
 .floating-library-btn {
-    position: fixed; top: 20px; left: 20px;
-    z-index: 1100;
+    position: fixed; top: 20px; left: 20px; z-index: 1100;
     background: var(--surface-color);
     border: 1px solid rgba(212, 163, 115, 0.3);
     color: var(--text-main);
@@ -1143,9 +1132,7 @@ h1, h2, h3, h4, h5, .brand-title {
 .floating-library-btn:hover { transform: translateY(-2px); border-color: var(--accent-color); }
 
 /* 主舞台 */
-#tarot-main-stage {
-    width: 100%; padding-top: 80px; transition: opacity 0.4s ease;
-}
+#tarot-main-stage { width: 100%; padding-top: 80px; transition: opacity 0.4s ease; }
 
 .wizard-container {
     width: 90%; max-width: 900px; margin: 0 auto; padding: 20px 0;
@@ -1222,6 +1209,7 @@ body.dark-mode .btn-secondary { border-color: #444; }
     #play-instruction { font-size: 1rem; margin-bottom: 5px; }
 }
 
+/* --- 手機抖動修復與卡片樣式 --- */
 .tarot-card {
     width: 70px; height: 119px; position: absolute;
     left: 50%; top: 50%; margin-left: -35px; margin-top: -60px;
@@ -1244,10 +1232,21 @@ body.dark-mode .btn-secondary { border-color: #444; }
     border: 2px solid #fff; box-shadow: inset 0 0 10px rgba(0,0,0,0.3);
     pointer-events: none; 
 }
-.tarot-card.hover-active {
+
+/* ★ 重要：只在支援 hover (電腦) 的設備上啟用 hover transform，修復手機抖動 */
+@media (hover: hover) {
+    .tarot-card.hover-active {
+        box-shadow: 0 0 20px rgba(212, 163, 115, 0.6);
+        border: 1px solid rgba(255,255,255,0.9);
+        /* 這裡的 transform 由 JS 的 mouseenter 事件輔助，或直接在 CSS 定義 */
+    }
+}
+/* 手機或觸控時，由 JS 強制添加這個 class */
+.tarot-card.touch-active {
     box-shadow: 0 0 20px rgba(212, 163, 115, 0.6);
     border: 1px solid rgba(255,255,255,0.9);
 }
+
 
 /* 結果區 */
 .spread-result-container {
@@ -1273,7 +1272,7 @@ body.dark-mode .result-card { background: #333; }
 .result-card img { width: 100%; height: 100%; object-fit: cover; }
 .result-card:hover { transform: translateY(-10px) scale(1.05); }
 
-/* 日記區 (原筆記) */
+/* 日記輸入區 */
 #journal-section {
     width: 100%; max-width: 500px; margin: 40px auto 20px;
     background: var(--surface-color); padding: 25px; border-radius: 20px;
@@ -1304,9 +1303,7 @@ body.dark-mode .result-card { background: #333; }
 body.dark-mode .library-sticky-header { border-bottom-color: rgba(255,255,255,0.06); }
 
 /* 分頁 Tab */
-.library-tabs {
-    display: flex; justify-content: center; gap: 20px; margin-bottom: 15px;
-}
+.library-tabs { display: flex; justify-content: center; gap: 20px; margin-bottom: 15px; }
 .lib-tab {
     background: transparent; border: none; font-size: 1rem; color: var(--text-sub);
     padding: 8px 12px; cursor: pointer; position: relative; font-weight: 500;
@@ -1319,9 +1316,7 @@ body.dark-mode .library-sticky-header { border-bottom-color: rgba(255,255,255,0.
 }
 
 /* 子篩選器 */
-.library-filters { 
-    display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: 10px; 
-}
+.library-filters { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: 10px; }
 .filter-btn {
     padding: 6px 16px; border: 1px solid transparent; background: rgba(0,0,0,0.04);
     border-radius: 30px; font-size: 0.8rem; color: var(--text-sub); cursor: pointer;
@@ -1346,38 +1341,68 @@ body.dark-mode .filter-btn.active { background: var(--accent-color); }
 .library-card img { width: 100%; height: auto; display: block; transition: transform 0.3s; cursor: pointer; }
 .library-card img:hover { transform: scale(1.08); }
 
-/* 2. 知識卡片 */
+/* 2. 知識卡片 (精緻化設計) */
 .knowledge-grid {
-    display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px;
 }
 .knowledge-card {
-    background: var(--surface-color); padding: 25px; border-radius: 16px;
-    box-shadow: var(--card-shadow); border-left: 4px solid var(--accent-color);
+    background: var(--surface-color); padding: 30px; border-radius: 20px;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.06); 
+    border: 1px solid rgba(255,255,255,0.5);
+    position: relative; overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
-.k-title { font-size: 1.1rem; font-weight: 700; margin-bottom: 10px; color: var(--text-main); }
-.k-content { font-size: 0.9rem; color: var(--text-sub); line-height: 1.6; }
+.knowledge-card::before {
+    content: ''; position: absolute; top: 0; left: 0; width: 6px; height: 100%;
+    background: var(--gold-border);
+}
+.knowledge-card:hover { transform: translateY(-5px); box-shadow: 0 20px 50px rgba(0,0,0,0.1); }
 
-/* 3. 日記列表 (更新版) */
-.journal-list { display: flex; flex-direction: column; gap: 20px; max-width: 600px; margin: 0 auto; }
+.k-header { display: flex; align-items: center; gap: 10px; margin-bottom: 15px; }
+.k-icon { font-size: 1.5rem; }
+.k-title { font-size: 1.2rem; font-weight: 700; color: var(--text-main); letter-spacing: 0.5px; }
+.k-content { font-size: 0.95rem; color: var(--text-sub); line-height: 1.8; text-align: justify; }
+
+/* 3. 日記列表 (左圖右文) */
+.journal-list { display: flex; flex-direction: column; gap: 25px; max-width: 800px; margin: 0 auto; }
 .journal-entry {
-    background: var(--surface-color); padding: 20px; border-radius: 16px;
-    box-shadow: var(--card-shadow); position: relative;
+    background: var(--surface-color); padding: 25px; border-radius: 24px;
+    box-shadow: var(--card-shadow); 
     border: 1px solid rgba(0,0,0,0.03);
+    display: flex; gap: 25px; align-items: flex-start;
+    animation: slideUpFade 0.5s ease forwards;
 }
-.j-header {
-    display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;
-    border-bottom: 1px dashed rgba(0,0,0,0.1); padding-bottom: 10px;
+@media (max-width: 600px) {
+    .journal-entry { flex-direction: column; gap: 15px; }
 }
-.j-date { font-size: 0.85rem; color: var(--accent-color); font-weight: 700; }
-.j-cards-container {
-    display: flex; gap: 8px; margin-bottom: 15px; flex-wrap: wrap;
+
+/* 左側：卡牌區 */
+.j-left {
+    flex-shrink: 0; display: flex; flex-direction: column; gap: 10px;
 }
-.j-mini-card {
-    width: 45px; border-radius: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+.j-card-img {
+    width: 100px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.15);
     cursor: zoom-in; transition: transform 0.2s;
+    object-fit: cover; background: #eee;
 }
-.j-mini-card:hover { transform: scale(1.1); }
-.j-text { font-size: 0.95rem; color: var(--text-main); line-height: 1.7; white-space: pre-wrap; }
+.j-card-img:hover { transform: scale(1.05); }
+.j-img-grid {
+    display: grid; grid-template-columns: repeat(2, 1fr); gap: 5px; width: 140px;
+}
+.j-img-grid .j-card-img { width: 100%; }
+
+/* 右側：文字內容區 */
+.j-right { flex: 1; display: flex; flex-direction: column; gap: 8px; }
+.j-meta-header {
+    border-bottom: 1px dashed rgba(0,0,0,0.1); padding-bottom: 10px; margin-bottom: 5px;
+}
+.j-date { font-size: 0.8rem; color: var(--text-sub); font-weight: 500; letter-spacing: 1px; margin-bottom: 4px; }
+.j-card-names { 
+    font-size: 1rem; font-weight: 700; color: var(--accent-color); 
+    line-height: 1.4; display: block;
+}
+.j-card-names span { display: block; font-size: 0.85rem; color: var(--text-sub); font-weight: 400; margin-top: 2px; }
+.j-text { font-size: 0.95rem; color: var(--text-main); line-height: 1.8; white-space: pre-wrap; margin-top: 5px;}
 .j-empty { text-align: center; color: var(--text-sub); margin-top: 50px; }
 
 /* Modal */
@@ -1397,8 +1422,7 @@ body.dark-mode .filter-btn.active { background: var(--accent-color); }
     padding: 30px 25px; position: relative;
     box-shadow: 0 25px 60px rgba(0,0,0,0.3); 
     animation: zoomIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    box-sizing: border-box; 
-    margin: auto; 
+    box-sizing: border-box; margin: auto; 
 }
 @keyframes zoomIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 
@@ -4428,20 +4452,22 @@ renderTarot:(container) => {
 
     // 如果全域沒有 tarotDetails，就用 placeholder
     const db = window.tarotDetails || tarotDetailsPlaceholder;
- // New: Knowledge Data Structure (Placeholder)
+  // Knowledge Data
     const knowledgeDB = {
         elements: [
-            { title: "🔥 火元素 (Wands)", desc: "象徵熱情、行動力、靈感與意志。" },
-            { title: "💧 水元素 (Cups)", desc: "象徵情感、潛意識、關係與愛。" },
-            { title: "🌬️ 風元素 (Swords)", desc: "象徵思想、理智、溝通與衝突。" },
-            { title: "🌿 土元素 (Pentacles)", desc: "象徵物質、金錢、工作與現實成果。" }
+            { title: "火元素 (Wands)", desc: "🔥 象徵熱情、行動力、靈感與意志。對應星座：牡羊、獅子、射手。" },
+            { title: "水元素 (Cups)", desc: "💧 象徵情感、潛意識、關係與愛。對應星座：巨蟹、天蠍、雙魚。" },
+            { title: "風元素 (Swords)", desc: "🌬️ 象徵思想、理智、溝通與衝突。對應星座：雙子、天秤、水瓶。" },
+            { title: "土元素 (Pentacles)", desc: "🌿 象徵物質、金錢、工作與現實成果。對應星座：金牛、處女、摩羯。" }
         ],
         numerology: [
-            { title: "數字 1 (Ace)", desc: "新的開始、潛能、種子。" },
-            { title: "數字 10", desc: "圓滿、週期的結束。" }
+            { title: "數字 1 (Ace)", desc: "🌱 新的開始、潛能、種子。最純粹的能量形式。" },
+            { title: "數字 2 - 9", desc: "⚖️ 從二元對立、合作、穩固、衝突、改變到力量的積累，象徵過程中的起伏。" },
+            { title: "數字 10", desc: "🏁 圓滿、週期的結束與下一個階段的準備。" }
         ],
         others: [
-            { title: "👑 宮廷牌", desc: "代表人物原型與性格特質。" }
+            { title: "宮廷牌 (Court Cards)", desc: "👑 侍者、騎士、皇后、國王。代表人物原型、性格特質或實際生活中的人物。" },
+            { title: "愚人之旅", desc: "🌌 0號愚人到21號世界，象徵靈魂從懵懂到覺醒的完整生命旅程。" }
         ]
     };
 
@@ -4462,18 +4488,38 @@ renderTarot:(container) => {
     };
 
     let state = {
-        mode: 'reading', // reading | library
-        libTab: 'cards', // cards | journal | knowledge
+        mode: 'reading',
+        libTab: 'cards',
         step: 'theme',
         theme: 'daily',
         spreadKey: 'one',
         deck: [],
         selectedIndices: [],
-        currentResultCards: [], // Store current drawn cards for journal
+        currentResultCards: [],
         isShuffling: false 
     };
 
-    // HTML Structure
+    // Helper: Generate English Name if not in DB
+    const getCardEngName = (id) => {
+        if(id.startsWith('m')) {
+             // 簡單的大牌對照 (若 DB 有則用 DB，否則 fallback)
+             const majors = ["The Fool","The Magician","The High Priestess","The Empress","The Emperor","The Hierophant","The Lovers","The Chariot","Strength","The Hermit","Wheel of Fortune","Justice","The Hanged Man","Death","Temperance","The Devil","The Tower","The Star","The Moon","The Sun","Judgement","The World"];
+             const idx = parseInt(id.substring(1));
+             return majors[idx] || "Major Arcana";
+        }
+        const suitMap = { 'wa': 'Wands', 'cu': 'Cups', 'sw': 'Swords', 'pe': 'Pentacles' };
+        const s = suitMap[id.substring(0,2)];
+        const v = id.substring(2);
+        let rank = v;
+        if(v==='01') rank='Ace';
+        else if(v==='11'||v==='pa') rank='Page';
+        else if(v==='12'||v==='kn') rank='Knight';
+        else if(v==='13'||v==='qu') rank='Queen';
+        else if(v==='14'||v==='ki') rank='King';
+        else rank = parseInt(v).toString();
+        return `${rank} of ${s}`;
+    };
+
     container.innerHTML = `
         <div id="tarot-app">
             <button id="btn-floating-library" class="floating-library-btn" title="打開圖書館">
@@ -4528,6 +4574,7 @@ renderTarot:(container) => {
                     <div class="library-filters" id="lib-card-filters">
                         <button class="filter-btn active" data-filter="all">全部</button>
                         <button class="filter-btn" data-filter="major">大牌</button>
+                        <button class="filter-btn" data-filter="court">宮廷牌</button>
                         <button class="filter-btn" data-filter="wands">權杖</button>
                         <button class="filter-btn" data-filter="cups">聖杯</button>
                         <button class="filter-btn" data-filter="swords">寶劍</button>
@@ -4713,6 +4760,7 @@ renderTarot:(container) => {
             card.dataset.baseTransform = baseTransform; 
             card.style.zIndex = 10 + i;
 
+            // Desktop Hover Logic
             card.onmouseenter = () => {
                 if (!card.classList.contains('picked') && !isMobile) {
                     card.classList.add('hover-active');
@@ -4730,6 +4778,7 @@ renderTarot:(container) => {
             card.onclick = (e) => { e.stopPropagation(); pickCard(card, i); };
         });
 
+        // Touch handling (Mobile)
         if (table._touchHandler) table.removeEventListener('touchmove', table._touchHandler);
         
         let lastActiveCard = null; 
@@ -4758,13 +4807,13 @@ renderTarot:(container) => {
             if (closestCard === lastActiveCard) return;
 
             if (lastActiveCard && lastActiveCard !== closestCard) {
-                lastActiveCard.classList.remove('hover-active');
+                lastActiveCard.classList.remove('touch-active'); // Use specific class
                 lastActiveCard.style.zIndex = 10 + cards.indexOf(lastActiveCard);
                 lastActiveCard.style.transform = lastActiveCard.dataset.baseTransform;
             }
 
             if (closestCard) {
-                closestCard.classList.add('hover-active');
+                closestCard.classList.add('touch-active'); // Use specific class
                 closestCard.style.zIndex = 1000;
                 closestCard.style.transform = `${closestCard.dataset.baseTransform} translateY(-30px) scale(1.1)`;
             }
@@ -4791,6 +4840,8 @@ renderTarot:(container) => {
 
         cardEl.classList.add('picked');
         cardEl.classList.remove('hover-active');
+        cardEl.classList.remove('touch-active');
+
         const isMobile = window.innerWidth < 600;
         const liftY = isMobile ? -50 : -80; 
         
@@ -4811,9 +4862,8 @@ renderTarot:(container) => {
         const resultArea = container.querySelector('#result-area');
         const labels = spreads[state.spreadKey].labels;
         resultArea.innerHTML = '';
-        state.currentResultCards = []; // Reset current cards for journal
+        state.currentResultCards = []; 
 
-        // Prepare Card Names for Journal Auto-fill
         let cardNames = [];
 
         state.selectedIndices.forEach((deckIndex, i) => {
@@ -4850,17 +4900,16 @@ renderTarot:(container) => {
             const d = new Date();
             const key = `tarot_journal_${d.getFullYear()}_${d.getMonth()+1}_${d.getDate()}`;
             
-            // Check if entry exists to avoid overwriting user input
             const existingRaw = localStorage.getItem(key);
+            // Default text: card names
             let defaultText = `今日牌卡：${cardNames.join('、')}\n\n我的心得：`;
             
             if (existingRaw) {
                 try {
                     const parsed = JSON.parse(existingRaw);
-                    // If old text exists, use it. If it was just a string, use it.
                     container.querySelector('#journal-input').value = parsed.text || parsed;
                 } catch(e) {
-                    container.querySelector('#journal-input').value = existingRaw; // Old format fallback
+                    container.querySelector('#journal-input').value = existingRaw; 
                 }
             } else {
                 container.querySelector('#journal-input').value = defaultText;
@@ -4919,6 +4968,8 @@ renderTarot:(container) => {
             let match = false;
             if(filter === 'all') match = true;
             else if(filter === 'major' && c.type === 'major') match = true;
+            // Feature: Court Filter Logic
+            else if(filter === 'court' && c.type === 'court') match = true;
             else if(filter === 'wands' && c.id.startsWith('wa')) match = true;
             else if(filter === 'cups' && c.id.startsWith('cu')) match = true;
             else if(filter === 'swords' && c.id.startsWith('sw')) match = true;
@@ -4940,11 +4991,14 @@ renderTarot:(container) => {
         const grid = container.querySelector('#knowledge-grid');
         grid.innerHTML = '';
         
+        // Exquisite Design Rendering
         const makeSection = (title, items) => {
             items.forEach(item => {
                 grid.innerHTML += `
                     <div class="knowledge-card">
-                        <div class="k-title">${item.title}</div>
+                        <div class="k-header">
+                           <div class="k-title">${item.title}</div>
+                        </div>
                         <div class="k-content">${item.desc}</div>
                     </div>
                 `;
@@ -4970,7 +5024,6 @@ renderTarot:(container) => {
             const valRaw = localStorage.getItem(key);
             if (!valRaw) return;
 
-            // Parse Data (Support old string format & new JSON format)
             let text = "";
             let cards = [];
             try {
@@ -4979,45 +5032,75 @@ renderTarot:(container) => {
                     text = parsed.text || "";
                     cards = parsed.cards || [];
                 } else {
-                    text = valRaw; // Legacy string
+                    text = valRaw; 
                 }
             } catch (e) {
-                text = valRaw; // Legacy string
+                text = valRaw; 
             }
 
             const parts = key.split('_');
             const dateStr = `${parts[2]} / ${parts[3]} / ${parts[4]}`;
             
-            // Generate Cards HTML
-            let cardsHtml = '';
+            // Build Left Side (Images)
+            let imgHtml = '';
+            let namesHtml = '';
+            
             if (cards.length > 0) {
-                cardsHtml = `<div class="j-cards-container">`;
-                cards.forEach(c => {
+                if (cards.length === 1) {
+                    const c = cards[0];
                     const isRev = c.isReversed;
-                    cardsHtml += `
-                        <img class="j-mini-card" 
+                    imgHtml = `
+                        <img class="j-card-img" 
                              src="./images/tarot/${c.file}" 
-                             style="transform: ${isRev ? 'rotate(180deg)' : 'none'}"
+                             style="width:120px; transform: ${isRev ? 'rotate(180deg)' : 'none'}"
                              onclick="showJournalCardDetail('${c.id}', ${isRev})"
                         >
                     `;
-                });
-                cardsHtml += `</div>`;
+                } else {
+                    imgHtml = `<div class="j-img-grid">`;
+                    cards.forEach(c => {
+                        const isRev = c.isReversed;
+                        imgHtml += `
+                            <img class="j-card-img" 
+                                 src="./images/tarot/${c.file}" 
+                                 style="transform: ${isRev ? 'rotate(180deg)' : 'none'}"
+                                 onclick="showJournalCardDetail('${c.id}', ${isRev})"
+                            >
+                        `;
+                    });
+                    imgHtml += `</div>`;
+                }
+
+                // Build Names (Chinese + English)
+                namesHtml = cards.map(c => {
+                    const info = db[c.id] || { name: "未知牌卡" };
+                    const cnName = `${info.name} ${c.isReversed ? '(逆)' : ''}`;
+                    const enName = getCardEngName(c.id);
+                    return `${cnName} <span>${enName}</span>`;
+                }).join('<br>');
+            } else {
+                 imgHtml = `<div style="width:100px; height:150px; background:#eee; display:flex; align-items:center; justify-content:center; border-radius:8px; color:#999; font-size:0.8rem;">無圖片</div>`;
+                 namesHtml = "未記錄牌卡";
             }
 
+            // New Layout: Left Image, Right Text
             list.innerHTML += `
                 <div class="journal-entry">
-                    <div class="j-header">
-                         <span class="j-date">${dateStr}</span>
+                    <div class="j-left">
+                        ${imgHtml}
                     </div>
-                    ${cardsHtml}
-                    <div class="j-text">${text}</div>
+                    <div class="j-right">
+                        <div class="j-meta-header">
+                             <div class="j-date">${dateStr}</div>
+                             <div class="j-card-names">${namesHtml}</div>
+                        </div>
+                        <div class="j-text">${text}</div>
+                    </div>
                 </div>
             `;
         });
     };
     
-    // Global helper for journal card click
     window.showJournalCardDetail = (id, isReversed) => {
         showDetail(id, isReversed, false);
     };
@@ -5095,7 +5178,6 @@ renderTarot:(container) => {
         if(e.target === container.querySelector('#card-detail-modal')) container.querySelector('#card-detail-modal').classList.add('hidden');
     };
 
-    // Updated Save Logic
     container.querySelector('#btn-save-journal').onclick = () => {
         const d = new Date();
         const key = `tarot_journal_${d.getFullYear()}_${d.getMonth()+1}_${d.getDate()}`;
@@ -5103,7 +5185,7 @@ renderTarot:(container) => {
         
         const dataToSave = {
             text: text,
-            cards: state.currentResultCards || [] // Save full card objects
+            cards: state.currentResultCards || [] 
         };
 
         localStorage.setItem(key, JSON.stringify(dataToSave));
