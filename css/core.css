@@ -1,0 +1,132 @@
+/*
+ * Safe Space - Core Theme & Splash
+ * Extracted from the original monolithic index(2).html.
+ */
+        /* --- 🎨 核心視覺變數 (日夜切換系統) --- */
+        :root {
+            /* 日間模式 (預設) */
+            --primary: #7A9F6E;       /* 抹茶綠 */
+            --primary-dark: #58754F;
+            --primary-light: #EBF2EA;
+            --bg: #FCFAF7;            /* 米白 */
+            --card-bg: #FFFFFF;
+            --text-main: #5C5552;     /* 深暖灰 */
+            --text-sub: #9E9894;
+            --accent-warm: #D67D68;
+            --radius-box: 24px;
+            --radius-btn: 16px;
+            --shadow-soft: 0 8px 20px rgba(122, 159, 110, 0.15);
+            --glass: rgba(255, 255, 255, 0.90);
+            --border-color: rgba(0,0,0,0.05);
+            --pet-glow: drop-shadow(0 4px 6px rgba(0,0,0,0.15)); /* 麵團陰影 */
+        }
+
+        /* 🌙 深色模式 (溫暖的深夜可可色) */
+        body.dark-mode {
+            --primary: #9BC58B;       /* 亮一點的綠，對比才夠 */
+            --primary-dark: #BCE0AF;
+            --primary-light: #3D3A37; /* 深卡其背景 */
+            --bg: #2C2927;            /* 深咖啡黑 */
+            --card-bg: #383533;       /* 稍微亮一點的灰褐 */
+            --text-main: #EDE8E4;     /* 暖白 */
+            --text-sub: #ACA59F;      /* 暖灰 */
+            --shadow-soft: 0 8px 20px rgba(0, 0, 0, 0.4);
+            --glass: rgba(44, 41, 39, 0.90);
+            --border-color: rgba(255,255,255,0.1);
+            --pet-glow: drop-shadow(0 0 10px rgba(255, 255, 255, 0.2)); /* 夜晚發光 */
+        }
+
+        body {
+            font-family: "Zen Maru Gothic", sans-serif;
+            background-color: var(--bg);
+            color: var(--text-main);
+            margin: 0;
+            padding: 24px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            line-height: 1.6;
+            -webkit-tap-highlight-color: transparent;
+            /* 關鍵：預設隱藏捲軸，等 Splash 結束才打開 */
+            overflow: hidden; 
+            transition: background-color 0.5s, color 0.5s;
+        }
+
+        /* --- 🎬 啟動畫面 (動態敘事版) --- */
+        #splash-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: var(--bg); z-index: 9999;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            transition: opacity 0.8s ease-out;
+            /* 防止手機滑動看到後面 */
+            touch-action: none; 
+        }
+        
+        .splash-content { text-align: center; position: relative; }
+
+        .splash-logo-container {
+            width: 140px; height: 140px; margin: 0 auto 30px auto;
+            position: relative;
+            /* 1. 麵團慢慢進來 (從上方降落) */
+            animation: doughEnter 2s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+            opacity: 0; /* 初始隱藏 */
+        }
+
+        /* 禪意麵團 */
+        .zen-dough {
+            width: 100%; height: 100%;
+            /* 2. 進場後接續呼吸動畫 */
+            animation: deepBreathe 6s ease-in-out infinite 2s; /* 延遲2秒等進場完 */
+            filter: var(--pet-glow);
+        }
+
+        .splash-title {
+            font-size: 1.8rem; font-weight: 900; color: var(--primary);
+            letter-spacing: 2px; margin-bottom: 5px;
+            /* 3. 標題慢慢出現 */
+            opacity: 0;
+            animation: fadeInUp 1.5s ease-out 1.5s forwards;
+        }
+        .splash-subtitle {
+            font-size: 0.9rem; color: var(--text-sub); font-weight: 500;
+            margin-bottom: 50px; opacity: 0;
+            animation: fadeInUp 1.5s ease-out 1.8s forwards;
+        }
+
+        .start-btn {
+            font-size: 1rem; color: white; font-weight: 700;
+            padding: 14px 40px; 
+            background: var(--primary);
+            border: none;
+            border-radius: 50px; cursor: pointer;
+            box-shadow: 0 5px 15px rgba(122, 159, 110, 0.3);
+            transition: all 0.3s;
+            letter-spacing: 1px;
+            opacity: 0;
+            /* 4. 按鈕淡入 + 搖動一下 */
+            animation: fadeInUp 1s ease-out 2.5s forwards, shakeBtn 0.5s ease-in-out 3s;
+        }
+        .start-btn:active { transform: scale(0.95); }
+
+        /* 動畫定義 */
+        @keyframes doughEnter {
+            0% { transform: translateY(-50px) scale(0.8); opacity: 0; }
+            100% { transform: translateY(0) scale(1); opacity: 1; }
+        }
+        @keyframes deepBreathe {
+            0%, 100% { transform: scale(1) translateY(0); }
+            50% { transform: scale(1.05) translateY(-5px); }
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes shakeBtn {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(-5deg); }
+            75% { transform: rotate(5deg); }
+        }
+
+
