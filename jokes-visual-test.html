@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Jokes Visual Test</title>
+<style>
+:root{--primary:#7A9F6E;--primary-dark:#58754F;--primary-light:#EBF2EA;--bg:#FCFAF7;--card-bg:#fff;--text-main:#5C5552;--text-sub:#9E9894;--accent-warm:#D67D68;--shadow-soft:0 8px 20px rgba(122,159,110,.15);--border-color:rgba(0,0,0,.05)}
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:"Arial","Noto Sans TC",sans-serif;background:var(--bg);color:var(--text-main)}
+#host{height:100vh;min-height:100dvh;padding:18px 20px;}
+</style>
+<link rel="stylesheet" href="./css/features/jokes.css">
+</head>
+<body>
+<div id="host"></div>
+<script>
+var renderers = {};
+</script>
+<script src="./js/features/jokes-data.js"></script>
+<script src="./js/features/jokes.js"></script>
+<script>
+renderJokes(document.getElementById('host'));
+setTimeout(()=>document.querySelector('[data-joke-action="like"]')?.click(), 650);
+setTimeout(()=>document.querySelector('[data-joke-action="enter-chat"]')?.click(), 1350);
+</script>
+</body>
+</html>

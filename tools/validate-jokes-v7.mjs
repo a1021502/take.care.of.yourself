@@ -1,0 +1,10 @@
+import fs from "node:fs";
+const s=fs.readFileSync("js/features/jokes-data.js","utf8");
+const db=JSON.parse(s.slice(s.indexOf("=")+1).replace(/;\s*$/,""));
+const active=db.jokes.filter(j=>j.enabled!==false);
+if(db.jokes.length!==647) throw new Error(`expected 647, got ${db.jokes.length}`);
+if(active.length!==147) throw new Error(`expected 147 active, got ${active.length}`);
+if(new Set(db.jokes.map(j=>j.id)).size!==db.jokes.length) throw new Error("duplicate ids");
+if(new Set(db.jokes.map(j=>j.reviewNo)).size!==db.jokes.length) throw new Error("duplicate review numbers");
+if(!fs.existsSync("jokes-review.html")) throw new Error("missing jokes-review.html");
+console.log("v7 joke validation: PASS");
